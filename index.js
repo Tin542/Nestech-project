@@ -5,7 +5,7 @@ const mongoose = require('mongoose');
 const port = 3000
 
 app.get('/', (req, res) => {
-  res.send('Hello bin')
+  res.send('Hello world')
 })
 
 app.listen(CONFIG.PORT, () => {
