@@ -4,9 +4,9 @@ const CONFIG = require('./config');
 const mongoose = require('mongoose');
 const port = 3000
 
-app.get('/', (req, res) => {
-  res.send('Hello world')
-})
+app.set('view engine', 'ejs');
+
+app.use('/', require('./routes/home.route'));
 
 app.listen(CONFIG.PORT, () => {
   console.log(`Example app listening on port ${CONFIG.PORT}`)
@@ -17,5 +17,4 @@ app.listen(CONFIG.PORT, () => {
 // tạo trello ==> workspace ==> invite
 
 // view (trang chủ)
-// models
 
