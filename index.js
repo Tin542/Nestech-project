@@ -1,20 +1,26 @@
-const express = require('express') // import express
-const app = express() // khai bao
-const CONFIG = require('./config');
-const mongoose = require('mongoose');
-const port = 3000
+const express = require("express"); // import express
+const app = express(); // khai bao
+const CONFIG = require("./config");
+const mongoose = require("mongoose");
 
-app.set('view engine', 'ejs');
+// MongoDB connection
+const db = CONFIG.MONGODB_URL;
+mongoose
+  .connect(db, { useUnifiedTopology: true, useNewUrlParser: true })
+  .then(() => console.log("Connected to mongodb (^.^)"))
+  .catch((err) => console.log(err));
 
-app.use('/', require('./routes/home.route'));
+app.set("view engine", "ejs");
+
+// Routes
+app.use("/", require("./routes/home"));
 
 app.listen(CONFIG.PORT, () => {
-  console.log(`Example app listening on port ${CONFIG.PORT}`)
-})
+  console.log(`Example app listening on port ${CONFIG.PORT}`);
+});
 
 // tao repo ==> readme.md: họ tên mem, mongo url, invite
-// vô mongo atlas tạo db ==> database ==> network access: tạo ip 
+// vô mongo atlas tạo db ==> database ==> network access: tạo ip
 // tạo trello ==> workspace ==> invite
 
 // view (trang chủ)
-
