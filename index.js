@@ -11,6 +11,7 @@ mongoose
   .catch((err) => console.log(err));
 
 app.set("view engine", "ejs");
+app.use('/public', express.static('public'));
 
 // Routes
 app.use("/", require("./routes/home"));
