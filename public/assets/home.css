@@ -1,0 +1,42 @@
+.top-title:hover + .hr-style {
+  width: 10%;
+}
+
+.hr-style {
+  width: 5%;
+  margin: 0 auto 0 auto;
+  height: 2px;
+  transition: 0.3s;
+}
+
+.bg-img {
+  overflow: hidden;
+}
+.bg-img img {
+  transition: transform 0.5s ease;
+}
+.bg-img:hover img {
+  transform: scale(1.1);
+}
+.banner-container {
+  margin-top: 30px;
+  width: 100%;
+  height: 70vh;
+  border: 1px solid #000000;
+  overflow: hidden;
+  position: relative;
+}
+.banner-img {
+  background-image: url("https://capricathemes.com/opencart/OPC02/OPC020033/image/catalog/cms-banner.jpg");
+  background-size: cover;
+  background-repeat: no-repeat;
+  transition: all 1s;
+  width: 100%;
+  height: 100%;
+}
+.banner-img:hover {
+  transform: scale(1.1);
+}
+.checked {
+  color: #ffff00;
+}
