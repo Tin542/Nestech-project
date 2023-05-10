@@ -24,7 +24,7 @@ function ProductController() {
     addProduct: (req, res) => {
       try {
         let data = req.body;
-        console.log('data create', data);
+        console.log("data create", data);
         return Product.create(data)
           .then((rs) => {
             return res.redirect("/products");

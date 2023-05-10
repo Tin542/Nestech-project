@@ -27,22 +27,30 @@
   </head>
   <body>
     <%- include('../partials/navbar.ejs') %>
-    <div style="margin-top: 80px" class="list-group p-5">
-      <a></a>
-      <% for (var i = 0; i < products.length ; i++) { %>
-      <a
-        href="#"
-        class="list-group-item list-group-item-action"
-        aria-current="true"
-      >
-        <div class="d-flex w-100 justify-content-between">
-          <h5 class="mb-1"><%= products[i].name %></h5>
-          <small><%= products[i].price %> VND</small>
-        </div>
-        <p class="mb-1"><%= products[i].rate %> stars</p>
-      </a>
+    <div style="margin-top: 80px" class="p-5">
+      <table class="table table-bordered">
+        <thead>
+          <tr>
+            <th scope="col">#</th>
+            <th scope="col">Name</th>
+            <th scope="col">Description</th>
+            <th scope="col">Price</th>
+            <th scope="col">Rate</th>
+          </tr>
+        </thead>
+        <tbody>
+          <% products.forEach(function(product, index) { %>
+          <tr>
+            <th><%= index+1 %></th>
+            <td><%= product.name %></td>
+            <td><%= product.description %></td>
+            <td><%= product.price %></td>
+            <td><%= product.rate %></td>
+          </tr>
+          <% }) %>
+        </tbody>
+      </table>
 
-      <% } %>
       <hr />
       <h3>Add Product</h3>
       <form class="row g-3" action="/products/add" method="post">
@@ -58,7 +66,6 @@
             id="name"
             name="name"
             placeholder="Nhập tên"
-            
           />
         </div>
         <div class="col-6">
@@ -69,7 +76,6 @@
             id="price"
             name="price"
             placeholder="Nhập giá"
-            
           />
         </div>
         <div class="col-6">
@@ -80,7 +86,6 @@
             id="rate"
             name="rate"
             placeholder="Nhập đánh giá"
-            
           />
         </div>
         <div class="col-6">
@@ -91,7 +96,6 @@
             id="description"
             name="description"
             placeholder="Nhập mô tả"
-            
           />
         </div>
         <div class="col-6">
