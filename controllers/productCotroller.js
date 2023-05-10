@@ -39,7 +39,6 @@ function ProductController() {
     getProductDetail: async (req, res) => {
       try {
         let productId = req.params?.id;
-        console.log(productId);
         let result = await Product.findById(productId);
         if (!result) {
           return res.json({ s: 404, msg: "Product not found" });
