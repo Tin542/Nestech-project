@@ -24,6 +24,11 @@
       rel="stylesheet"
       href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css"
     />
+    <script
+      src="https://code.jquery.com/jquery-3.1.1.js"
+      integrity="sha256-16cdPddA6VdVInumRGo6IbivbERE8p7CQR3HzTBuELA="
+      crossorigin="anonymous"
+    ></script>
   </head>
   <body>
     <%- include('../partials/navbar.ejs') %>
@@ -36,6 +41,7 @@
             <th scope="col">Description</th>
             <th scope="col">Price</th>
             <th scope="col">Rate</th>
+            <th scope="col">Action</th>
           </tr>
         </thead>
         <tbody>
@@ -46,6 +52,14 @@
             <td><%= product.description %></td>
             <td><%= product.price %></td>
             <td><%= product.rate %></td>
+            <td>
+              <i
+                style="cursor: pointer"
+                onclick='editItem("<%= product._id %>")'
+                class="bi bi-pencil-square"
+              ></i>
+              <i style="cursor: pointer" class="bi bi-trash3"></i>
+            </td>
           </tr>
           <% }) %>
         </tbody>
@@ -113,7 +127,93 @@
         </div>
       </form>
       <hr />
+      <div id="formEdit"></div>
     </div>
+
+    <script>
+      function editItem(id) {
+        $.ajax({
+          type: "GET",
+          url: `/products/detail/${id}`,
+          success: function (rs) {
+            if (rs.s === 200) {
+              let data = rs.data;
+              var formEdit = `
+              <h3>Edit Product</h3>
+      <form class="row g-3" action="/products/edit" method="post">
+        <!-- <div class="col-md-6">
+            <img src="<%= urlUploaded %>" height="100px" width="100px" />
+            <input type="hidden" class="form-control" name="avatar" id="avatar" value="<%= urlUploaded %>">
+        </div> -->
+        <div>
+                            <input type="hidden" class="form-control" id="_id" name="_id" value="${data._id}">
+                        </div>
+        <div class="col-md-6">
+          <label for="name" class="form-label">Name</label>
+          <input
+            type="text"
+            class="form-control"
+            id="name"
+            name="name"
+            placeholder="Nhập tên"
+            value="${data.name}"
+          />
+        </div>
+        <div class="col-6">
+          <label for="price" class="form-label">Price</label>
+          <input
+            type="number"
+            class="form-control"
+            id="price"
+            name="price"
+            placeholder="Nhập giá"
+            value="${data.price}"
+          />
+        </div>
+        <div class="col-6">
+          <label for="rate" class="form-label">Rate</label>
+          <input
+            type="number"
+            class="form-control"
+            id="rate"
+            name="rate"
+            placeholder="Nhập đánh giá"
+            value="${data.rate}"
+          />
+        </div>
+        <div class="col-6">
+          <label for="description" class="form-label">Des</label>
+          <input
+            type="text"
+            class="form-control"
+            id="description"
+            name="description"
+            placeholder="Nhập mô tả"
+            value="${data.description}"
+          />
+        </div>
+        <div class="col-6">
+          <label for="imageUrl" class="form-label">image URL</label>
+          <input
+            type="text"
+            class="form-control"
+            id="imageUrl"
+            name="imageUrl"
+            placeholder="Nhập url"
+            value="${data.imageUrl}"
+          />
+        </div>
+        <div class="col-12">
+          <button type="submit" class="btn btn-primary">Update</button>
+        </div>
+      </form>
+                  `;
+              $("#formEdit").html(formEdit);
+            }
+          },
+        });
+      }
+    </script>
 
     <%- include('../partials/footer.ejs') %>
   </body>

@@ -25,3 +25,4 @@ app.listen(CONFIG.PORT, () => {
 
 // pody-parser 
 // define form view
+// ajax: là 1 phương thức để call API (axios, fetch, request, http,...)

@@ -36,6 +36,40 @@ function ProductController() {
         console.log(error);
       }
     },
+    getProductDetail: async (req, res) => {
+      try {
+        let productId = req.params?.id;
+        console.log(productId);
+        let result = await Product.findById(productId);
+        if (!result) {
+          return res.json({ s: 404, msg: "Product not found" });
+        }
+        return res.json({ s: 200, data: result });
+      } catch (error) {
+        console.log("Get Detail error: " + error);
+      }
+    },
+    editProduct: async (req, res) => {
+      try {
+        let editData = req.body;
+        let detailProduct = await Product.findById(editData._id);
+        if (!detailProduct) {
+          res.json({ s: 404, msg: "Product not found" });
+        }
+        delete editData._id; // xoa field id trong editData
+        return Product.findByIdAndUpdate(detailProduct._id, editData)
+          .then((rs) => {
+            if (rs) {
+              res.redirect("/products");
+            }
+          })
+          .catch((err) => {
+            console.log(err);
+          });
+      } catch (error) {
+        console.log("edit product error: ", error);
+      }
+    },
   };
 }
 
