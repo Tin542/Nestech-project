@@ -67,11 +67,16 @@
 
       <hr />
       <h3>Add Product</h3>
+      <form
+        id="uploadFile"
+        enctype="multipart/form-data"
+        action="/upload-image"
+        method="post"
+      >
+        <input type="file" name="file" />
+        <input type="submit" value="Upload File" name="submit" />
+      </form>
       <form class="row g-3" action="/products/add" method="post">
-        <!-- <div class="col-md-6">
-            <img src="<%= urlUploaded %>" height="100px" width="100px" />
-            <input type="hidden" class="form-control" name="avatar" id="avatar" value="<%= urlUploaded %>">
-        </div> -->
         <div class="col-md-6">
           <label for="name" class="form-label">Name</label>
           <input

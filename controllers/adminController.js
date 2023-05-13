@@ -21,7 +21,9 @@ function AdminController() {
         console.log(error);
       }
     },
-    
+    users: (req, res) => {
+      return res.render("pages/admin/userList", {});
+    },
   };
 }
 
