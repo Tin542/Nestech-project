@@ -15,8 +15,9 @@ router.get('/products', productController.getList);
 router.post('/products/add', productController.addProduct);
 router.get('/products/detail/:id', productController.getProductDetail);
 router.post('/products/edit', productController.editProduct);
+router.delete('/products/delete/:id', productController.deleteProduct);
 
 // upload hinh anh
-router.post('/products/upload-image', upload.single('file', ), fileService.uploadImage);
+router.post("/products/upload-image", upload.single("file"), fileService.uploadFile);
 
 module.exports = router;

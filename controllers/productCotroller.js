@@ -21,6 +21,13 @@ function ProductController() {
         console.log(error);
       }
     },
+    getListDB: () => {
+      try {
+        return Product.find();
+      } catch (error) {
+        console.log(error);
+      }
+    },
     addProduct: (req, res) => {
       try {
         let data = req.body;
@@ -67,6 +74,26 @@ function ProductController() {
           });
       } catch (error) {
         console.log("edit product error: ", error);
+      }
+    },
+    deleteProduct: async(req, res) => {
+      try {
+        const pId = req.params?.id;
+        const product = await Product.findById(pId);
+        if (!product) {
+          return res.json({ s: 404, msg: "Product not found" });
+        }
+        Product.deleteOne({ _id: pId })
+          .then((rs) => {
+            console.log(rs);
+            return res.json({ s: 200, msg: "Delete product success!!" });
+          })
+          .catch((e) => {
+            console.log(`deleteProduct - fail: ${e}`);
+            return rs.json({ s: 400, msg: "deleteProduct fail" });
+          });
+      } catch (error) {
+        console.log(error);
       }
     },
   };

@@ -4,6 +4,7 @@
       <thead>
         <tr>
           <th scope="col">#</th>
+          <th scope="col">Hình ảnh</th>
           <th scope="col">Tên sản phẩm</th>
           <th scope="col">Mô tả</th>
           <th scope="col">Đánh giá</th>
@@ -14,6 +15,9 @@
         <% products.forEach(function(item, index) { %>
         <tr>
           <th scope="row"><%= index+1 %></th>
+          <td>
+            <img src="<%= item.imageUrl %>" height="50px" width="50px" />
+          </td>
           <td><%= item.name %></td>
           <td><%= item.description %></td>
           <td><%= item.rate %></td>
