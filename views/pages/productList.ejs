@@ -37,6 +37,7 @@
         <thead>
           <tr>
             <th scope="col">#</th>
+            <th scope="col">Image</th>
             <th scope="col">Name</th>
             <th scope="col">Description</th>
             <th scope="col">Price</th>
@@ -48,6 +49,9 @@
           <% products.forEach(function(product, index) { %>
           <tr>
             <th><%= index+1 %></th>
+            <td>
+              <img src="<%= product.imageUrl %>" height="100px" width="100px" />
+            </td>
             <td><%= product.name %></td>
             <td><%= product.description %></td>
             <td><%= product.price %></td>
@@ -58,7 +62,11 @@
                 onclick='editItem("<%= product._id %>")'
                 class="bi bi-pencil-square"
               ></i>
-              <i style="cursor: pointer" class="bi bi-trash3"></i>
+              <i
+                onclick='deleteItem("<%= product._id %>")'
+                style="cursor: pointer"
+                class="bi bi-trash3"
+              ></i>
             </td>
           </tr>
           <% }) %>
@@ -67,11 +75,26 @@
 
       <hr />
       <h3>Add Product</h3>
+      <form
+        id="uploadFile"
+        enctype="multipart/form-data"
+        action="/products/upload-image"
+        method="post"
+      >
+        <input type="file" name="file" />
+        <input type="submit" value="Upload File" name="submit" />
+      </form>
       <form class="row g-3" action="/products/add" method="post">
-        <!-- <div class="col-md-6">
-            <img src="<%= urlUploaded %>" height="100px" width="100px" />
-            <input type="hidden" class="form-control" name="avatar" id="avatar" value="<%= urlUploaded %>">
-        </div> -->
+        <div class="col-md-6">
+          <img src="<%= urlUploaded %>" height="100px" width="100px" />
+          <input
+            type="hidden"
+            class="form-control"
+            name="imageUrl"
+            id="imageUrl"
+            value="<%= urlUploaded %>"
+          />
+        </div>
         <div class="col-md-6">
           <label for="name" class="form-label">Name</label>
           <input
@@ -112,16 +135,6 @@
             placeholder="Nhập mô tả"
           />
         </div>
-        <div class="col-6">
-          <label for="imageUrl" class="form-label">image URL</label>
-          <input
-            type="text"
-            class="form-control"
-            id="imageUrl"
-            name="imageUrl"
-            placeholder="Nhập url"
-          />
-        </div>
         <div class="col-12">
           <button type="submit" class="btn btn-primary">Add</button>
         </div>
@@ -131,6 +144,16 @@
     </div>
 
     <script>
+      function deleteItem(id){
+        $.ajax({
+          type: "DELETE",
+          url: `/products/delete/${id}`,
+          success: function (rs) {
+            alert('delete success');
+            window.location.reload();
+          }
+        })
+      }
       function editItem(id) {
         $.ajax({
           type: "GET",
