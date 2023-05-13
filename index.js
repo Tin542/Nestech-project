@@ -1,7 +1,8 @@
 const express = require("express"); // import express
 const app = express(); // khai bao
 const CONFIG = require("./config");
-const home = require('./routes/home')
+const home = require('./routes/home');
+const admin = require('./routes/admin');
 const mongoose = require("mongoose");
 const bodyParser = require("body-parser");
 
@@ -10,7 +11,7 @@ const db = CONFIG.MONGODB_URL;
 mongoose
   .connect(db, { useUnifiedTopology: true, useNewUrlParser: true })
   .then(() => console.log("Connected to mongodb =(^.^)="))
-  .catch((err) => console.log(err));
+  .catch((err) => console.log('failed to connect to mongodb =(T.T)='));
 
 app.set("view engine", "ejs");
 app.use('/public', express.static('public'));
@@ -18,6 +19,7 @@ app.use(bodyParser.urlencoded({ extended: true }));
 
 // Routes
 app.use("/", home);
+app.use('/admin', admin)
 
 app.listen(CONFIG.PORT, () => {
   console.log(`Example app listening on port ${CONFIG.PORT}`);
