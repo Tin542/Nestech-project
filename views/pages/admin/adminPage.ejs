@@ -31,7 +31,8 @@
       <div class="row flex-nowrap">
         <%- include('../../partials/admin/adminSidebar.ejs') %>
         <div class="col py-3">
-          <%- include('./productList.ejs') %>
+          <% if(products) { %> <%- include('./productList.ejs') %> <% } %> <%
+          if(users) { %> <%- include('./userList.ejs') %> <% } %>
         </div>
       </div>
     </div>

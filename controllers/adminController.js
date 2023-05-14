@@ -3,7 +3,9 @@ const Product = require("../models/product").Product;
 
 function AdminController() {
   // chua global var
-  const SELF = {};
+  const SELF = {
+
+  };
   return {
     home: (req, res) => {
       try {
@@ -11,6 +13,7 @@ function AdminController() {
           .then((rs) => {
             res.render("pages/admin/adminPage", {
               products: rs,
+              users: null,
               urlUploaded: null,
             });
           })
@@ -22,7 +25,11 @@ function AdminController() {
       }
     },
     users: (req, res) => {
-      return res.render("pages/admin/userList", {});
+      return res.render("pages/admin/adminPage", {
+        users: [],
+        products: null,
+        urlUploaded: null
+      });
     },
   };
 }
