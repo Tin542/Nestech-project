@@ -24,6 +24,11 @@
       rel="stylesheet"
       href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css"
     />
+    <script
+      src="https://code.jquery.com/jquery-3.1.1.js"
+      integrity="sha256-16cdPddA6VdVInumRGo6IbivbERE8p7CQR3HzTBuELA="
+      crossorigin="anonymous"
+    ></script>
   </head>
   <body>
     <%- include('../../partials/admin/adminNavbar.ejs') %>
@@ -36,5 +41,114 @@
         </div>
       </div>
     </div>
+    <script>
+      function editProduct(id) {
+        $.ajax({
+          type: "GET",
+          url: `/admin/products/detail/${id}`,
+          success: function (rs) {
+            if (rs.s === 200) {
+              let data = rs.data;
+              var formEdit = `
+              <form class="row g-3" action="/admin/products/edit" method="post">
+            <div class="col-md-12">
+              <img src="<%= urlUploaded %>" height="100px" width="100px" />
+              <input
+                style="display: none"
+                type="text"
+                class="form-control"
+                name="imageUrl"
+                id="imageUrl"
+                value="<%= urlUploaded %>"
+              />
+            </div>
+            <div>
+                            <input type="hidden" class="form-control" id="_id" name="_id" value="${data._id}">
+                        </div>
+            <div class="col-md-6">
+              <label for="name" class="form-label">Tên sản phẩm</label>
+              <input
+                type="text"
+                class="form-control"
+                id="name"
+                name="name"
+                placeholder="Nhập tên"
+                value="${data.name}"
+              />
+            </div>
+            <div class="col-6">
+              <label for="price" class="form-label">Giá</label>
+              <input
+                type="number"
+                class="form-control"
+                id="price"
+                name="price"
+                placeholder="Nhập giá"
+                value="${data.price}"
+              />
+            </div>
+            <div class="col-6">
+              <label for="rate" class="form-label">Đánh giá</label>
+              <input
+                type="number"
+                class="form-control"
+                id="rate"
+                name="rate"
+                placeholder="Nhập đánh giá"
+                value="${data.rate}"
+              />
+            </div>
+            <div class="col-6">
+              <label for="description" class="form-label">Mô tả</label>
+              <input
+                type="text"
+                class="form-control"
+                id="description"
+                name="description"
+                placeholder="Nhập mô tả"
+                value="${data.description}"
+              />
+            </div>
+
+            <div class="col-12">
+              <div class="modal-footer">
+                <button
+                  type="button"
+                  class="btn btn-secondary"
+                  data-bs-dismiss="modal"
+                >
+                  Đóng
+                </button>
+                <button type="submit" class="btn btn-primary">Lưu</button>
+              </div>
+            </div>
+          </form>
+              
+                  `;
+              $("#formEdit").html(formEdit);
+            }
+          },
+        });
+      }
+      function deleteItem(id) {
+        $.ajax({
+          type: "DELETE",
+          url: `/admin/products/delete/${id}`,
+          success: function (rs) {
+            alert("delete success");
+            window.location.reload();
+          },
+        });
+      }
+      function uploadImage() {
+        $.ajax({
+          type: "POST",
+          url: `/admin/products/upload-image`,
+          success: function (rs) {
+            console.log("image", rs);
+          },
+        });
+      }
+    </script>
   </body>
 </html>

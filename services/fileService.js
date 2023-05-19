@@ -7,7 +7,7 @@ function FileService() {
   return {
     uploadFile: (req, res) => {
       try {
-        console.log(req.file);
+        console.log('req image', req);
         if (!req.file) {
           return res.json({ s: 404, msg: "File not found" });
         }
@@ -24,13 +24,11 @@ function FileService() {
           console.log("Uploaded");
           const options = {
             action: "read",
-            expires: Date.now() + 1000 * 60 * 60,
+            expires: Date.now() + 1000 * 60 * 60 * 24 * 30, // 30 ngay
           };
           blob.getSignedUrl(options).then(async (urls) => {
-            let productList = await productController.getListDB();
-            return res.render("pages/productList", {
+            return res.json("/views/pages/admin/adminPage.ejs", {
               urlUploaded: urls[0],
-              products: productList
             });
           });
         });

@@ -3,19 +3,31 @@ const Product = require("../models/product").Product;
 
 function ProductController() {
   // chua global var
-  const SELF = {};
+  const SELF = {
+    SIZE: 5
+  };
   return {
-    getList: (req, res) => {
+    getList: async (req, res) => {
       try {
-        return Product.find()
+        let page = req.query.page;
+        let keySearch = req.query.keySearch;
+        if (!page || parseInt(page) <= 0) {
+          page = 1;
+        }
+        let skip = (parseInt(page) - 1) * SELF.SIZE;
+        let regex = new RegExp(keySearch);
+        return Product.find({name: regex})
+          .skip(skip)
+          .limit(SELF.SIZE)
           .then((rs) => {
-            res.render("pages/productList", {
+            console.log(rs);
+            res.render("pages/index", {
               products: rs,
               urlUploaded: null,
             });
           })
           .catch((error) => {
-            res.json({ s: 400, msg: error });
+            res.send({ s: 400, msg: error });
           });
       } catch (error) {
         console.log(error);

@@ -1,8 +1,22 @@
 const express = require("express");
 const adminController = require('../controllers/adminController');
+const productController = require("../controllers/productCotroller");
 const router = express.Router({});
+const fileService = require("../services/fileService");
+const multer = require("multer");
 
-router.get('/', adminController.home);
-router.get('/user-list', adminController.users);
+const upload = multer({
+    storage: multer.memoryStorage(),
+})
+
+router.get('/products/list', adminController.getList);
+router.get('/user/list', adminController.users);
+router.post('/products/add', adminController.addProduct);
+router.get('/products/detail/:id', adminController.getProductDetail);
+router.post('/products/edit', adminController.editProduct);
+router.delete('/products/delete/:id', adminController.deleteProduct);
+
+// upload hinh anh
+router.post("/products/upload-image", upload.single("file"), fileService.uploadFile);
 
 module.exports = router;
