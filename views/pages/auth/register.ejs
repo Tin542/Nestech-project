@@ -1,0 +1,55 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Đăng kí</title>
+    <%- include('../../partials/header.ejs') %>
+  </head>
+  <body>
+    <%- include('../../partials/navbar.ejs') %>
+    <div class="container">
+      <div class="row">
+        <div class="col-md-6 offset-md-3">
+          <div class="signup-form">
+            <form action="" class="mt-5 border p-4 bg-white shadow">
+              <h4 class="mb-5 text-secondary text-center">Đăng kí tài khoản</h4>
+              <div class="row">
+                <div class="mb-3 col-md-12">
+                  <label>Họ và tên<span class="text-danger">*</span></label>
+                  <input type="text" name="fullname" class="form-control" />
+                </div>
+                <div class="mb-3 col-md-6">
+                  <label>Username<span class="text-danger">*</span></label>
+                  <input type="text" name="username" class="form-control" />
+                </div>
+                <div class="mb-3 col-md-6">
+                    <label>Email<span class="text-danger">*</span></label>
+                    <input type="email" name="email" class="form-control" />
+                  </div>
+
+                <div class="mb-3 col-md-12">
+                  <label>Mật khẩu<span class="text-danger">*</span></label>
+                  <input
+                    type="password"
+                    name="password"
+                    class="form-control"
+                  />
+                </div>
+                
+                
+                <div class="col-md-12">
+                  <button class="btn btn-primary">Đăng kí</button>
+                </div>
+              </div>
+            </form>
+            <p class="text-center mt-3 text-secondary">
+              Bạn đã có tài khoản ? <a href="#">Đăng nhập</a>
+            </p>
+          </div>
+        </div>
+      </div>
+    </div>
+  </body>
+</html>

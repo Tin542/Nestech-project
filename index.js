@@ -3,6 +3,7 @@ const app = express(); // khai bao
 const CONFIG = require("./config");
 const home = require('./routes/home');
 const admin = require('./routes/admin');
+const auth = require('./routes/auth');
 const mongoose = require("mongoose");
 const bodyParser = require("body-parser");
 
@@ -19,7 +20,8 @@ app.use(bodyParser.urlencoded({ extended: true }));
 
 // Routes
 app.use("/", home);
-app.use('/admin', admin)
+app.use('/admin', admin);
+app.use('/auth', auth);
 
 app.listen(CONFIG.PORT, () => {
   console.log(`Example app listening on port ${CONFIG.PORT}`);
