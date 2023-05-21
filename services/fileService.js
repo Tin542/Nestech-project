@@ -1,24 +1,24 @@
 "use strict";
 const firebase = require("./firebaseService");
-const productController = require("../controllers/productCotroller")
+const productController = require("../controllers/productCotroller");
 
 function FileService() {
   const SELF = {};
   return {
     uploadFile: (req, res) => {
+      console.log("Uploading", req.body.data);
       try {
-        console.log('req image', req);
-        if (!req.file) {
+        if (!req.body) {
           return res.json({ s: 404, msg: "File not found" });
         }
-        const blob = firebase.bucket.file(req.file.originalname);
+        const blob = firebase.bucket.file(req.body.originalname);
         const blobWriter = blob.createWriteStream({
           metadata: {
-            contentType: req.file.mimetype,
+            contentType: req.body.mimetype,
           },
         });
         blobWriter.on("error", (err) => {
-          console.log(err);
+          console.log("upload image error 0: ", err);
         });
         blobWriter.on("finish", () => {
           console.log("Uploaded");
@@ -27,14 +27,14 @@ function FileService() {
             expires: Date.now() + 1000 * 60 * 60 * 24 * 30, // 30 ngay
           };
           blob.getSignedUrl(options).then(async (urls) => {
-            return res.json("/views/pages/admin/adminPage.ejs", {
+            return res.json({
               urlUploaded: urls[0],
             });
           });
         });
-        blobWriter.end(req.file.buffer);
+        blobWriter.end(req.body.buffer);
       } catch (error) {
-        console.log(error);
+        console.log("upload image error 1: ", error);
       }
     },
   };

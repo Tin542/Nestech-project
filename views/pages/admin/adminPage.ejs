@@ -118,13 +118,17 @@
         });
       }
       function uploadImage() {
-        $.ajax({
-          type: "POST",
-          url: `/admin/products/upload-image`,
-          success: function (rs) {
-            console.log("image", rs);
-          },
-        });
+        var file = $("#image_file")[0].files[0];
+        if (file) {
+          $.ajax({
+            type: "POST",
+            url: `/admin/products/upload-image`,
+            data: { file },
+            success: function (rs) {
+              console.log("image", rs);
+            },
+          });
+        }
       }
     </script>
   </body>

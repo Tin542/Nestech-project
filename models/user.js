@@ -4,12 +4,13 @@ const mongoose = require("mongoose");
 // define model schema
 const User = mongoose.Schema(
   {
+    fullname: { type: String },
     username: { type: String },
     password: { type: String },
-    fullname: { type: String },
-    email: { type: String },
-    phone: { type: String },
-    gender: { type: String },
+    email: { type: String, unique: true },
+    active: { type: Boolean, default: false },
+    otp: { type: String },
+    token: { type: String },
   },
   { version: false, timestamps: true }
 );
@@ -21,5 +22,5 @@ User.statics.objectId = function (id) {
 
 // export models
 module.exports = {
-  Product: mongoose.model("user", User),
+  User: mongoose.model("user", User),
 };
