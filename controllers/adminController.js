@@ -1,5 +1,6 @@
 "use strict";
 const Product = require("../models/product").Product;
+const User = require("../models/user").User;
 
 function AdminController() {
   // chua global var
@@ -10,7 +11,7 @@ function AdminController() {
     getList: async (req, res) => {
       try {
         let page = req.query.page;
-        let keySearch = req.query.keySearch;
+        let keySearch = req.query.searchValue || "";
         if (!page || parseInt(page) <= 0) {
           page = 1;
         }
@@ -20,7 +21,8 @@ function AdminController() {
         // pagination
         let productCount = await Product.find({ name: regex }).countDocuments(); // lấy tổng số product hiện có
         let pageCount = 0; // tổng số trang
-        if(productCount % SELF.SIZE !== 0) { // nếu tổng số product chia SIZE có dư
+        if (productCount % SELF.SIZE !== 0) {
+          // nếu tổng số product chia SIZE có dư
           pageCount = Math.floor(productCount / SELF.SIZE) + 1; // làm tròn số xuống cận dưới rồi + 1
         } else {
           pageCount = productCount / SELF.SIZE; // nếu ko dư thì chia bth
@@ -44,13 +46,7 @@ function AdminController() {
         console.log(error);
       }
     },
-    users: (req, res) => {
-      return res.render("pages/admin/adminPage", {
-        users: [],
-        products: null,
-        urlUploaded: null,
-      });
-    },
+
     addProduct: (req, res) => {
       try {
         let data = req.body;
@@ -114,6 +110,46 @@ function AdminController() {
           .catch((e) => {
             console.log(`deleteProduct - fail: ${e}`);
             return rs.json({ s: 400, msg: "deleteProduct fail" });
+          });
+      } catch (error) {
+        console.log(error);
+      }
+    },
+    users: async (req, res) => {
+      try {
+        let page = req.query.page;
+        let keySearch = req.query.searchValue || "";
+        if (!page || parseInt(page) <= 0) {
+          page = 1;
+        }
+        let skip = (parseInt(page) - 1) * SELF.SIZE;
+        let regex = new RegExp(keySearch);
+
+        // pagination
+        let userCount = await User.find({
+          $or: [{ fullname: regex }, { username: regex }],
+        }).countDocuments(); // lấy tổng số product hiện có
+        let pageCount = 0; // tổng số trang
+        if (userCount % SELF.SIZE !== 0) {
+          // nếu tổng số product chia SIZE có dư
+          pageCount = Math.floor(userCount / SELF.SIZE) + 1; // làm tròn số xuống cận dưới rồi + 1
+        } else {
+          pageCount = userCount / SELF.SIZE; // nếu ko dư thì chia bth
+        }
+
+        return User.find({ $or: [{ fullname: regex }, { username: regex }] })
+          .skip(skip) // số trang bỏ qua ==> skip = (số trang hiện tại - 1) * số item ở mỗi trang
+          .limit(SELF.SIZE) // số item ở mỗi trang
+          .then((rs) => {
+            res.render("pages/admin/adminPage", {
+              products: null,
+              pages: pageCount, // tổng số trang
+              users: rs,
+              urlUploaded: null,
+            });
+          })
+          .catch((error) => {
+            res.send({ s: 400, msg: error });
           });
       } catch (error) {
         console.log(error);

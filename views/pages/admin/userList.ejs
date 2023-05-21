@@ -1,23 +1,46 @@
 <div class="jumbotron">
-    <h3>Danh sách khách hàng</h3>
-    <table class="table">
-      <thead>
-        <tr>
-          <th scope="col">#</th>
-          <th scope="col">Họ tên</th>
-          <th scope="col">Email</th>
-          <th scope="col">username</th>
-          <th scope="col">gender</th>
-        </tr>
-      </thead>
-      <tbody>
-        <th scope="row">1</th>
-          <td>tin</td>
-          <td>tin@gmail.com</td>
-          <td>tinnt</td>
-          <td>male</td>
-          <td>
-        
-      </tbody>
-    </table>
-  </div>
+  <h3>Danh sách khách hàng</h3>
+  <table class="table">
+    <thead>
+      <tr>
+        <th scope="col">#</th>
+        <th scope="col">Họ tên</th>
+        <th scope="col">Email</th>
+        <th scope="col">username</th>
+        <th scope="col">Trạng thái</th>
+      </tr>
+    </thead>
+    <tbody>
+      <% users.forEach(function(item, index) { %>
+      <tr>
+        <th scope="row"><%= index+1 %></th>
+        <td><%= item.fullname %></td>
+        <td><%= item.email %></td>
+        <td><%= item.username %></td>
+        <td><%= item.active %></td>
+      </tr>
+      <%});%>
+    </tbody>
+  </table>
+  <nav aria-label="Page navigation example">
+    <ul class="pagination">
+      <li class="page-item">
+        <a class="page-link" href="#" aria-label="Previous">
+          <span aria-hidden="true">&laquo;</span>
+        </a>
+      </li>
+      <% for(var i=1; i <= pages; i++) { %>
+      <li class="page-item">
+        <a class="page-link" href="/admin/user/list?page=<%= i %>"
+          ><%= i %></a
+        >
+      </li>
+      <% }; %>
+      <li class="page-item">
+        <a class="page-link" href="#" aria-label="Next">
+          <span aria-hidden="true">&raquo;</span>
+        </a>
+      </li>
+    </ul>
+  </nav>
+</div>

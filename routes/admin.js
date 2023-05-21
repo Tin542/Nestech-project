@@ -9,12 +9,15 @@ const upload = multer({
     storage: multer.memoryStorage(),
 })
 
+// product
 router.get('/products/list', adminController.getList);
-router.get('/user/list', adminController.users);
 router.post('/products/add', adminController.addProduct);
 router.get('/products/detail/:id', adminController.getProductDetail);
 router.post('/products/edit', adminController.editProduct);
 router.delete('/products/delete/:id', adminController.deleteProduct);
+
+// user
+router.get('/user/list', adminController.users);
 
 // upload hinh anh
 router.post("/products/upload-image", upload.single("file"), fileService.uploadFile);
