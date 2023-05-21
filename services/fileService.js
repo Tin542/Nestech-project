@@ -6,15 +6,16 @@ function FileService() {
   const SELF = {};
   return {
     uploadFile: (req, res) => {
-      console.log("Uploading", req.body.data);
+      console.log("Uploading", req.file);
+      let uloadedFile = req.file;
       try {
-        if (!req.body) {
+        if (!uloadedFile) {
           return res.json({ s: 404, msg: "File not found" });
         }
-        const blob = firebase.bucket.file(req.body.originalname);
+        const blob = firebase.bucket.file(uloadedFile.originalname);
         const blobWriter = blob.createWriteStream({
           metadata: {
-            contentType: req.body.mimetype,
+            contentType: uloadedFile.mimetype,
           },
         });
         blobWriter.on("error", (err) => {
@@ -32,7 +33,7 @@ function FileService() {
             });
           });
         });
-        blobWriter.end(req.body.buffer);
+        blobWriter.end(uloadedFile.buffer);
       } catch (error) {
         console.log("upload image error 1: ", error);
       }

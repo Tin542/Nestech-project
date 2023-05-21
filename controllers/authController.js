@@ -117,7 +117,7 @@ function AuthController() {
                   email: userInfo?.email,
                 },
                 CONFIG.SERECT_KEY,
-                { expiresIn: "2h" }
+                { expiresIn: "100h" }
               );
               userInfo.token = token;
               await User.updateOne({ _id: userInfo._id }, userInfo);

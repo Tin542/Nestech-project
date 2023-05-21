@@ -92,7 +92,9 @@
       </li>
       <% for(var i=1; i <= pages; i++) { %>
       <li class="page-item">
-        <a class="page-link" href='/admin/products/list?page=<%= i %>'><%= i %></a>
+        <a class="page-link" href="/admin/products/list?page=<%= i %>"
+          ><%= i %></a
+        >
       </li>
       <% }; %>
       <li class="page-item">
@@ -126,14 +128,14 @@
 
           <form class="row g-3" action="/admin/products/add" method="post">
             <div class="col-md-12">
-              <img src="<%= urlUploaded %>" height="100px" width="100px" />
+              <img src="" height="100px" width="100px" id="imageUpload"/>
               <input
                 style="display: none"
                 type="text"
                 class="form-control"
                 name="imageUrl"
                 id="imageUrl"
-                value="<%= urlUploaded %>"
+                value=""
               />
             </div>
             <div class="col-md-6">
@@ -213,7 +215,7 @@
           ></button>
         </div>
         <div class="modal-body">
-          <input type="file" name="file" />
+          <input type="file" name="file" id="image_file" />
           <button onclick="uploadImage()">Xem ảnh</button>
 
           <div id="formEdit"></div>

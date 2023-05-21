@@ -29,14 +29,14 @@
               var formEdit = `
               <form class="row g-3" action="/admin/products/edit" method="post">
             <div class="col-md-12">
-              <img src="<%= urlUploaded %>" height="100px" width="100px" />
+              <img src="${data.imageUrl}" height="100px" width="100px" id="imageUpload"/>
               <input
                 style="display: none"
                 type="text"
                 class="form-control"
                 name="imageUrl"
                 id="imageUrl"
-                value="<%= urlUploaded %>"
+                value="${data.imageUrl}"
               />
             </div>
             <div>
@@ -100,7 +100,7 @@
               </div>
             </div>
           </form>
-              
+
                   `;
               $("#formEdit").html(formEdit);
             }
@@ -117,18 +117,27 @@
           },
         });
       }
+
       function uploadImage() {
-        var file = $("#image_file")[0].files[0];
-        if (file) {
-          $.ajax({
-            type: "POST",
-            url: `/admin/products/upload-image`,
-            data: { file },
-            success: function (rs) {
-              console.log("image", rs);
-            },
-          });
-        }
+        var fileInput = document.getElementById("image_file");
+        var file = fileInput.files[0];
+        var formData = new FormData();
+        formData.append("file", file);
+
+        $.ajax({
+          url: "/admin/products/upload-image",
+          type: "POST",
+          data: formData,
+          processData: false,
+          contentType: false,
+          success: function (response) {
+            document.getElementById("imageUpload").src = response.urlUploaded;
+            document.getElementById("imageUrl").value = response.urlUploaded;
+          },
+          error: function (xhr, status, error) {
+            // Xử lý lỗi
+          },
+        });
       }
     </script>
   </body>
