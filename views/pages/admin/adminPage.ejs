@@ -26,83 +26,15 @@
           success: function (rs) {
             if (rs.s === 200) {
               let data = rs.data;
-              var formEdit = `
-              <form class="row g-3" action="/admin/products/edit" method="post">
-            <div class="col-md-12">
-              <img src="${data.imageUrl}" height="100px" width="100px" id="imageUpload"/>
-              <input
-                style="display: none"
-                type="text"
-                class="form-control"
-                name="imageUrl"
-                id="imageUrl"
-                value="${data.imageUrl}"
-              />
-            </div>
-            <div>
-                            <input type="hidden" class="form-control" id="_id" name="_id" value="${data._id}">
-                        </div>
-            <div class="col-md-6">
-              <label for="name" class="form-label">Tên sản phẩm</label>
-              <input
-                type="text"
-                class="form-control"
-                id="name"
-                name="name"
-                placeholder="Nhập tên"
-                value="${data.name}"
-              />
-            </div>
-            <div class="col-6">
-              <label for="price" class="form-label">Giá</label>
-              <input
-                type="number"
-                class="form-control"
-                id="price"
-                name="price"
-                placeholder="Nhập giá"
-                value="${data.price}"
-              />
-            </div>
-            <div class="col-6">
-              <label for="rate" class="form-label">Đánh giá</label>
-              <input
-                type="number"
-                class="form-control"
-                id="rate"
-                name="rate"
-                placeholder="Nhập đánh giá"
-                value="${data.rate}"
-              />
-            </div>
-            <div class="col-6">
-              <label for="description" class="form-label">Mô tả</label>
-              <input
-                type="text"
-                class="form-control"
-                id="description"
-                name="description"
-                placeholder="Nhập mô tả"
-                value="${data.description}"
-              />
-            </div>
-
-            <div class="col-12">
-              <div class="modal-footer">
-                <button
-                  type="button"
-                  class="btn btn-secondary"
-                  data-bs-dismiss="modal"
-                >
-                  Đóng
-                </button>
-                <button type="submit" class="btn btn-primary">Lưu</button>
-              </div>
-            </div>
-          </form>
-
-                  `;
-              $("#formEdit").html(formEdit);
+              // set data vừa get đc lên <input>
+              document.getElementById("_idEdit").value = data._id;
+              document.getElementById("nameEdit").value = data.name;
+              document.getElementById("priceEdit").value = data.price;
+              document.getElementById("rateEdit").value = data.rate;
+              document.getElementById("descriptionEdit").value =
+                data.description;
+              document.getElementById("imageUrlEdit").value = data.imageUrl;
+              document.getElementById("imageUploadEdit").src = data.imageUrl;
             }
           },
         });
@@ -121,6 +53,9 @@
       function uploadImage() {
         var fileInput = document.getElementById("image_file");
         var file = fileInput.files[0];
+        if (!file) {
+          return alert("Vui lòng chọn ảnh");
+        }
         var formData = new FormData();
         formData.append("file", file);
 
@@ -133,6 +68,32 @@
           success: function (response) {
             document.getElementById("imageUpload").src = response.urlUploaded;
             document.getElementById("imageUrl").value = response.urlUploaded;
+          },
+          error: function (xhr, status, error) {
+            // Xử lý lỗi
+          },
+        });
+      }
+      function uploadImageForEdit() {
+        var fileInput = document.getElementById("image_file_edit");
+        var file = fileInput.files[0];
+        if (!file) {
+          return alert("Vui lòng chọn ảnh");
+        }
+        var formData = new FormData();
+        formData.append("file", file);
+
+        $.ajax({
+          url: "/admin/products/upload-image",
+          type: "POST",
+          data: formData,
+          processData: false,
+          contentType: false,
+          success: function (response) {
+            document.getElementById("imageUploadEdit").src =
+              response.urlUploaded;
+            document.getElementById("imageUrlEdit").value =
+              response.urlUploaded;
           },
           error: function (xhr, status, error) {
             // Xử lý lỗi

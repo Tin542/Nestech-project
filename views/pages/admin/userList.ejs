@@ -17,7 +17,13 @@
         <td><%= item.fullname %></td>
         <td><%= item.email %></td>
         <td><%= item.username %></td>
-        <td><%= item.active %></td>
+        <td>
+          <% if(item.active == false) { %>
+          <span class="badge rounded-pill bg-danger">Chưa kích hoạt</span>
+          <% } %> <% if(item.active == true) { %>
+          <span class="badge rounded-pill bg-success">Đã kích hoạt</span>
+          <% } %>
+        </td>
       </tr>
       <%});%>
     </tbody>
@@ -31,9 +37,7 @@
       </li>
       <% for(var i=1; i <= pages; i++) { %>
       <li class="page-item">
-        <a class="page-link" href="/admin/user/list?page=<%= i %>"
-          ><%= i %></a
-        >
+        <a class="page-link" href="/admin/user/list?page=<%= i %>"><%= i %></a>
       </li>
       <% }; %>
       <li class="page-item">
