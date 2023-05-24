@@ -205,13 +205,13 @@
     </div>
 
     <div class="container p-3 mt-4">
-      <div class="row">
+      <div class="row gy-3">
         <div class="col col-12 col-sm-6 d-flex justify-content-center">
           <img
             src="https://cdn0.fahasa.com/media/magentothem/banner7/ZaloPayT523_840x320_SlideBanner.jpg"
             class="card-img-top"
             alt="..."
-            style="width: 100%; height: 300px"
+            style="width: 100%; height: 300px; cursor: pointer"
           />
         </div>
         <div class="col col-12 col-sm-6 d-flex justify-content-center">
@@ -219,7 +219,7 @@
             src="https://cdn0.fahasa.com/media/magentothem/banner7/Back2School_T523_mainbanner_840x320.png"
             class="card-img-top"
             alt="..."
-            style="width: 100%; height: 300px"
+            style="width: 100%; height: 300px; cursor: pointer"
           />
         </div>
       </div>
@@ -227,9 +227,11 @@
     <p class="fs-2 text-center mt-5 top-title">Top Seller</p>
     <hr class="hr-style" />
     <div class="container mt-4">
-      <div class="row row-cols-4 gy-3">
+      <div class="row gy-3">
         <% for (var i = 0; i < listItems.length ; i++) { %>
-        <div class="col d-flex justify-content-center">
+        <div
+          class="col col-12 col-sm-6 col-md-4 col-lg-3 d-flex justify-content-center"
+        >
           <div class="card" id="productCard">
             <div class="product-img">
               <img src="<%= listItems[i].image %>" alt="..." />
@@ -247,41 +249,55 @@
             </div>
             <div class="overlay">
               <div class="d-grid gap-2 col-8 mx-auto">
-                <button type="button" class="btn btn-outline-secondary"><i class="bi bi-eye-fill"></i> &nbsp;Xem chi tiết</button>
-                <button class="btn btn-primary" type="button"><i class="bi bi-cart2"></i> &nbsp;Thêm vào giỏ</button>
+                <button type="button" class="btn btn-outline-secondary">
+                  <i class="bi bi-eye-fill"></i> &nbsp;Xem chi tiết
+                </button>
+                <button class="btn btn-primary" type="button">
+                  <i class="bi bi-cart2"></i> &nbsp;Thêm vào giỏ
+                </button>
               </div>
             </div>
           </div>
         </div>
         <% } %>
+        <div class="text-center" id="more">
+          <a href="#" id="more-link">Xem thêm</a>
+        </div>
       </div>
     </div>
-    <div class="banner-container">
-      <div class="banner-img">
-        <div class="container">
-          <div class="row align-items-center">
-            <div class="col"></div>
-            <div class="col d-flex justify-content-center">
-              <div class="mt-5">
-                <h1
-                  style="color: azure; font-size: 50px"
-                  class="font-weight-bold"
-                >
-                  30% Save
-                </h1>
-                <p
-                  style="color: azure; font-size: 50px"
-                  class="font-weight-normal"
-                >
-                  Latest Ceramic Art
-                </p>
-                <p style="color: darkgray" class="font-weight-light">
-                  There are many variations of passages of Lorem.
-                </p>
-                <button type="button" class="btn btn-light">Shop Now</button>
-              </div>
-            </div>
-          </div>
+    <div class="container mt-4">
+      <div class="row gy-3" id="bottom-ad">
+        <div
+          class="col col-12 col-sm-6 col-md-4 col-lg-3 d-flex justify-content-center"
+        >
+          <img
+            src="https://cdn0.fahasa.com/media/wysiwyg/Thang-05-2023/SaleT3_Bo2_Smallbanner_310x210_2.png"
+            alt="..."
+          />
+        </div>
+        <div
+          class="col col-12 col-sm-6 col-md-4 col-lg-3 d-flex justify-content-center"
+        >
+          <img
+            src="https://cdn0.fahasa.com/media/wysiwyg/Thang-05-2023/SubBanner_T523_-03_TrangThieuNhi.png"
+            alt="..."
+          />
+        </div>
+        <div
+          class="col col-12 col-sm-6 col-md-4 col-lg-3 d-flex justify-content-center"
+        >
+          <img
+            src="https://cdn0.fahasa.com/media/wysiwyg/Thang-05-2023/Tamlinh_mainbanner_T5_Smallbanner_310x210_2.png"
+            alt="..."
+          />
+        </div>
+        <div
+          class="col col-12 col-sm-6 col-md-4 col-lg-3 d-flex justify-content-center"
+        >
+          <img
+            src="https://cdn0.fahasa.com/media/wysiwyg/Thang-05-2023/TrangDoChoiT523_Banner_SmallBanner_310x210.png"
+            alt="..."
+          />
         </div>
       </div>
     </div>
