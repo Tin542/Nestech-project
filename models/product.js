@@ -9,6 +9,7 @@ const Product = mongoose.Schema(
     rate: { type: Number },
     description: { type: String },
     imageUrl: { type: String },
+    author: {type: String}
   },
   { version: false, timestamps: true }
 );

@@ -234,7 +234,7 @@
         >
           <div class="card" id="productCard">
             <div class="product-img">
-              <img src="<%= listItems[i].image %>" alt="..." />
+              <img src="<%= listItems[i].imageUrl %>" alt="..." />
             </div>
 
             <div class="card-body">
@@ -244,7 +244,7 @@
               <% } else { %>
               <span class="fa fa-star"></span>
               <% } %> <% } %>
-              <h5 class="card-title"><%= listItems[i].title %></h5>
+              <h5 class="card-title"><%= listItems[i].name %></h5>
               <p class="card-text">$<%= listItems[i].price %></p>
             </div>
             <div class="overlay">

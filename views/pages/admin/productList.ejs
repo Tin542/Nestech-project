@@ -18,13 +18,12 @@
     </div>
   </div>
 
-  <table class="table">
+  <table class="table mt-3">
     <thead>
       <tr>
-        <th scope="col">#</th>
         <th scope="col">Hình ảnh</th>
         <th scope="col">Tên sản phẩm</th>
-        <th scope="col">Mô tả</th>
+        <th scope="col">Tác giả</th>
         <th scope="col">Đánh giá</th>
         <th scope="col">Giá</th>
       </tr>
@@ -32,15 +31,24 @@
     <tbody>
       <% products.forEach(function(item, index) { %>
       <tr>
-        <th scope="row"><%= index+1 %></th>
-        <td>
+        <td class="w-2">
           <img src="<%= item.imageUrl %>" height="50px" width="50px" />
         </td>
-        <td><%= item.name %></td>
-        <td><%= item.description %></td>
-        <td><%= item.rate %></td>
-        <td><%= item.price %></td>
-        <td>
+        <td
+          style="cursor: pointer"
+          class="w-25"
+          data-bs-toggle="tooltip"
+          data-bs-placement="right"
+          title="<%= item.name %>"
+        >
+          <span class="d-inline-block text-truncate" style="max-width: 200px">
+            <%= item.name %>
+          </span>
+        </td>
+        <td scope="w-2"><%= item.author %></td>
+        <td class="w-2"><%= item.rate %></td>
+        <td class="w-2"><%= item.price %></td>
+        <td class="w-2">
           <button
             data-bs-toggle="modal"
             data-bs-target="#editModal"
@@ -185,14 +193,26 @@
               />
             </div>
             <div class="col-6">
-              <label for="description" class="form-label">Mô tả</label>
+              <label for="author" class="form-label">Tác giả</label>
               <input
                 type="text"
+                class="form-control"
+                id="author"
+                name="author"
+                placeholder="Nhập tên tác giả"
+              />
+            </div>
+            <div class="col-12">
+              <label for="description" class="form-label"
+                >Mô tả</label
+              >
+              <textarea
                 class="form-control"
                 id="description"
                 name="description"
                 placeholder="Nhập mô tả"
-              />
+                rows="3"
+              ></textarea>
             </div>
 
             <div class="col-12">
@@ -294,15 +314,28 @@
               />
             </div>
             <div class="col-6">
-              <label for="description" class="form-label">Mô tả</label>
+              <label for="author" class="form-label">Tác giả</label>
               <input
                 type="text"
+                class="form-control"
+                id="authorEdit"
+                name="author"
+                placeholder="Nhập tên tác giả"
+                value=""
+              />
+            </div>
+            <div class="col-12">
+              <label for="descriptionEdit" class="form-label"
+                >Mô tả</label
+              >
+              <textarea
                 class="form-control"
                 id="descriptionEdit"
                 name="description"
                 placeholder="Nhập mô tả"
+                rows="3"
                 value=""
-              />
+              ></textarea>
             </div>
 
             <div class="col-12">
