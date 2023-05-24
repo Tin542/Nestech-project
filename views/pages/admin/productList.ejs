@@ -46,8 +46,14 @@
           </span>
         </td>
         <td scope="w-2"><%= item.author %></td>
-        <td class="w-2"><%= item.rate %></td>
-        <td class="w-2"><%= item.price %></td>
+        <td class="w-2">
+          <% for (var j = 0; j < 5; j++){ %> <% if (j < item.rate){ %>
+          <span class="fa fa-star checked"></span>
+          <% } else { %>
+          <span class="fa fa-star"></span>
+          <% } %> <% } %>
+        </td>
+        <td class="w-2"><%= item.price %> $</td>
         <td class="w-2">
           <button
             data-bs-toggle="modal"
@@ -203,9 +209,7 @@
               />
             </div>
             <div class="col-12">
-              <label for="description" class="form-label"
-                >Mô tả</label
-              >
+              <label for="description" class="form-label">Mô tả</label>
               <textarea
                 class="form-control"
                 id="description"
@@ -325,9 +329,7 @@
               />
             </div>
             <div class="col-12">
-              <label for="descriptionEdit" class="form-label"
-                >Mô tả</label
-              >
+              <label for="descriptionEdit" class="form-label">Mô tả</label>
               <textarea
                 class="form-control"
                 id="descriptionEdit"
