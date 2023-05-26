@@ -94,7 +94,7 @@ function AuthController() {
         Logger.error(`verify - fail: ${error}`);
       }
     },
-    login: async(req, res) => {
+    login: async (req, res) => {
       try {
         let data = req.body;
         if (!data?.username || !data?.password) {
@@ -102,10 +102,16 @@ function AuthController() {
         }
         let userInfo = await User.findOne({ username: data?.username }).lean();
         if (!userInfo) {
-          return res.json({ s: 404, msg: `Username ${data?.username} Không tồn tại` });
+          return res.json({
+            s: 404,
+            msg: `Username ${data?.username} Không tồn tại`,
+          });
         }
         if (!userInfo.active) {
-          return res.json({ s: 400, msg: `Username ${data?.username} chưa xác thực` });
+          return res.json({
+            s: 400,
+            msg: `Username ${data?.username} chưa xác thực`,
+          });
         }
         return bcrypt
           .compare(data?.password, userInfo.password)
@@ -128,9 +134,46 @@ function AuthController() {
           })
           .catch();
       } catch (error) {
-        console.log('login error: ' + error);
+        console.log("login error: " + error);
       }
-    }
+    },
+    reset: async (req, res) => {
+      try {
+        let data = req.body; // data reset
+
+        // check validate
+        if (!data?.email || !data?.password) {
+          return res.json({ s: 400, msg: "Vui lòng điền đầy đủ thông tin" });
+        }
+        if (data?.password !== data?.rePassword) {
+          return res.json({ s: 400, msg: "Mật khẩu chưa trùng khớp" });
+        }
+
+        // check if user is already registered
+        const userInfo = await User.findOne({
+          email: data?.email,
+        }).lean(); // lean() => tăng hiệu suất truy vấn
+        if (!userInfo) {
+          return res.json({ s: 400, msg: "Người dùng không tồn tại" });
+        }
+
+        // reset password
+        return SELF.enCodePass(data?.password).then((hash) => {
+          let otp = (Math.random() + 1).toString(36).substring(6); // create random OTP
+          return User.findByIdAndUpdate(userInfo._id, {
+            password: hash,
+          })
+            .then(async (rs) => {
+              return res.redirect("/auth/login");
+            })
+            .catch((err) => {
+              console.log("reset password error: ", err);
+            });
+        });
+      } catch (error) {
+        console.log("reset error: ", error);
+      }
+    },
   };
 }
 

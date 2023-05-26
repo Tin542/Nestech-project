@@ -16,14 +16,17 @@ router.get("/verifyEmail", (req, res) => {
   res.render("pages/auth/verifyEmail.ejs");
 });
 router.get("/login", (req, res) => {
-    res.render("pages/auth/login.ejs");
-  });
+  res.render("pages/auth/login.ejs");
+});
+router.get('/reset', (req, res)=>{
+  res.render("pages/auth/resetPassword.ejs");
+})
 
 // Controllers Routes
 router.post("/register", authController.register);
 router.post("/verify", authController.verify);
-router.post('/login', authController.login);
-
+router.post("/login", authController.login);
+router.post("/reset", authController.reset);
 
 // upload hinh anh
 // router.post("/products/upload-image", upload.single("file"), fileService.uploadFile);
