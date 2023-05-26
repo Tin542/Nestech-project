@@ -24,13 +24,15 @@
               <div class="row">
                 <div class="mb-3 col-md-12">
                   <label>Nhập OTP<span class="text-danger">*</span></label>
-                  <input
-                    type="text"
-                    name="otp"
-                    class="form-control"
-                    required
-                  />
+                  <input type="text" name="otp" class="form-control" required />
                 </div>
+                <% if(typeof msg !== "undefined"){ %>
+                <div class="mb-3 col-md-12">
+                  <div class="badge bg-danger text-wrap" style="width: 100%">
+                    <%= msg %>
+                  </div>
+                </div>
+                <% } %>
 
                 <div class="col-md-12">
                   <button class="btn btn-primary">Xác thực</button>

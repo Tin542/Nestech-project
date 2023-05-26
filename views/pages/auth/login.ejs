@@ -21,7 +21,7 @@
               <h4 class="mb-5 text-secondary text-center">Đăng nhập</h4>
               <div class="row">
                 <div class="mb-3 col-md-12">
-                  <label>Username<span class="text-danger">*</span></label>
+                  <label>Tài khoản<span class="text-danger">*</span></label>
                   <input
                     type="text"
                     name="username"
@@ -30,7 +30,7 @@
                   />
                 </div>
                 <div class="mb-3 col-md-12">
-                  <label>Password<span class="text-danger">*</span></label>
+                  <label>Mật khẩu<span class="text-danger">*</span></label>
                   <input
                     type="password"
                     name="password"
@@ -38,10 +38,12 @@
                     required
                   />
                 </div>
-                <% if(s === 400){ %>
-                  <div class="badge bg-error text-wrap" style="width: 6rem;">
+                <% if(typeof msg !== "undefined"){ %>
+                <div class="mb-3 col-md-12">
+                  <div class="badge bg-danger text-wrap" style="width: 100%">
                     <%= msg %>
                   </div>
+                </div>
                 <% } %>
 
                 <div class="col-md-12">
