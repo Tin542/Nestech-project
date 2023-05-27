@@ -249,9 +249,9 @@
             </div>
             <div class="overlay">
               <div class="d-grid gap-2 col-8 mx-auto">
-                <button onclick='getDetail("<%= listItems[i]._id %>")' type="button" class="btn btn-outline-secondary">
+                <a href="/products/detail/<%= listItems[i]._id %>" type="button" class="btn btn-outline-secondary">
                   <i class="bi bi-eye-fill"></i> &nbsp;Xem chi tiết
-                </button>
+                </a>
                 <button class="btn btn-primary" type="button">
                   <i class="bi bi-cart2"></i> &nbsp;Thêm vào giỏ
                 </button>

@@ -24,11 +24,12 @@ function HomeController() {
     getProductDetail: async (req, res) => {
       try {
         let productId = req.params?.id;
+        console.log("Product id", productId);
         let result = await Product.findById(productId);
         if (!result) {
           return res.json({ s: 404, msg: "Product not found" });
         }
-        return res.json({ s: 200, data: result });
+        return res.render("pages/detail", { data: result });
       } catch (error) {
         console.error("get detail at homeControlelr error: " + err);
       }
