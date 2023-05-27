@@ -108,7 +108,7 @@
     </tbody>
   </table>
   <nav aria-label="Page navigation example">
-    <ul class="pagination">
+    <ul class="pagination" id="pagination">
       <li class="page-item">
         <a class="page-link" href="#" aria-label="Previous">
           <span aria-hidden="true">&laquo;</span>
@@ -176,6 +176,7 @@
                 id="name"
                 name="name"
                 placeholder="Nhập tên"
+                required
               />
             </div>
             <div class="col-6">
@@ -186,6 +187,8 @@
                 id="price"
                 name="price"
                 placeholder="Nhập giá"
+                min="0"
+                required
               />
             </div>
             <div class="col-6">
@@ -196,6 +199,8 @@
                 id="rate"
                 name="rate"
                 placeholder="Nhập đánh giá"
+                min="0" max="5"
+                required
               />
             </div>
             <div class="col-6">
@@ -206,6 +211,7 @@
                 id="author"
                 name="author"
                 placeholder="Nhập tên tác giả"
+                required
               />
             </div>
             <div class="col-12">
@@ -216,6 +222,7 @@
                 name="description"
                 placeholder="Nhập mô tả"
                 rows="3"
+                required
               ></textarea>
             </div>
 
@@ -293,6 +300,7 @@
                 name="name"
                 placeholder="Nhập tên"
                 value=""
+                required
               />
             </div>
             <div class="col-6">
@@ -304,6 +312,8 @@
                 name="price"
                 placeholder="Nhập giá"
                 value=""
+                min="0"
+                required
               />
             </div>
             <div class="col-6">
@@ -315,6 +325,8 @@
                 name="rate"
                 placeholder="Nhập đánh giá"
                 value=""
+                min="0" max="5"
+                required
               />
             </div>
             <div class="col-6">
@@ -326,6 +338,7 @@
                 name="author"
                 placeholder="Nhập tên tác giả"
                 value=""
+                required
               />
             </div>
             <div class="col-12">
@@ -337,6 +350,7 @@
                 placeholder="Nhập mô tả"
                 rows="3"
                 value=""
+                required
               ></textarea>
             </div>
 
@@ -358,3 +372,4 @@
     </div>
   </div>
 </div>
+

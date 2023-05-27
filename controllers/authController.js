@@ -49,7 +49,10 @@ function AuthController() {
           $or: [{ email: data?.email }, { username: data?.username }], // find user by email or username
         }).lean(); // lean() => tăng hiệu suất truy vấn
         if (userInfo) {
-          return res.render("pages/auth/register.ejs", { s: 400, msg: "Tài khoản hoặc email đã tồn tại" });
+          return res.render("pages/auth/register.ejs", {
+            s: 400,
+            msg: "Tài khoản hoặc email đã tồn tại",
+          });
         }
 
         // register user
@@ -78,7 +81,10 @@ function AuthController() {
       try {
         let data = req.body;
         if (!data?.otp) {
-          return res.render("pages/auth/verifyEmail.ejs",{ s: 400, msg: "Vui lòng nhập OTP" });
+          return res.render("pages/auth/verifyEmail.ejs", {
+            s: 400,
+            msg: "Vui lòng nhập OTP",
+          });
         }
         const emailLocalStorage = await localStorage.getItem("email");
         return User.findOne({ otp: data?.otp, email: emailLocalStorage })
@@ -90,7 +96,10 @@ function AuthController() {
               await User.updateOne({ _id: userInfo._id }, userInfo);
               res.redirect("/auth/login");
             } else {
-              return res.render("pages/auth/verifyEmail.ejs", { s: 400, msg: "OTP chưa chính xác" });
+              return res.render("pages/auth/verifyEmail.ejs", {
+                s: 400,
+                msg: "OTP chưa chính xác",
+              });
             }
           })
           .catch((e) => {
@@ -136,6 +145,8 @@ function AuthController() {
               );
               userInfo.token = token;
               await User.updateOne({ _id: userInfo._id }, userInfo);
+              let session = req.session
+              session.userId = token 
               res.redirect("/admin/products/list");
             } else {
               res.render("pages/auth/login.ejs", {
@@ -155,10 +166,16 @@ function AuthController() {
 
         // check validate
         if (!data?.email || !data?.password) {
-          return res.render("pages/auth/resetPassword.ejs",{ s: 400, msg: "Vui lòng điền đầy đủ thông tin" });
+          return res.render("pages/auth/resetPassword.ejs", {
+            s: 400,
+            msg: "Vui lòng điền đầy đủ thông tin",
+          });
         }
         if (data?.password !== data?.rePassword) {
-          return res.render("pages/auth/resetPassword.ejs",{ s: 400, msg: "Mật khẩu chưa trùng khớp" });
+          return res.render("pages/auth/resetPassword.ejs", {
+            s: 400,
+            msg: "Mật khẩu chưa trùng khớp",
+          });
         }
 
         // check if user is already registered
@@ -166,7 +183,10 @@ function AuthController() {
           email: data?.email,
         }).lean(); // lean() => tăng hiệu suất truy vấn
         if (!userInfo) {
-          return res.render("pages/auth/resetPassword.ejs", { s: 400, msg: "Người dùng không tồn tại" });
+          return res.render("pages/auth/resetPassword.ejs", {
+            s: 400,
+            msg: "Người dùng không tồn tại",
+          });
         }
 
         // reset password
@@ -184,6 +204,19 @@ function AuthController() {
         });
       } catch (error) {
         console.log("reset error: ", error);
+      }
+    },
+    checkLogin: async (req, res, next) => {
+      try {
+        let session = req.session;
+        if (session.userId) {
+          //Todo: token => verify Database
+          return next();
+        } else {
+          return res.redirect("/auth/login");
+        }
+      } catch (error) {
+        Logger.error(`checkLogin - fail: ${error}`);
       }
     },
   };

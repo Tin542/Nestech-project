@@ -249,7 +249,7 @@
             </div>
             <div class="overlay">
               <div class="d-grid gap-2 col-8 mx-auto">
-                <button type="button" class="btn btn-outline-secondary">
+                <button onclick='getDetail("<%= listItems[i]._id %>")' type="button" class="btn btn-outline-secondary">
                   <i class="bi bi-eye-fill"></i> &nbsp;Xem chi tiết
                 </button>
                 <button class="btn btn-primary" type="button">
@@ -305,4 +305,27 @@
     <!-- Footer -->
     <%- include('../partials/footer.ejs') %>
   </body>
+  <script>
+    function getDetail(id){
+      $.ajax({
+          type: "GET",
+          url: `/products/detail/${id}`,
+          success: function (rs) {
+            if (rs.s === 200) {
+              let data = rs.data;
+              // set data vừa get đc lên <input>
+              document.getElementById("_idEdit").value = data._id;
+              document.getElementById("nameEdit").value = data.name;
+              document.getElementById("priceEdit").value = data.price;
+              document.getElementById("rateEdit").value = data.rate;
+              document.getElementById("descriptionEdit").value =
+                data.description;
+              document.getElementById("imageUrlEdit").value = data.imageUrl;
+              document.getElementById("imageUploadEdit").src = data.imageUrl;
+              document.getElementById("authorEdit").value = data.author
+            }
+          },
+        });
+    }
+  </script>
 </html>

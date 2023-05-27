@@ -6,6 +6,8 @@ const admin = require('./routes/admin');
 const auth = require('./routes/auth');
 const mongoose = require("mongoose");
 const bodyParser = require("body-parser");
+const cookieParser = require("cookie-parser");
+const sessions = require("express-session");
 
 // MongoDB connection
 const db = CONFIG.MONGODB_URL;
@@ -17,6 +19,14 @@ mongoose
 app.set("view engine", "ejs");
 app.use('/public', express.static('public'));
 app.use(bodyParser.urlencoded({ extended: true }));
+app.use(
+  sessions({
+    secret: "456456456",
+    saveUninitialized: true,
+    cookie: { maxAge: 1000 * 60 * 60 * 24 },
+    resave: false,
+  })
+);
 
 // Routes
 app.use("/", home);

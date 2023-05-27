@@ -9,7 +9,7 @@ function HomeController() {
   return {
     home: (req, res) => {
       try {
-        return Product.find({ rate: 5 })
+        return Product.find({ rate: 5 }) // Product.find()
           .limit(SELF.SIZE)
           .then((rs) => {
             res.render("pages/home", { listItems: rs });
@@ -19,6 +19,18 @@ function HomeController() {
           });
       } catch (error) {
         console.log("error at home controller", error);
+      }
+    },
+    getProductDetail: async (req, res) => {
+      try {
+        let productId = req.params?.id;
+        let result = await Product.findById(productId);
+        if (!result) {
+          return res.json({ s: 404, msg: "Product not found" });
+        }
+        return res.json({ s: 200, data: result });
+      } catch (error) {
+        console.error("get detail at homeControlelr error: " + err);
       }
     },
   };

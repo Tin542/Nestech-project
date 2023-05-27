@@ -138,7 +138,7 @@ function AdminController() {
         }
 
         return User.find({ $or: [{ fullname: regex }, { username: regex }] })
-          .skip(skip) // số trang bỏ qua ==> skip = (số trang hiện tại - 1) * số item ở mỗi trang
+          .skip(skip) // số item bỏ qua ==> skip = (số trang hiện tại - 1) * số item ở mỗi trang
           .limit(SELF.SIZE) // số item ở mỗi trang
           .then((rs) => {
             res.render("pages/admin/adminPage", {
