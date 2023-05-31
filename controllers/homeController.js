@@ -26,6 +26,7 @@ function HomeController() {
         let productId = req.params?.id;
         console.log("Product id", productId);
         let result = await Product.findById(productId);
+        console.log("Product", result);
         if (!result) {
           return res.json({ s: 404, msg: "Product not found" });
         }
