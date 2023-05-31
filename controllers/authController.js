@@ -145,8 +145,8 @@ function AuthController() {
               );
               userInfo.token = token;
               await User.updateOne({ _id: userInfo._id }, userInfo);
-              let session = req.session
-              session.userId = token 
+              let session = req.session;
+              session.userId = token;
               res.redirect("/admin/products/list");
             } else {
               res.render("pages/auth/login.ejs", {
@@ -158,6 +158,32 @@ function AuthController() {
           .catch();
       } catch (error) {
         console.log("login error: " + error);
+      }
+    },
+    sendOTP: async (req, res) => {
+      try {
+        let data = req.body;
+        let otp = (Math.random() + 1).toString(36).substring(6);
+        let userInfo = await User.findOne({ email: data?.email }).lean();
+        if (!userInfo) {
+          return res.render("pages/auth/verifyEmailReset.ejs", {
+            s: 404,
+            msg: `Email ${data?.email} Không tồn tại`,
+          });
+        }
+        return User.findByIdAndUpdate(userInfo._id, { otp: otp })
+          .then((rs) => {
+            if (rs) {
+              res.json("pages/auth/verifyEmailReset.ejs", {
+                s: 200,
+              });
+            }
+          })
+          .catch((err) => {
+            console.log(err);
+          });
+      } catch (error) {
+        console.log("error sen otp: " + error);
       }
     },
     reset: async (req, res) => {
