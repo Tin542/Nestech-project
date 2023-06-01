@@ -36,18 +36,18 @@
                     &nbsp; <button class="btn btn-primary">Gửi mã OTP</button>
                   </form>
                 </div>
-                <% if(s === 200) { %>
+                <% if(isShowed === true) { %>
                 <div>
                   <label>Nhập mã OTP<span class="text-danger">*</span></label>
 
                   <form
                     method="post"
-                    action="/auth/sendOTP"
+                    action="/auth/verify-otp"
                     class="d-flex mb-3 col-md-12"
                   >
                     <div class="col-md-8">
                       <input
-                        type="number"
+                        type="text"
                         name="otp"
                         class="form-control"
                         required

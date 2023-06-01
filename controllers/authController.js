@@ -166,16 +166,17 @@ function AuthController() {
         let otp = (Math.random() + 1).toString(36).substring(6);
         let userInfo = await User.findOne({ email: data?.email }).lean();
         if (!userInfo) {
-          return res.render("pages/auth/verifyEmailReset.ejs", {
+          return res.send("pages/auth/verifyEmailForReset.ejs", {
             s: 404,
             msg: `Email ${data?.email} Không tồn tại`,
           });
         }
+        await localStorage.setItem("email", data?.email);
         return User.findByIdAndUpdate(userInfo._id, { otp: otp })
           .then((rs) => {
             if (rs) {
-              res.json("pages/auth/verifyEmailReset.ejs", {
-                s: 200,
+              res.render("pages/auth/verifyEmailForReset.ejs", {
+                isShowed: true,
               });
             }
           })
@@ -186,17 +187,45 @@ function AuthController() {
         console.log("error sen otp: " + error);
       }
     },
+    verifyEmailForReset: async (req, res) => {
+      try {
+        let data = req.body;
+        if (!data?.otp) {
+          return res.render("pages/auth/verifyEmailForReset.ejs", {
+            s: 400,
+            isShowed: true,
+            msg: "Vui lòng nhập OTP",
+          });
+        }
+        const emailLocalStorage = await localStorage.getItem("email");
+        return User.findOne({ otp: data?.otp, email: emailLocalStorage })
+          .lean()
+          .then(async (userInfo) => {
+            if (userInfo) {
+              userInfo.active = true;
+              userInfo.otp = "";
+              await User.updateOne({ _id: userInfo._id }, userInfo);
+              res.redirect("/auth/reset");
+            } else {
+              return res.render("pages/auth/verifyEmailForReset.ejs", {
+                s: 400,
+                isShowed: true,
+                msg: "OTP chưa chính xác",
+              });
+            }
+          })
+          .catch((e) => {
+            Logger.error(`Find one user fail: ${e}`);
+          });
+      } catch (error) {
+        Logger.error(`verify - fail: ${error}`);
+      }
+    },
     reset: async (req, res) => {
       try {
         let data = req.body; // data reset
 
         // check validate
-        if (!data?.email || !data?.password) {
-          return res.render("pages/auth/resetPassword.ejs", {
-            s: 400,
-            msg: "Vui lòng điền đầy đủ thông tin",
-          });
-        }
         if (data?.password !== data?.rePassword) {
           return res.render("pages/auth/resetPassword.ejs", {
             s: 400,
@@ -204,9 +233,10 @@ function AuthController() {
           });
         }
 
+        const emailLocalStorage = await localStorage.getItem("email");
         // check if user is already registered
         const userInfo = await User.findOne({
-          email: data?.email,
+          email: emailLocalStorage,
         }).lean(); // lean() => tăng hiệu suất truy vấn
         if (!userInfo) {
           return res.render("pages/auth/resetPassword.ejs", {
@@ -216,17 +246,15 @@ function AuthController() {
         }
 
         // reset password
-        return SELF.enCodePass(data?.password).then((hash) => {
-          let otp = (Math.random() + 1).toString(36).substring(6); // create random OTP
-          return User.findByIdAndUpdate(userInfo._id, {
-            password: hash,
-          })
-            .then(async (rs) => {
-              return res.redirect("/auth/login");
-            })
-            .catch((err) => {
-              console.log("reset password error: ", err);
+        return SELF.enCodePass(data?.password).then(async (hash) => {
+          try {
+            const rs = await User.findByIdAndUpdate(userInfo._id, {
+              password: hash,
             });
+            return await res.redirect("/auth/login");
+          } catch (err) {
+            console.log("reset password error: ", err);
+          }
         });
       } catch (error) {
         console.log("reset error: ", error);
