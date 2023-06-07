@@ -11,7 +11,7 @@ const upload = multer({
 
 router.get('/', homeController.home);
 
-router.get('/products', productController.getList);
+router.get('/products', homeController.getList);
 router.get('/products/detail/:id', homeController.getProductDetail);
 
 // upload hinh anh

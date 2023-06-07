@@ -27,6 +27,16 @@
         
       </ul>
       <div class="navbar-nav ms-auto">
+        <form method="GET" action="/" class="d-flex me-2">
+          <input
+            class="form-control me-2"
+            type="search"
+            placeholder="Tìm kiếm"
+            aria-label="Search"
+            name="searchValue"
+          />
+          <button class="btn btn-outline-success" type="submit"><i class="bi bi-search"></i></button>
+        </form>
         <div class="d-grid gap-2 d-md-block">
           <a href="/auth/login" class="btn btn-info" type="button">Đăng nhập</a>
           <a href="/auth/register" class="btn btn-outline-info" type="button">Đăng kí</a>
