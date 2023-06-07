@@ -10,38 +10,32 @@
 <body>
     <!-- navbar -->
     <%- include('../partials/navbar.ejs') %>
-    <div>
-        <div class="card mb-3">
-            <div class="row g-0">
-              <div class="col-md-4" style="width:40%">
-                <img src="<%= data.imageUrl %>" class="rounded float-end" alt="..." width="700px">
-              </div>
-              <div class="col-md-8" style="width:40%">
-                <div class="card-body">
-                  <h3 class="card-title"><%= data.name %></h3>
-                  <h2 class="card-title" style="color:red"><%= data.price %> $</h2>
-                  <p class="card-text">
-                        <% for (var j = 0; j < 5; j++){ %> <% if (j < data.rate){ %>
-                        <span class="fa fa-star checked" style="color: yellow"></span>
-                        <% } else { %>
-                        <span class="fa fa-star"></span>
-                        <% } %> <% } %>
-                  </p>
-                  <p class="card-text"><%= data.description %></p>
-                </div>
-              </div>
-              <div class="col-md-8" style="width:20%">
-                <div class="card-body">
-                  <h6 class="card-title">Tác giả: <%= data.author %></h6>
-                  <h5></h5>
-                </div>
-              </div>
+    <!-- detail -->
+    <div class="container">
+      <div class="row">
+        <div class="col d-flex justify-content-center text-center">
+          <img src="<%= data.imageUrl %>" class="rounded float-end" alt="...">
+        </div>
+        <div class="col">
+          <div>
+            <h3><%= data.name %></h3>
+            <h6>Tác giả: <%= data.author %></h6>
+            <h2 style="color:red"><%= data.price %> $</h2>
+            <p>
+                  <% for (var j = 0; j < 5; j++){ %> <% if (j < data.rate){ %>
+                  <span class="fa fa-star checked" style="color: yellow"></span>
+                  <% } else { %>
+                  <span class="fa fa-star"></span>
+                  <% } %> <% } %>
+            </p>
+            <i><%= data.description %></i>
+	          <div style="padding-top: 20px;">
+              <button type="button" class="btn btn-danger"><i class="bi bi-cart3"></i>&nbsp;Thêm vào giỏ hàng</button>
+              <button type="button" class="btn btn-danger" style="color:red; background-color: white; border: 1.5px solid red;">Mua ngay</button>
             </div>
           </div>
-        <div style="padding-left: 13%">
-          <button type="button" class="btn btn-danger"><i class="icofont-cart"></i>Thêm vào giỏ hàng</button>
-          <button type="button" class="btn btn-danger" style="color:red; background-color: white; border: 1.5px solid red;">Mua ngay</button>
         </div>
+      </div>
     </div>
     <!-- Footer -->
     <%- include('../partials/footer.ejs') %>
