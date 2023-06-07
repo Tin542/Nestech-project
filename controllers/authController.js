@@ -273,6 +273,20 @@ function AuthController() {
         Logger.error(`checkLogin - fail: ${error}`);
       }
     },
+    logout: async (req, res, next) => {
+      try {
+        // If the user is loggedin
+        if (req.session.userId) {
+          req.session.userId = undefined;
+          res.redirect("/");
+        } else {
+          // Not logged in
+          res.redirect("/");
+        }
+      } catch (error) {
+        console.log(error);
+      }
+    },
   };
 }
 

@@ -24,6 +24,7 @@ router.get("/reset", (req, res) => {
 router.get("/verify-email", (req, res) => {
   res.render("pages/auth/verifyEmailForReset.ejs", { isShowed: false });
 });
+router.get('/logout', authController.logout);
 
 // Controllers Routes
 router.post("/register", authController.register);
