@@ -6,7 +6,7 @@ function FileService() {
   const SELF = {};
   return {
     uploadFile: (req, res) => {
-      console.log("Uploading", req.file);
+     
       let uloadedFile = req.file;
       try {
         if (!uloadedFile) {
