@@ -147,7 +147,7 @@ function AuthController() {
               await User.updateOne({ _id: userInfo._id }, userInfo);
               let session = req.session;
               session.userId = token;
-              res.redirect("/admin/products/list");
+              res.redirect("/");
             } else {
               res.render("pages/auth/login.ejs", {
                 s: 400,

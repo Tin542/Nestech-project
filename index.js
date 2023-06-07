@@ -29,9 +29,14 @@ app.use(
 );
 
 // Routes
-app.use("/", home);
 app.use('/admin', admin);
 app.use('/auth', auth);
+
+app.use(function(req, res, next) {
+  res.locals.user = req.session.userId;
+  next();
+});
+app.use("/", home);
 
 app.listen(CONFIG.PORT, () => {
   console.log(`Example app listening on port ${CONFIG.PORT}`);
