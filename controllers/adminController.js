@@ -98,7 +98,6 @@ function AdminController() {
       try {
         const pId = req.params?.id;
         const product = await Product.findById(pId);
-        console.log("product delete", product);
         if (!product) {
           return res.json({ s: 404, msg: "Product not found" });
         }
