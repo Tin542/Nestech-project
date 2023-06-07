@@ -24,7 +24,7 @@ function HomeController() {
     getProductDetail: async (req, res) => {
       try {
         let productId = req.params?.id;
-        console.log("Product id", productId);
+        
         let result = await Product.findById(productId);
         console.log("Product", result);
         if (!result) {
