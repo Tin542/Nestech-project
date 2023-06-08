@@ -5,7 +5,6 @@ const mongoose = require("mongoose");
 const Cart = mongoose.Schema(
   {
     products: { type: Array },
-    price: { type: Number },
     userID: { type: String },
   },
   { version: false, timestamps: true }
