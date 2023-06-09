@@ -6,6 +6,7 @@ const Cart = mongoose.Schema(
   {
     products: { type: Array },
     userID: { type: String },
+    price: { type: Number}
   },
   { version: false, timestamps: true }
 );
