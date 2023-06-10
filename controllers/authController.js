@@ -61,7 +61,7 @@ function AuthController() {
         // register user
         return SELF.enCodePass(data?.password).then(async (hash) => {
           let otp = await (Math.random() + 1).toString(36).substring(6); // create random OTP
-          await emailService.SendMailSG(otp, data?.email).then(async ()=>{
+          await emailService.SendMailSG(otp, data?.email).then(async () => {
             try {
               const rs = await User.create({
                 fullname: data?.fullname,
@@ -75,8 +75,7 @@ function AuthController() {
             } catch (err) {
               console.log("register user error: ", err);
             }
-          })
-          
+          });
         });
       } catch (error) {
         console.log("register error: ", error);
@@ -123,7 +122,9 @@ function AuthController() {
             msg: "Tài khoản hoặc mật khẩu đang trống",
           });
         }
-        let userInfo = await User.findOne({ username: data?.username.trim() }).lean();
+        let userInfo = await User.findOne({
+          username: data?.username.trim(),
+        }).lean();
         if (!userInfo) {
           return res.render("pages/auth/login.ejs", {
             s: 404,
@@ -151,7 +152,8 @@ function AuthController() {
               userInfo.token = token;
               await User.updateOne({ _id: userInfo._id }, userInfo);
               let session = req.session;
-              session.userId = token;
+              session.token = token;
+              session.userId = userInfo._id;
               res.redirect("/");
             } else {
               res.render("pages/auth/login.ejs", {

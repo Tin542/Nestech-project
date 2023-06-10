@@ -27,7 +27,7 @@ function CartController() {
   return {
     getCurrentCart: async (req, res) => {
       try {
-        let userID = res.locals.user; // get current user id
+        let uid = res.locals.user; // get current user id
         let productID = req.params?.id; // get current product id
         let product = await Product.findById(productID);
 
@@ -35,9 +35,10 @@ function CartController() {
           return res.json({ s: 404, msg: "Product not found" });
         }
 
-        let result = await Cart.findOne({ userID });
+        let result = await Cart.findOne({ userID: uid }).lean();
+
         if (!result) {
-          SELF.createCart(userID, product);
+          SELF.createCart(uid, product);
         } else {
           console.log("cart founded successfully");
         }
