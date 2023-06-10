@@ -253,7 +253,7 @@
                 <a href="/products/detail/<%= listItems[i]._id %>" type="button" class="btn btn-outline-secondary">
                   <i class="bi bi-eye-fill"></i> &nbsp;Xem chi tiết
                 </a>
-                <button class="btn btn-primary" type="button">
+                <button onclick="addToCart('<%= listItems[i]._id %>')" class="btn btn-primary" type="button">
                   <i class="bi bi-cart2"></i> &nbsp;Thêm vào giỏ
                 </button>
               </div>
@@ -307,6 +307,17 @@
     <%- include('../partials/footer.ejs') %>
   </body>
   <script>
+    function addToCart(pid){
+      $.ajax({
+        type: "GET",
+        url: `/cart/current`,
+        success: function(rs){
+          
+        }
+        
+        
+      })
+    };
     function getDetail(id){
       $.ajax({
           type: "GET",
