@@ -16,8 +16,7 @@ router.get("/cart", (req, res) => {
   res.render("pages/cart.ejs");
 });
 
-router.get('/cart/current', cartController.getCurrentCart)
-router.post('/cart', cartController.createCart);
+router.get('/cart/current/:id', cartController.getCurrentCart)
 
 
 module.exports = router;

@@ -310,12 +310,10 @@
     function addToCart(pid){
       $.ajax({
         type: "GET",
-        url: `/cart/current`,
+        url: `/cart/current/${pid}`,
         success: function(rs){
-          
+          alert('Đã thêm vào giỏ hàng');
         }
-        
-        
       })
     };
     function getDetail(id){
