@@ -102,7 +102,7 @@ function CartController() {
         let cartDetail = await Cart.findById(cid);
         if (!cartDetail) return res.json({ s: 404, msg: "Cart not found" });
         let upQuantity = await Number.parseInt(cartDetail.quantity + 1);
-        console.log("upQuantity: ", upQuantity);
+        
         return Cart.findByIdAndUpdate(cartDetail._id, { quantity: upQuantity })
           .then(() => {
             // window.location.reload();
@@ -121,7 +121,7 @@ function CartController() {
         let cartDetail = await Cart.findById(cid);
         if (!cartDetail) return res.json({ s: 404, msg: "Cart not found" });
         let upQuantity = await Number.parseInt(cartDetail.quantity - 1);
-        console.log("upQuantity: ", upQuantity);
+       
         return Cart.findByIdAndUpdate(cartDetail._id, { quantity: upQuantity })
           .then(() => {
             // window.location.reload();
@@ -132,6 +132,26 @@ function CartController() {
           });
       } catch (error) {
         console.log("removeItem error", error);
+      }
+    },
+    deleteItem: async (req, res) => {
+      try {
+        const cid = req.params?.id;
+        const detailCart = await Cart.findById(cid);
+        if (!detailCart) {
+          return res.json({ s: 404, msg: "Cart not found" });
+        }
+        detailCart.deleteOne({ _id: cid })
+          .then((rs) => {
+            
+            return res.json({ s: 200, msg: "Xóa thành công!!" });
+          })
+          .catch((e) => {
+            console.log(`delete item from cart- fail: ${e}`);
+            return rs.json({ s: 400, msg: "delete item from cart-" });
+          });
+      } catch (error) {
+        console.log(error);
       }
     },
   };
