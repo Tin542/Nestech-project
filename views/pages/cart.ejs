@@ -58,7 +58,7 @@
                 </td>
                 <td class="text-center">
                   <div class="d-flex justify-content-center">
-                    <button onclick="removeItem()" id="amount-button">
+                    <button onclick="removeItem('<%= item._id %>')" id="amount-button">
                       <i class="bi bi-dash"></i>
                     </button>
                     <span id="amount"><%= item.quantity %></span>
@@ -135,5 +135,14 @@
         }
       })
     };
+    function removeItem(cid){
+      $.ajax({
+        type: "GET",
+        url: `/cart/remove/${cid}`,
+        success: function(rs){
+         
+        }
+      })
+    }
   </script>
 </html>

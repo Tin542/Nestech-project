@@ -97,22 +97,41 @@ function CartController() {
       }
     },
     addItem: async (req, res) => {
-     
       try {
         let cid = req.params?.id;
         let cartDetail = await Cart.findById(cid);
         if (!cartDetail) return res.json({ s: 404, msg: "Cart not found" });
-        let upQuantity = Number.parseInt( (await cartDetail.quantity) + 1);
-        return Cart.findByIdAndUpdate(cid, { quantity: upQuantity })
+        let upQuantity = await Number.parseInt(cartDetail.quantity + 1);
+        console.log("upQuantity: ", upQuantity);
+        return Cart.findByIdAndUpdate(cartDetail._id, { quantity: upQuantity })
           .then(() => {
             // window.location.reload();
-            res.redirect(req.get('/cart'));
+            res.redirect("/cart");
           })
           .catch((error) => {
             console.log(error);
           });
       } catch (error) {
         console.log("addItem error", error);
+      }
+    },
+    removeItem: async (req, res) => {
+      try {
+        let cid = req.params?.id;
+        let cartDetail = await Cart.findById(cid);
+        if (!cartDetail) return res.json({ s: 404, msg: "Cart not found" });
+        let upQuantity = await Number.parseInt(cartDetail.quantity - 1);
+        console.log("upQuantity: ", upQuantity);
+        return Cart.findByIdAndUpdate(cartDetail._id, { quantity: upQuantity })
+          .then(() => {
+            // window.location.reload();
+            res.redirect("/cart");
+          })
+          .catch((error) => {
+            console.log(error);
+          });
+      } catch (error) {
+        console.log("removeItem error", error);
       }
     },
   };
