@@ -238,9 +238,8 @@
             </div>
 
             <div class="card-body">
-              <% for (var j = 0; j < 5; j++){ %> 
-                <% if (j < listItems[i].rate){
-                %>
+              <% for (var j = 0; j < 5; j++){ %> <% if (j < listItems[i].rate){
+              %>
               <span class="fa fa-star checked"></span>
               <% } else { %>
               <span class="fa fa-star"></span>
@@ -250,10 +249,18 @@
             </div>
             <div class="overlay">
               <div class="d-grid gap-2 col-8 mx-auto">
-                <a href="/products/detail/<%= listItems[i]._id %>" type="button" class="btn btn-outline-secondary">
+                <a
+                  href="/products/detail/<%= listItems[i]._id %>"
+                  type="button"
+                  class="btn btn-outline-secondary"
+                >
                   <i class="bi bi-eye-fill"></i> &nbsp;Xem chi tiết
                 </a>
-                <button onclick="addToCart('<%= listItems[i]._id %>')" class="btn btn-primary" type="button">
+                <button
+                  onclick="addToCart('<%= listItems[i]._id %>')"
+                  class="btn btn-primary"
+                  type="button"
+                >
                   <i class="bi bi-cart2"></i> &nbsp;Thêm vào giỏ
                 </button>
               </div>
@@ -307,35 +314,38 @@
     <%- include('../partials/footer.ejs') %>
   </body>
   <script>
-    function addToCart(pid){
+    function addToCart(pid) {
+      $.ajax({
+        url: "/cart/add",
+        type: "POST",
+        data: cid,
+        processData: false,
+        contentType: false,
+        success: function (rs) {
+          // console.log(rs);
+          // alert(rs.msg);
+        },
+      });
+    }
+    function getDetail(id) {
       $.ajax({
         type: "GET",
-        url: `/cart/current/${pid}`,
-        success: function(rs){
-          // alert('Đã thêm vào giỏ hàng');
-        }
-      })
-    };
-    function getDetail(id){
-      $.ajax({
-          type: "GET",
-          url: `/products/detail/${id}`,
-          success: function (rs) {
-            if (rs.s === 200) {
-              let data = rs.data;
-              // set data vừa get đc lên <input>
-              document.getElementById("_idEdit").value = data._id;
-              document.getElementById("nameEdit").value = data.name;
-              document.getElementById("priceEdit").value = data.price;
-              document.getElementById("rateEdit").value = data.rate;
-              document.getElementById("descriptionEdit").value =
-                data.description;
-              document.getElementById("imageUrlEdit").value = data.imageUrl;
-              document.getElementById("imageUploadEdit").src = data.imageUrl;
-              document.getElementById("authorEdit").value = data.author
-            }
-          },
-        });
+        url: `/products/detail/${id}`,
+        success: function (rs) {
+          if (rs.s === 200) {
+            let data = rs.data;
+            // set data vừa get đc lên <input>
+            document.getElementById("_idEdit").value = data._id;
+            document.getElementById("nameEdit").value = data.name;
+            document.getElementById("priceEdit").value = data.price;
+            document.getElementById("rateEdit").value = data.rate;
+            document.getElementById("descriptionEdit").value = data.description;
+            document.getElementById("imageUrlEdit").value = data.imageUrl;
+            document.getElementById("imageUploadEdit").src = data.imageUrl;
+            document.getElementById("authorEdit").value = data.author;
+          }
+        },
+      });
     }
   </script>
 </html>

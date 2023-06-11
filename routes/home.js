@@ -13,11 +13,9 @@ router.get("/products/detail/:id", homeController.getProductDetail);
 // Cart
 
 router.use(authController.checkLogin);
-router.get("/cart", (req, res) => {
-  res.render("pages/cart.ejs");
-});
-router.use(authController.checkLogin);
-router.get('/cart/current/:id', cartController.getCurrentCart)
+router.get("/cart", cartController.getCurrentCart);
+router.get('/cart/current/:id', cartController.checkCart);
+router.get('/cart/add/:id', cartController.addItem);
 
 
 module.exports = router;

@@ -4,9 +4,12 @@ const mongoose = require("mongoose");
 // define model schema
 const Cart = mongoose.Schema(
   {
-    products: { type: Array },
+    productID: { type: String},
     userID: { type: String },
-    price: { type: Number}
+    productName: {type: String},
+    productImg: {type: String},
+    productPrice: { type: Number},
+    quantity: {type: Number},
   },
   { version: false, timestamps: true }
 );
