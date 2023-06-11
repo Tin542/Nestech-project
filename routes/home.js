@@ -16,6 +16,8 @@ router.use(authController.checkLogin);
 router.get("/cart", cartController.getCurrentCart);
 router.get('/cart/current/:id', cartController.checkCart);
 router.get('/cart/add/:id', cartController.addItem);
+router.get('/cart/remove/:id', cartController.removeItem);
+router.delete('/cart/delete/:id', cartController.deleteItem);
 
 
 module.exports = router;

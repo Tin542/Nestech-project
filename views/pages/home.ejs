@@ -316,14 +316,11 @@
   <script>
     function addToCart(pid) {
       $.ajax({
-        url: "/cart/add",
-        type: "POST",
-        data: cid,
-        processData: false,
-        contentType: false,
+        url: `/cart/current/${pid}`,
+        type: "GET",
         success: function (rs) {
           // console.log(rs);
-          // alert(rs.msg);
+          alert(rs.msg);
         },
       });
     }

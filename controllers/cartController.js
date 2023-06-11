@@ -97,22 +97,59 @@ function CartController() {
       }
     },
     addItem: async (req, res) => {
-     
       try {
         let cid = req.params?.id;
         let cartDetail = await Cart.findById(cid);
         if (!cartDetail) return res.json({ s: 404, msg: "Cart not found" });
-        let upQuantity = Number.parseInt( (await cartDetail.quantity) + 1);
-        return Cart.findByIdAndUpdate(cid, { quantity: upQuantity })
+        let upQuantity = await Number.parseInt(cartDetail.quantity + 1);
+        
+        return Cart.findByIdAndUpdate(cartDetail._id, { quantity: upQuantity })
           .then(() => {
-            // window.location.reload();
-            res.redirect(req.get('/cart'));
+            return res.json({ s: 200, msg: "Cập nhật giỏ hàng thành công!!" });
           })
           .catch((error) => {
             console.log(error);
           });
       } catch (error) {
         console.log("addItem error", error);
+      }
+    },
+    removeItem: async (req, res) => {
+      try {
+        let cid = req.params?.id;
+        let cartDetail = await Cart.findById(cid);
+        if (!cartDetail) return res.json({ s: 404, msg: "Cart not found" });
+        let upQuantity = await Number.parseInt(cartDetail.quantity - 1);
+       
+        return Cart.findByIdAndUpdate(cartDetail._id, { quantity: upQuantity })
+          .then(() => {
+            return res.json({ s: 200, msg: "Cập nhật giỏ hàng thành công!!" });
+          })
+          .catch((error) => {
+            console.log(error);
+          });
+      } catch (error) {
+        console.log("removeItem error", error);
+      }
+    },
+    deleteItem: async (req, res) => {
+      try {
+        const cid = req.params?.id;
+        const detailCart = await Cart.findById(cid);
+        if (!detailCart) {
+          return res.json({ s: 404, msg: "Cart not found" });
+        }
+        detailCart.deleteOne({ _id: cid })
+          .then((rs) => {
+            
+            return res.json({ s: 200, msg: "Xóa thành công!!" });
+          })
+          .catch((e) => {
+            console.log(`delete item from cart- fail: ${e}`);
+            return rs.json({ s: 400, msg: "delete item from cart-" });
+          });
+      } catch (error) {
+        console.log(error);
       }
     },
   };
