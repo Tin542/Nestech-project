@@ -1,0 +1,139 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Giỏ hàng</title>
+    <%- include('../partials/header.ejs') %>
+    <link href="/public/assets/cart.css" rel="stylesheet" type="text/css" />
+  </head>
+  <body>
+    <!-- navbar -->
+    <%- include('../partials/navbar.ejs') %>
+    <!-- detail -->
+    <div class="container">
+      <div class="row">
+        <div class="col mt-3 mb-3">
+          <h5>GIỎ HÀNG</h5>
+          (7 san pham)
+        </div>
+      </div>
+      <div class="row">
+        <div class="col-12 col-sm-12 col-md-8 d-flex justify-content-center">
+          <table class="table table-borderless">
+            <thead class="table-info">
+              <tr class="text-center">
+                <th scope="col">#</th>
+                <th scope="col">Sản phẩm</th>
+                <th scope="col">Số lượng</th>
+                <th scope="col">Thành tiền</th>
+                <th scope="col"></th>
+              </tr>
+            </thead>
+            <tbody>
+              <% cartitems.forEach(function(item, index) { %>
+              <tr>
+                <th scope="row"><%= index+1 %></th>
+                <td class="d-flex">
+                  <img
+                    src="<%= item.productImg %>"
+                    height="60px"
+                    width="60px"
+                  />
+                  <div
+                    data-bs-toggle="tooltip"
+                    data-bs-placement="right"
+                    title="Thám Tử Lừng Danh Conan - Tập 96"
+                    class="d-block"
+                  >
+                    <span
+                      class="d-inline-block text-truncate"
+                      style="max-width: 200px"
+                    >
+                      <%= item.productName %>
+                    </span>
+                    <div class="fw-bold"><%= item.productPrice %> $</div>
+                  </div>
+                </td>
+                <td class="text-center">
+                  <div class="d-flex justify-content-center">
+                    <button onclick="removeItem()" id="amount-button">
+                      <i class="bi bi-dash"></i>
+                    </button>
+                    <span id="amount"><%= item.quantity %></span>
+                    <button onclick="addItem('<%= item._id %>')" id="amount-button">
+                      <i class="bi bi-plus"></i>
+                    </button>
+                  </div>
+                </td>
+                <td style="color: red" class="w-2 fw-bold text-center">
+                  <%= item.productPrice * item.quantity %> $
+                </td>
+                <td align="center">
+                  <button
+                    onclick=""
+                    type="button"
+                    class="btn btn-outline-danger"
+                  >
+                    <svg
+                      style="cursor: pointer"
+                      xmlns="http://www.w3.org/2000/svg"
+                      width="16"
+                      height="16"
+                      fill="currentColor"
+                      class="bi bi-trash"
+                      viewBox="0 0 16 16"
+                    >
+                      <path
+                        d="M5.5 5.5A.5.5 0 0 1 6 6v6a.5.5 0 0 1-1 0V6a.5.5 0 0 1 .5-.5Zm2.5 0a.5.5 0 0 1 .5.5v6a.5.5 0 0 1-1 0V6a.5.5 0 0 1 .5-.5Zm3 .5a.5.5 0 0 0-1 0v6a.5.5 0 0 0 1 0V6Z"
+                      />
+                      <path
+                        d="M14.5 3a1 1 0 0 1-1 1H13v9a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V4h-.5a1 1 0 0 1-1-1V2a1 1 0 0 1 1-1H6a1 1 0 0 1 1-1h2a1 1 0 0 1 1 1h3.5a1 1 0 0 1 1 1v1ZM4.118 4 4 4.059V13a1 1 0 0 0 1 1h6a1 1 0 0 0 1-1V4.059L11.882 4H4.118ZM2.5 3h11V2h-11v1Z"
+                      />
+                    </svg>
+                  </button>
+                </td>
+              </tr>
+              <% }); %>
+            </tbody>
+          </table>
+        </div>
+        <div class="col-12 col-sm-12 col-md-4 d-flex justify-content-center ">
+          <div class="card w-100 sticky-top" style="height: 200px">
+            <div class="card-header">
+              <div class="d-flex justify-content-between">
+                <div>Thành tiền</div>
+                <div><%= totalPrice %> $</div>
+              </div>
+            </div>
+            <div class="card-body">
+              <h5 class="card-title">
+                <div class="d-flex justify-content-between">
+                  <div>Tổng số tiền (gồm VAT)</div>
+                  <div><%= totalPrice %> $</div>
+                </div>
+              </h5>
+              <button class="btn btn-lg btn-danger mt-5 w-100">
+                Thanh toán
+              </button>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+    <!-- Footer -->
+    <%- include('../partials/footer.ejs') %>
+  </body>
+  <script>
+    function addItem(cid){
+      $.ajax({
+        type: "GET",
+        url: `/cart/add/${cid}`,
+        success: function(rs){
+         
+        }
+      })
+    };
+  </script>
+</html>
