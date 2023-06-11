@@ -58,11 +58,17 @@
                 </td>
                 <td class="text-center">
                   <div class="d-flex justify-content-center">
-                    <button onclick="removeItem('<%= item._id %>')" id="amount-button">
+                    <button
+                      onclick="removeItem('<%= item._id %>')"
+                      id="amount-button"
+                    >
                       <i class="bi bi-dash"></i>
                     </button>
                     <span id="amount"><%= item.quantity %></span>
-                    <button onclick="addItem('<%= item._id %>')" id="amount-button">
+                    <button
+                      onclick="addItem('<%= item._id %>')"
+                      id="amount-button"
+                    >
                       <i class="bi bi-plus"></i>
                     </button>
                   </div>
@@ -99,7 +105,7 @@
             </tbody>
           </table>
         </div>
-        <div class="col-12 col-sm-12 col-md-4 d-flex justify-content-center ">
+        <div class="col-12 col-sm-12 col-md-4 d-flex justify-content-center">
           <div class="card w-100 sticky-top" style="height: 200px">
             <div class="card-header">
               <div class="d-flex justify-content-between">
@@ -126,33 +132,35 @@
     <%- include('../partials/footer.ejs') %>
   </body>
   <script>
-    function addItem(cid){
+    function addItem(cid) {
       $.ajax({
         type: "GET",
         url: `/cart/add/${cid}`,
-        success: function(rs){
-         
-        }
-      })
-    };
-    function removeItem(cid){
+        success: function (rs) {
+          alert(rs.msg);
+          window.location.reload();
+        },
+      });
+    }
+    function removeItem(cid) {
       $.ajax({
         type: "GET",
         url: `/cart/remove/${cid}`,
-        success: function(rs){
-         
-        }
-      })
+        success: function (rs) {
+          alert(rs.msg);
+          window.location.reload();
+        },
+      });
     }
-    function deleteItem(cid){
+    function deleteItem(cid) {
       $.ajax({
         type: "DELETE",
         url: `/cart/delete/${cid}`,
-        success: function(rs){
-          alert("delete success");
-            window.location.reload();
-        }
-      })
+        success: function (rs) {
+          alert(rs.msg);
+          window.location.reload();
+        },
+      });
     }
   </script>
 </html>

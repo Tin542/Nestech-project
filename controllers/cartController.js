@@ -105,8 +105,7 @@ function CartController() {
         
         return Cart.findByIdAndUpdate(cartDetail._id, { quantity: upQuantity })
           .then(() => {
-            // window.location.reload();
-            res.redirect("/cart");
+            return res.json({ s: 200, msg: "Cập nhật giỏ hàng thành công!!" });
           })
           .catch((error) => {
             console.log(error);
@@ -124,8 +123,7 @@ function CartController() {
        
         return Cart.findByIdAndUpdate(cartDetail._id, { quantity: upQuantity })
           .then(() => {
-            // window.location.reload();
-            res.redirect("/cart");
+            return res.json({ s: 200, msg: "Cập nhật giỏ hàng thành công!!" });
           })
           .catch((error) => {
             console.log(error);
