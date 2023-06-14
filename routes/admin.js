@@ -25,6 +25,7 @@ router.get('/promotion/detail/:id', adminController.getPromotionDetail);
 router.post('/promotion/edit', adminController.editPromotion);
 router.delete('/promotion/delete/:id', adminController.deletePromotion);
 
+
 // user
 router.get('/user/list', adminController.users);
 

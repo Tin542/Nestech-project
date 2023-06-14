@@ -16,10 +16,11 @@
       <div class="row">
         <div class="col mt-3 mb-3">
           <h5>GIỎ HÀNG</h5>
-          (7 san pham)
+          (<%= cartitems.length %> sản phẩm)
         </div>
       </div>
       <div class="row">
+        <% if (cartitems.length !== 0) { %>
         <div class="col-12 col-sm-12 col-md-8 d-flex justify-content-center">
           <table class="table table-borderless">
             <thead class="table-info">
@@ -58,12 +59,22 @@
                 </td>
                 <td class="text-center">
                   <div class="d-flex justify-content-center">
+                    <% if (item.quantity > 1) { %>
                     <button
                       onclick="removeItem('<%= item._id %>')"
                       id="amount-button"
                     >
                       <i class="bi bi-dash"></i>
                     </button>
+                    <% } %> <% if (item.quantity === 1) { %>
+                    <button
+                      disabled
+                      onclick="removeItem('<%= item._id %>')"
+                      id="amount-button"
+                    >
+                      <i class="bi bi-dash"></i>
+                    </button>
+                    <% } %>
                     <span id="amount"><%= item.quantity %></span>
                     <button
                       onclick="addItem('<%= item._id %>')"
@@ -126,6 +137,22 @@
             </div>
           </div>
         </div>
+        <% } else { %>
+        <div class="col-12">
+          <div class="card bg-light p-5">
+            <img
+              style="margin: auto;"
+              width="200px"
+              height="200px"
+              src="https://cdn0.fahasa.com/skin//frontend/ma_vanese/fahasa/images/checkout_cart/ico_emptycart.svg"
+            />
+            <div class="fst-italic m-auto">Bạn chưa có sản phẩm nào trong giỏ hàng =(o.o)=</div>
+            <a class="btn btn-primary mt-5" href="/products" role="button"
+              >Mua hàng</a
+            >
+          </div>
+        </div>
+        <% } %>
       </div>
     </div>
     <!-- Footer -->

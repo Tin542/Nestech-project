@@ -34,6 +34,7 @@ app.use('/auth', auth);
 
 app.use(function(req, res, next) {
   res.locals.user = req.session.userId;
+  res.locals.cart = req.session.cart;
   next();
 });
 app.use("/", home);

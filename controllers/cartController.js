@@ -67,6 +67,8 @@ function CartController() {
         }).lean();
         if (!result) {
           let msg = await SELF.createCart(uid, product, res);
+          let session = req.session;
+          session.cart = parseInt(res.locals.cart) + 1;
           return res.json({ s: 200, msg: msg });
         }
         let quantity = (await result.quantity) + 1;
@@ -83,6 +85,8 @@ function CartController() {
           .then((rs) => {
             if (rs) {
               let totalPrice = SELF.getTotalPrice(rs);
+              let session = req.session;
+              session.cart = parseInt(rs.length);
               res.render("pages/cart.ejs", {
                 cartitems: rs,
                 totalPrice: totalPrice,
@@ -102,7 +106,7 @@ function CartController() {
         let cartDetail = await Cart.findById(cid);
         if (!cartDetail) return res.json({ s: 404, msg: "Cart not found" });
         let upQuantity = await Number.parseInt(cartDetail.quantity + 1);
-        
+
         return Cart.findByIdAndUpdate(cartDetail._id, { quantity: upQuantity })
           .then(() => {
             return res.json({ s: 200, msg: "Cập nhật giỏ hàng thành công!!" });
@@ -120,7 +124,7 @@ function CartController() {
         let cartDetail = await Cart.findById(cid);
         if (!cartDetail) return res.json({ s: 404, msg: "Cart not found" });
         let upQuantity = await Number.parseInt(cartDetail.quantity - 1);
-       
+
         return Cart.findByIdAndUpdate(cartDetail._id, { quantity: upQuantity })
           .then(() => {
             return res.json({ s: 200, msg: "Cập nhật giỏ hàng thành công!!" });
@@ -139,9 +143,11 @@ function CartController() {
         if (!detailCart) {
           return res.json({ s: 404, msg: "Cart not found" });
         }
-        detailCart.deleteOne({ _id: cid })
+        detailCart
+          .deleteOne({ _id: cid })
           .then((rs) => {
-            
+            let session = req.session;
+            session.cart = parseInt(res.locals.cart) - 1;
             return res.json({ s: 200, msg: "Xóa thành công!!" });
           })
           .catch((e) => {
