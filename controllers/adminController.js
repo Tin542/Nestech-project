@@ -114,6 +114,9 @@ function AdminController() {
         console.log(error);
       }
     },
+
+    
+
     users: async (req, res) => {
       try {
         let page = req.query.page;
