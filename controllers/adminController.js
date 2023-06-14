@@ -46,7 +46,6 @@ function AdminController() {
         console.log(error);
       }
     },
-
     addProduct: (req, res) => {
       try {
         let data = req.body;
@@ -113,9 +112,7 @@ function AdminController() {
       } catch (error) {
         console.log(error);
       }
-    },
-
-    
+    },  
 
     users: async (req, res) => {
       try {
