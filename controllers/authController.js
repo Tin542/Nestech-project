@@ -3,6 +3,7 @@ const jwt = require("jsonwebtoken");
 const LocalStorage = require("node-localstorage").LocalStorage;
 
 const User = require("../models/user").User;
+const Cart = require("../models/cart").Cart;
 const emailService = require("../services/emailService");
 const localStorage = new LocalStorage("./localStorage");
 const bcrypt = require("bcrypt"); // encrypt password
@@ -154,6 +155,10 @@ function AuthController() {
               let session = req.session;
               session.token = token;
               session.userId = userInfo._id;
+
+              let cart = await Cart.find({ userID: userInfo._id });
+              session.cart = cart.length;
+
               res.redirect("/");
             } else {
               res.render("pages/auth/login.ejs", {

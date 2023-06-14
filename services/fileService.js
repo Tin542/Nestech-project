@@ -1,6 +1,5 @@
 "use strict";
 const firebase = require("./firebaseService");
-const productController = require("../controllers/productCotroller");
 
 function FileService() {
   const SELF = {};
