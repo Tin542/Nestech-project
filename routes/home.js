@@ -1,20 +1,23 @@
 const express = require("express");
 const homeController = require("../controllers/homeController");
-const productController = require("../controllers/productCotroller");
-const fileService = require("../services/fileService");
-const multer = require("multer");
+const authController = require('../controllers/authController');
+const cartController = require('../controllers/cartController');
 const router = express.Router({});
 
-const upload = multer({
-    storage: multer.memoryStorage(),
-})
+router.get("/", homeController.home);
 
-router.get('/', homeController.home);
+// Products
+router.get("/products", homeController.getList);
+router.get("/products/detail/:id", homeController.getProductDetail);
 
-router.get('/products', homeController.getList);
-router.get('/products/detail/:id', homeController.getProductDetail);
+// Cart
 
-// upload hinh anh
-router.post("/products/upload-image", upload.single("file"), fileService.uploadFile);
+router.use(authController.checkLogin);
+router.get("/cart", cartController.getCurrentCart);
+router.get('/cart/current/:id', cartController.checkCart);
+router.get('/cart/add/:id', cartController.addItem);
+router.get('/cart/remove/:id', cartController.removeItem);
+router.delete('/cart/delete/:id', cartController.deleteItem);
+
 
 module.exports = router;

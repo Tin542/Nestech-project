@@ -30,7 +30,7 @@
             </p>
             <i><%= data.description %></i>
 	          <div style="padding-top: 20px;">
-              <button type="button" class="btn btn-danger"><i class="bi bi-cart3"></i>&nbsp;Thêm vào giỏ hàng</button>
+              <button onclick="addToCart('<%= data._id %>')" type="button" class="btn btn-danger"><i class="bi bi-cart3"></i>&nbsp;Thêm vào giỏ hàng</button>
               <button type="button" class="btn btn-danger" style="color:red; background-color: white; border: 1.5px solid red;">Mua ngay</button>
             </div>
           </div>
@@ -40,4 +40,16 @@
     <!-- Footer -->
     <%- include('../partials/footer.ejs') %>
   </body>
+  <script>
+    function addToCart(pid) {
+      $.ajax({
+        url: `/cart/current/${pid}`,
+        type: "GET",
+        success: function (rs) {
+          // console.log(rs);
+          alert(rs.msg);
+        },
+      });
+    }
+  </script>
 </html>

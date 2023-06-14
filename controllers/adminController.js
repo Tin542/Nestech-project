@@ -103,7 +103,7 @@ function AdminController() {
         }
         Product.deleteOne({ _id: pId })
           .then((rs) => {
-            console.log(rs);
+            
             return res.json({ s: 200, msg: "Delete product success!!" });
           })
           .catch((e) => {

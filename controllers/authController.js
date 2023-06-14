@@ -1,9 +1,12 @@
 "use strict";
-const User = require("../models/user").User;
-const bcrypt = require("bcrypt"); // encrypt password
 const jwt = require("jsonwebtoken");
 const LocalStorage = require("node-localstorage").LocalStorage;
+
+const User = require("../models/user").User;
+const emailService = require("../services/emailService");
 const localStorage = new LocalStorage("./localStorage");
+const bcrypt = require("bcrypt"); // encrypt password
+
 const CONFIG = require("../config");
 
 function AuthController() {
@@ -56,22 +59,23 @@ function AuthController() {
         }
 
         // register user
-        return SELF.enCodePass(data?.password).then((hash) => {
-          let otp = (Math.random() + 1).toString(36).substring(6); // create random OTP
-          return User.create({
-            fullname: data?.fullname,
-            username: data?.username,
-            password: hash,
-            email: data?.email,
-            otp: otp,
-          })
-            .then(async (rs) => {
+        return SELF.enCodePass(data?.password).then(async (hash) => {
+          let otp = await (Math.random() + 1).toString(36).substring(6); // create random OTP
+          await emailService.SendMailSG(otp, data?.email).then(async () => {
+            try {
+              const rs = await User.create({
+                fullname: data?.fullname,
+                username: data?.username,
+                password: hash,
+                email: data?.email,
+                otp: otp,
+              });
               await localStorage.setItem("email", data?.email);
-              return res.redirect("/auth/verifyEmail");
-            })
-            .catch((err) => {
+              return await res.redirect("/auth/verifyEmail");
+            } catch (err) {
               console.log("register user error: ", err);
-            });
+            }
+          });
         });
       } catch (error) {
         console.log("register error: ", error);
@@ -112,13 +116,15 @@ function AuthController() {
     login: async (req, res) => {
       try {
         let data = req.body;
-        if (!data?.username || !data?.password) {
+        if (!data?.username.trim() || !data?.password.trim()) {
           return res.render("pages/auth/login.ejs", {
             s: 400,
             msg: "Tài khoản hoặc mật khẩu đang trống",
           });
         }
-        let userInfo = await User.findOne({ username: data?.username }).lean();
+        let userInfo = await User.findOne({
+          username: data?.username.trim(),
+        }).lean();
         if (!userInfo) {
           return res.render("pages/auth/login.ejs", {
             s: 404,
@@ -132,7 +138,7 @@ function AuthController() {
           });
         }
         return bcrypt
-          .compare(data?.password, userInfo.password)
+          .compare(data?.password.trim(), userInfo.password)
           .then(async (rs) => {
             if (rs) {
               const token = jwt.sign(
@@ -146,7 +152,8 @@ function AuthController() {
               userInfo.token = token;
               await User.updateOne({ _id: userInfo._id }, userInfo);
               let session = req.session;
-              session.userId = token;
+              session.token = token;
+              session.userId = userInfo._id;
               res.redirect("/");
             } else {
               res.render("pages/auth/login.ejs", {
@@ -164,7 +171,7 @@ function AuthController() {
       try {
         let data = req.body;
         let otp = (Math.random() + 1).toString(36).substring(6);
-        let userInfo = await User.findOne({ email: data?.email }).lean();
+        let userInfo = await User.findOne({ email: data?.email.trim() }).lean();
         if (!userInfo) {
           return res.send("pages/auth/verifyEmailForReset.ejs", {
             s: 404,
@@ -271,6 +278,20 @@ function AuthController() {
         }
       } catch (error) {
         Logger.error(`checkLogin - fail: ${error}`);
+      }
+    },
+    logout: async (req, res, next) => {
+      try {
+        // If the user is loggedin
+        if (req.session.userId) {
+          req.session.userId = undefined;
+          res.redirect("/");
+        } else {
+          // Not logged in
+          res.redirect("/");
+        }
+      } catch (error) {
+        console.log(error);
       }
     },
   };
