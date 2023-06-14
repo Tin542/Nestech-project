@@ -59,12 +59,22 @@
                 </td>
                 <td class="text-center">
                   <div class="d-flex justify-content-center">
+                    <% if (item.quantity > 1) { %>
                     <button
                       onclick="removeItem('<%= item._id %>')"
                       id="amount-button"
                     >
                       <i class="bi bi-dash"></i>
                     </button>
+                    <% } %> <% if (item.quantity === 1) { %>
+                    <button
+                      disabled
+                      onclick="removeItem('<%= item._id %>')"
+                      id="amount-button"
+                    >
+                      <i class="bi bi-dash"></i>
+                    </button>
+                    <% } %>
                     <span id="amount"><%= item.quantity %></span>
                     <button
                       onclick="addItem('<%= item._id %>')"
@@ -129,9 +139,17 @@
         </div>
         <% } else { %>
         <div class="col-12">
-          <div class="card d-flex justify-content-center bg-light p-5">
-            <img width="100px" height="100px" src="https://cdn0.fahasa.com/skin//frontend/ma_vanese/fahasa/images/checkout_cart/ico_emptycart.svg" />
-            <a class="btn btn-primary" href="#" role="button">Link</a>
+          <div class="card bg-light p-5">
+            <img
+              style="margin: auto;"
+              width="200px"
+              height="200px"
+              src="https://cdn0.fahasa.com/skin//frontend/ma_vanese/fahasa/images/checkout_cart/ico_emptycart.svg"
+            />
+            <div class="fst-italic m-auto">Bạn chưa có sản phẩm nào trong giỏ hàng =(o.o)=</div>
+            <a class="btn btn-primary mt-5" href="/products" role="button"
+              >Mua hàng</a
+            >
           </div>
         </div>
         <% } %>

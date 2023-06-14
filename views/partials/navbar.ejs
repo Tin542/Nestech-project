@@ -37,7 +37,9 @@
           <% } %> <% if(typeof user !== 'undefined') { %>
           <ul class="navbar-nav ms-auto">
             <li class="nav-item">
-              <span class="badge rounded-pill bg-primary" style="float:right; position: absolute ;">1</span>
+              <% if (cart !== 0) { %>
+              <span class="badge rounded-pill bg-danger" style="float:right; position: absolute ;"><%= cart %></span>
+              <% } %>
               <a class="nav-link mx-2" aria-current="page" href="/cart"
                 >
                 
