@@ -19,7 +19,7 @@ router.post('/products/edit', adminController.editProduct);
 router.delete('/products/delete/:id', adminController.deleteProduct);
 
 //promotion
-router.get('/promotion/list', adminController.getList);
+router.get('/promotion/list', adminController.getPromotionList);
 router.post('/promotion/add', adminController.addPromotion);
 router.get('/promotion/detail/:id', adminController.getPromotionDetail);
 router.post('/promotion/edit', adminController.editPromotion);

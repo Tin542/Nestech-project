@@ -115,7 +115,9 @@ function AdminController() {
       }
     },
 
-    
+    getPromotionList: async (req, res) => {
+
+    },
 
     users: async (req, res) => {
       try {
