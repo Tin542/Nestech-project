@@ -16,10 +16,11 @@
       <div class="row">
         <div class="col mt-3 mb-3">
           <h5>GIỎ HÀNG</h5>
-          (7 san pham)
+          (<%= cartitems.length %> sản phẩm)
         </div>
       </div>
       <div class="row">
+        <% if (cartitems.length !== 0) { %>
         <div class="col-12 col-sm-12 col-md-8 d-flex justify-content-center">
           <table class="table table-borderless">
             <thead class="table-info">
@@ -126,6 +127,14 @@
             </div>
           </div>
         </div>
+        <% } else { %>
+        <div class="col-12">
+          <div class="card d-flex justify-content-center bg-light p-5">
+            <img width="100px" height="100px" src="https://cdn0.fahasa.com/skin//frontend/ma_vanese/fahasa/images/checkout_cart/ico_emptycart.svg" />
+            <a class="btn btn-primary" href="#" role="button">Link</a>
+          </div>
+        </div>
+        <% } %>
       </div>
     </div>
     <!-- Footer -->
