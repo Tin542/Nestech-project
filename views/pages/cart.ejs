@@ -124,20 +124,20 @@
               </div>
             </div>
             <div class="card-body">
-              <form>
+              <form method="POST" action="/cart/update-user-info">
                 <div class="mb-3">
                   <label for="fullname" class="form-label">Họ tên người nhận</label>
-                  <input type="text" class="form-control" id="fullname">
+                  <input type="text" class="form-control" name="fullname" id="fullname" value="<%= userInfo.fullname %>">
                 </div>
                 <div class="mb-3">
                   <label for="phone" class="form-label">Số điện thoại người nhận</label>
-                  <input type="text" class="form-control" id="phone">
+                  <input type="text" class="form-control" name="phone" id="phone" value="<%= userInfo.phone %>">
                 </div>
                 <div class="mb-3">
                   <label for="address" class="form-label">Địa chỉ nhận hàng</label>
-                  <input type="text" class="form-control" id="address">
+                  <input type="text" class="form-control" name="address" id="address" value="<%= userInfo.address %>">
                 </div>
-                <button type="submit" class="btn btn-primary mt-5 w-100">Kiểm tra</button>
+                <button type="submit" class="btn btn-primary mt-5 w-100">Lưu thông tin</button>
               </form>
             </div>
           </div>

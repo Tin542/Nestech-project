@@ -1,7 +1,7 @@
 "use strict";
 const Cart = require("../models/cart").Cart;
 const Product = require("../models/product").Product;
-// const User = require("../models/user").User;
+const User = require("../models/user").User;
 
 function CartController() {
   // chua global var
@@ -78,9 +78,13 @@ function CartController() {
         console.log("get cart error", error);
       }
     },
-    getCurrentCart: (req, res) => {
+    getCurrentCart: async (req, res) => {
       try {
-        let uid = res.locals.user; // get current user id
+        let uid = res.locals.user; // get current user id;
+        let currentUser = await User.findById(uid);
+        if (!currentUser) {
+          res.json({ s: 404, msg: "User not found" });
+        }
         return Cart.find({ userID: uid })
           .then((rs) => {
             if (rs) {
@@ -90,6 +94,7 @@ function CartController() {
               res.render("pages/cart.ejs", {
                 cartitems: rs,
                 totalPrice: totalPrice,
+                userInfo: currentUser,
               });
             }
           })
@@ -156,6 +161,28 @@ function CartController() {
           });
       } catch (error) {
         console.log(error);
+      }
+    },
+    updateUserInfo: async (req, res) => {
+      try {
+        let uid = res.locals.user; // get current user id;
+        let updateInfo = req.body;
+        let listCart = await Cart.find({ userID: uid });
+
+        return await User.findByIdAndUpdate(uid, {
+          phone: updateInfo.phone,
+          address: updateInfo.address,
+        })
+          .then((rs) => {
+            if (rs) {
+              console.log('update user info success')
+            }
+          })
+          .catch((err) => {
+            console.log("update user info in cart", err);
+          });
+      } catch (error) {
+        console.log("update user info in cart", error);
       }
     },
   };
