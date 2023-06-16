@@ -6,13 +6,13 @@ function EmailService() {
       return new Promise((resolve, reject) => {
         // set up api key
         sgMail.setApiKey(
-          "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"
+          "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"
         );
 
         // set up for email
         const msg = {
-          to: emailCustomer, // email người nhận
-          from: "thuydunghothi1110@gmail.com", // email người gửi
+          to: emailCustomer.trim(), // email người nhận
+          from: "tinnt0504@gmail.com", // email người gửi
           subject: "Mã OTP để đăng kí tài khoản",// tiêu đề email
           // html: `` // nội dung email(style)
           text: `Mã OTP của bạn là ${otp}  =(^,^)=`, // nội dung email (text)
