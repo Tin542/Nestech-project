@@ -176,6 +176,7 @@ function CartController() {
           .then((rs) => {
             if (rs) {
               console.log('update user info success')
+              res.redirect(req.get('referer'));
             }
           })
           .catch((err) => {

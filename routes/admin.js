@@ -28,6 +28,13 @@ router.delete('/products/delete/:id', adminController.deleteProduct);
 // user
 router.get('/user/list', adminController.users);
 
+// Excel import, export
+router.get("/file", (req, res) => {
+    res.render("pages/testList");
+  });
+router.post("/import-excel", fileService.uploadFileExcel);
+router.get("/export-excel", fileService.exportFileExcel);
+
 // upload hinh anh
 router.post("/products/upload-image", upload.single("file"), fileService.uploadFile);
 

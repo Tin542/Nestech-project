@@ -1,11 +1,18 @@
 "use strict";
 const firebase = require("./firebaseService");
+const xlsx = require("xlsx");
+const fs = require("fs");
 
 function FileService() {
-  const SELF = {};
+  const SELF = {
+    sampleData: [
+      { Name: "John", Age: 25, Email: "john@example.com" },
+      { Name: "Jane", Age: 30, Email: "jane@example.com" },
+      { Name: "Bob", Age: 35, Email: "bob@example.com" },
+    ],
+  };
   return {
     uploadFile: (req, res) => {
-     
       let uloadedFile = req.file;
       try {
         if (!uloadedFile) {
@@ -36,6 +43,47 @@ function FileService() {
       } catch (error) {
         console.log("upload image error 1: ", error);
       }
+    },
+    uploadFileExcel: (req, res) => {
+      const file = req.files;
+      if (!file) {
+        return res.json({ s: 400, msg: "No files" });
+      }
+
+      //Lưu file vào thư mục tạm
+      const excelFile = file.file;
+      excelFile.mv(__dirname + "/uploads/" + excelFile.name, (err) => {
+        if (err) {
+          return res.json({ s: 400, msg: err });
+        }
+        //__dirname: C://Desktop//work//Neshctech/NESHTECH-EC/services
+        const workbook = xlsx.readFile(
+          __dirname + "/uploads/" + excelFile.name
+        );
+        const worksheet = workbook.Sheets[workbook.SheetNames[0]];
+        const data = xlsx.utils.sheet_to_json(worksheet, { header: 1 });
+        console.log(data);
+        res.send("Import thành công");
+      });
+    },
+    exportFileExcel: (req, res) => {
+      const workbook = xlsx.utils.book_new();
+      const worksheet = xlsx.utils.json_to_sheet(SELF.sampleData);
+      xlsx.utils.book_append_sheet(workbook, worksheet, "Sheet 1");
+
+      // Tạo file Excel tạm thời
+      const tempFilePath = "temp.xlsx";
+      xlsx.writeFile(workbook, tempFilePath);
+
+      // Gửi file Excel về cho người dùng tải xuống
+      res.download(tempFilePath, "data.xlsx", (err) => {
+        // Xóa file Excel tạm thời sau khi đã gửi
+        fs.unlink(tempFilePath, (err) => {
+          if (err) {
+            console.error(err);
+          }
+        });
+      });
     },
   };
 }

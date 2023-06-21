@@ -185,11 +185,18 @@ function AuthController() {
         }
         await localStorage.setItem("email", data?.email);
         return User.findByIdAndUpdate(userInfo._id, { otp: otp })
-          .then((rs) => {
+          .then(async (rs) => {
             if (rs) {
-              res.render("pages/auth/verifyEmailForReset.ejs", {
-                isShowed: true,
-              });
+              await emailService
+                .SendMailSG(otp, data?.email)
+                .then((rs) => {
+                  res.render("pages/auth/verifyEmailForReset.ejs", {
+                    isShowed: true,
+                  });
+                })
+                .catch((err) => {
+                  console.log(err);
+                });
             }
           })
           .catch((err) => {

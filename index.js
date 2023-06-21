@@ -8,16 +8,18 @@ const mongoose = require("mongoose");
 const bodyParser = require("body-parser");
 const cookieParser = require("cookie-parser");
 const sessions = require("express-session");
+const fileUpload = require('express-fileupload');
 
 // MongoDB connection
 const db = CONFIG.MONGODB_URL;
 mongoose
-  .connect(db, { useUnifiedTopology: true, useNewUrlParser: true })
+  .connect(db, { useUnifiedTopology: true, useNewUrlParser: true, maxPoolSize: 20 })
   .then(() => console.log("Connected to mongodb =(^.^)="))
   .catch((err) => console.log('failed to connect to mongodb =(T.T)='));
 
 app.set("view engine", "ejs");
 app.use('/public', express.static('public'));
+app.use(fileUpload());
 app.use(bodyParser.urlencoded({ extended: true }));
 app.use(
   sessions({
