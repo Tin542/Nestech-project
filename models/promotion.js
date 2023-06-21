@@ -15,7 +15,7 @@ const Promotion = mongoose.Schema(
 );
 
 // define ID of object
-Product.statics.objectId = function (id) {
+Promotion.statics.objectId = function (id) {
   return mongoose.Types.objectId(id);
 };
 
