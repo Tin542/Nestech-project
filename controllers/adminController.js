@@ -1,6 +1,7 @@
 "use strict";
 const Product = require("../models/product").Product;
 const User = require("../models/user").User;
+const Staff = require("../models/staff").Staff;
 
 function AdminController() {
   // chua global var
@@ -37,6 +38,7 @@ function AdminController() {
               pages: pageCount, // tổng số trang
               users: null,
               urlUploaded: null,
+              staffs: null,
             });
           })
           .catch((error) => {
@@ -145,6 +147,7 @@ function AdminController() {
               pages: pageCount, // tổng số trang
               users: rs,
               urlUploaded: null,
+              staffs: null
             });
           })
           .catch((error) => {
@@ -154,6 +157,48 @@ function AdminController() {
         console.log(error);
       }
     },
+
+    staffs: async (req, res) => {
+      try {
+        let page = req.query.page;
+        let keySearch = req.query.searchValue || "";
+        if (!page || parseInt(page) <= 0) {
+          page = 1;
+        }
+        let skip = (parseInt(page) - 1) * SELF.SIZE;
+        let regex = new RegExp(keySearch);
+
+        // pagination
+        let userCount = await Staff.find({
+          $or: [{ fullname: regex }, { username: regex }],
+        }).countDocuments(); // lấy tổng số product hiện có
+        let pageCount = 0; // tổng số trang
+        if (userCount % SELF.SIZE !== 0) {
+          // nếu tổng số product chia SIZE có dư
+          pageCount = Math.floor(userCount / SELF.SIZE) + 1; // làm tròn số xuống cận dưới rồi + 1
+        } else {
+          pageCount = userCount / SELF.SIZE; // nếu ko dư thì chia bth
+        }
+
+        return Staff.find({ $or: [{ fullname: regex }, { username: regex }] })
+          .skip(skip) // số item bỏ qua ==> skip = (số trang hiện tại - 1) * số item ở mỗi trang
+          .limit(SELF.SIZE) // số item ở mỗi trang
+          .then((rs) => {
+            res.render("pages/admin/adminPage", {
+              products: null,
+              pages: pageCount, // tổng số trang
+              users: null,
+              urlUploaded: null,
+              staffs: rs,
+            });
+          })
+          .catch((error) => {
+            res.send({ s: 400, msg: error });
+          });
+      } catch (error) {
+        console.log(error);
+      }
+    }
   };
 }
 

@@ -28,6 +28,9 @@ router.delete('/products/delete/:id', adminController.deleteProduct);
 // user
 router.get('/user/list', adminController.users);
 
+// staff
+router.get('/staffs/list', adminController.staffs);
+
 // Excel import, export
 router.get("/file", (req, res) => {
     res.render("pages/testList");
