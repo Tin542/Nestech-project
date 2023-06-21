@@ -140,12 +140,11 @@ function AdminController() {
           pageCount = promotionCount / SELF.SIZE; // nếu ko dư thì chia bth
         }
         productIdList = await Product.find();
-        console.log("productList: ", productIdList);
         return Promotion.find({ name: regex })
           .skip(skip) // số trang bỏ qua ==> skip = (số trang hiện tại - 1) * số item ở mỗi trang
           .limit(SELF.SIZE) // số item ở mỗi trang
           .then((rs) => {
-            console.log(rs);
+            
             res.render("pages/admin/adminPage", {
               promotion: rs,
               products: null,
@@ -153,6 +152,7 @@ function AdminController() {
               users: null,
               urlUploaded: null,
               productIdList: productIdList,
+              staffs: null,
             });
           })
           .catch((error) => {
