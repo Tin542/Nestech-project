@@ -29,6 +29,16 @@ router.delete('/promotion/delete/:id', adminController.deletePromotion);
 // user
 router.get('/user/list', adminController.users);
 
+// staff
+router.get('/staffs/list', adminController.staffs);
+
+// Excel import, export
+router.get("/file", (req, res) => {
+    res.render("pages/testList");
+  });
+router.post("/import-excel", fileService.uploadFileExcel);
+router.get("/export-excel", fileService.exportFileExcel);
+
 // upload hinh anh
 router.post("/products/upload-image", upload.single("file"), fileService.uploadFile);
 

@@ -116,8 +116,33 @@
             </tbody>
           </table>
         </div>
-        <div class="col-12 col-sm-12 col-md-4 d-flex justify-content-center">
-          <div class="card w-100 sticky-top" style="height: 200px">
+        <div class="col-12 col-sm-12 col-md-4">
+          <div class="card w-100" style="height: auto">
+            <div class="card-header">
+              <div class="d-flex justify-content-between">
+                <div>Thông tin giao hàng</div>
+              </div>
+            </div>
+            <div class="card-body">
+              <form method="POST" action="/cart/update-user-info">
+                <div class="mb-3">
+                  <label for="fullname" class="form-label">Họ tên người nhận</label>
+                  <input disabled type="text" class="form-control" name="fullname" id="fullname" value="<%= userInfo.fullname %>">
+                </div>
+                <div class="mb-3">
+                  <label for="phone" class="form-label">Số điện thoại người nhận</label>
+                  <input type="text" class="form-control" name="phone" id="phone" value="<%= userInfo.phone %>">
+                </div>
+                <div class="mb-3">
+                  <label for="address" class="form-label">Địa chỉ nhận hàng</label>
+                  <input type="text" class="form-control" name="address" id="address" value="<%= userInfo.address %>">
+                </div>
+                <button type="submit" class="btn btn-primary mt-5 w-100">Lưu thông tin</button>
+              </form>
+            </div>
+          </div>
+
+          <div class="card w-100 mt-3" style="height: 200px">
             <div class="card-header">
               <div class="d-flex justify-content-between">
                 <div>Thành tiền</div>

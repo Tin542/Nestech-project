@@ -70,6 +70,7 @@ function HomeController() {
         console.log(error);
       }
     },
+    
   };
 }
 

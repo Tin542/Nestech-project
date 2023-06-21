@@ -16,7 +16,8 @@
         <div class="col py-3">
           <% if(products) { %> <%- include('./productList.ejs') %> <% } %> 
           <% if(promotion) { %> <%- include('./promotionList.ejs') %> <% } %>
-          <% if(users) { %> <%- include('./userList.ejs') %> <% } %>
+          <% if(users) { %> <%- include('./userList.ejs') %> <% } %> <% if(staffs) {
+          %> <%- include('./staffList.ejs') %> <% } %>
         </div>
       </div>
     </div>
@@ -37,7 +38,7 @@
                 data.description;
               document.getElementById("imageUrlEdit").value = data.imageUrl;
               document.getElementById("imageUploadEdit").src = data.imageUrl;
-              document.getElementById("authorEdit").value = data.author
+              document.getElementById("authorEdit").value = data.author;
             }
           },
         });

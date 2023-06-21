@@ -15,7 +15,7 @@ function EmailService() {
           from: "thuydunghothi1110@gmail.com", // email người gửi
           subject: "Mã OTP để đăng kí tài khoản",// tiêu đề email
           // html: `` // nội dung email(style)
-          text: `Mã OTP của bạn là ${otp}  =(^,^)=`, // nội dung email (text)
+          text: `Mã OTP của bạn là ${otp}  =(^.^)=`, // nội dung email (text)
         };
 
         // send mail
