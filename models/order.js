@@ -5,6 +5,7 @@ const mongoose = require("mongoose");
 const Order = mongoose.Schema(
   {
     userID: { type: String },
+    fullname: { type: String },
     phone: { type: String },
     address: { type: String },
     totalPrice: { type: Number },

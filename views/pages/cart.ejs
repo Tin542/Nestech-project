@@ -184,13 +184,32 @@
                 </div>
               </h5>
               <hr />
-              <form method="POST" action="">
+              <form method="POST" action="/order/create">
                 <div class="mt-3">
+                  <input
+                    type="hidden"
+                    name="fullname"
+                    id="fullname"
+                    value="<%= userInfo.fullname %>"
+                  />
+                  <input
+                    type="hidden"
+                    name="phone"
+                    id="phone"
+                    value="<%= userInfo.phone %>"
+                  />
+                  <input
+                    type="hidden"
+                    name="address"
+                    id="address"
+                    value="<%= userInfo.address %>"
+                  />
                   <input
                     type="hidden"
                     name="totalPrice"
                     value="<%= totalPrice %>"
                   />
+
                   <div class="d-flex justify-content-between mb-3">
                     <h5>Phương thức thanh toán</h5>
                   </div>
