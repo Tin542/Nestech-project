@@ -1,27 +1,26 @@
 <div class="jumbotron">
-    <div class="container">
-        <div class="row justify-content-between">
-          <div class="col-4">
-            <h3>Danh sách nhân viên</h3>
-          </div>
-          <div class="col-4 d-flex flex-row-reverse">
-            <!-- Button trigger modal -->
-            <button
-              type="button"
-              class="btn btn-primary ms-3"
-            >
-              Import Excel
-            </button>
-            <button
-              type="button"
-              class="btn btn-primary"
-              
-            >
-              Export Excel
-            </button>
-          </div>
-        </div>
+  <div class="container">
+    <div class="row justify-content-between">
+      <div class="col-4">
+        <h3>Danh sách nhân viên</h3>
       </div>
+      <div class="col-4 d-flex flex-row-reverse">
+        <form class="ms-3">
+          <button
+          type="button"
+          class="btn btn-primary"
+          data-bs-toggle="modal"
+          data-bs-target="#createModal"
+        >
+          Thêm nhân viên
+        </button>
+        </form>
+        <form method="GET" action="/admin/staffs/export">
+          <button class="btn btn-primary" type="submit">Export to Excel</button>
+        </form>
+      </div>
+    </div>
+  </div>
   <table class="table">
     <thead>
       <tr>
@@ -61,7 +60,7 @@
       </li>
       <% for(var i=1; i <= pages; i++) { %>
       <li class="page-item">
-        <a class="page-link" href="/admin/staff/list?page=<%= i %>"><%= i %></a>
+        <a class="page-link" href="/admin/staffs/list?page=<%= i %>"><%= i %></a>
       </li>
       <% }; %>
       <li class="page-item">
@@ -71,4 +70,31 @@
       </li>
     </ul>
   </nav>
+  <div
+    class="modal fade"
+    id="createModal"
+    tabindex="-1"
+    aria-labelledby="createModal"
+    aria-hidden="true"
+  >
+    <div class="modal-dialog">
+      <div class="modal-content">
+        <div class="modal-header">
+          <h5 class="modal-title" id="createModal">Thêm nhân viên</h5>
+          <button
+            type="button"
+            class="btn-close"
+            data-bs-dismiss="modal"
+            aria-label="Close"
+          ></button>
+        </div>
+        <div class="modal-body">
+          <form method="POST" action="/admin/staffs/add" enctype="multipart/form-data">
+            <input type="file" name="file" accept=".xlsx, .xls" />
+            <button type="submit">Thêm</button>
+          </form>
+        </div>
+      </div>
+    </div>
+  </div>
 </div>
