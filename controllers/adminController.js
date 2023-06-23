@@ -360,10 +360,9 @@ function AdminController() {
             let staffArray = [];
             if (rs.length > 0) {
               await rs.forEach( async(item, index) => {
-                await staffArray.push(SELF.mapStaffToExportData(item)); 
+                 staffArray.push(SELF.mapStaffToExportData(item)); 
               });
             }
-            console.log(staffArray);
 
             const workbook = xlsx.utils.book_new();
             const worksheet = xlsx.utils.json_to_sheet(staffArray);
