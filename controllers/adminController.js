@@ -1,15 +1,29 @@
 "use strict";
+const xlsx = require("xlsx");
+const fs = require("fs");
+const moment = require("moment");
+
 const Product = require("../models/product").Product;
 const Promotion = require("../models/promotion").Promotion;
 const User = require("../models/user").User;
 const Staff = require("../models/staff").Staff;
-const moment = require("moment");
-const dateService = require("../services/date");
 
 function AdminController() {
   // chua global var
   const SELF = {
     SIZE: 5,
+    mapStaffToExportData: (staff) => {
+      return {
+        fullname: staff.fullname,
+        username: staff.username,
+        phone: staff.phone,
+        email: staff.email,
+        active: staff.active,
+      };
+    },
+    formatDateToString: (date) => {
+      return moment(date).format("DD/MM/YYYY, h:mm:ss a");
+    },
   };
   return {
     getList: async (req, res) => {
@@ -146,27 +160,10 @@ function AdminController() {
           .skip(skip) // số trang bỏ qua ==> skip = (số trang hiện tại - 1) * số item ở mỗi trang
           .limit(SELF.SIZE) // số item ở mỗi trang
           .then((rs) => {
-            for (let i = 0, ii = rs.length; i < ii; i++) {
-              let startDateFM = moment(rs[i].startDate).format(
-                "DD/MM/YYYY, h:mm:ss a"
-              );
-              let endDateFM = moment(rs[i].endDate).format(
-                "DD/MM/YYYY, h:mm:ss a"
-              );
-              console.log("s: ", startDateFM)
-              console.log("e: ", endDateFM)
-              // rs[i].startDate = rs[i].startDate.replace(
-              //   rs[i].startDate,
-              //   startDateFM
-              // );
-              // rs[i].endDate = rs[i].endDate.replace(
-              //   rs[i].endDate,
-              //   endDateFM
-              // );
-              // console.log("startDate: ", rs[i].startDate);
-              // console.log("endDate: ", rs[i].endDate);
-            }
-            // console.log(rs);
+            rs.forEach((item)=>{
+              let td = SELF.formatDateToString(item.startDate);
+              item.startDate.toString().replace(item.startDate, td);
+            });
             res.render("pages/admin/adminPage", {
               promotion: rs,
               products: null,
@@ -187,10 +184,12 @@ function AdminController() {
     addPromotion: async (req, res) => {
       try {
         let data = req.body;
-        console.log("Data: ", data);
+        data.startDate = SELF.formatDateToString(data.startDate);
+        data.endDate = SELF.formatDateToString(data.endDate);
+
         return Promotion.create(data)
           .then((rs) => {
-            return rs;
+            return res.redirect('list');
           })
           .catch((err) => {
             res.send({ s: 400, msg: err });
@@ -335,6 +334,70 @@ function AdminController() {
           });
       } catch (error) {
         console.log(error);
+      }
+    },
+    addStaff: async (req, res) => {
+      const file = req.files;
+      if (!file) {
+        return res.json({ s: 400, msg: "No files" });
+      }
+
+      //Lưu file vào thư mục tạm
+      const excelFile = file.file;
+      excelFile.mv(__dirname + "/uploads/" + excelFile.name, (err) => {
+        if (err) {
+          return res.json({ s: 400, msg: err });
+        }
+        //__dirname: C://Desktop//work//Neshctech/NESHTECH-EC/services
+        const workbook = xlsx.readFile(
+          __dirname + "/uploads/" + excelFile.name
+        );
+        const worksheet = workbook.Sheets[workbook.SheetNames[0]];
+        const data = xlsx.utils.sheet_to_json(worksheet, { header: 2 });
+
+        data.forEach(async (item, index) => {
+          let result = await Staff.create(item);
+          if (!result) {
+            return res.json({ s: 400, msg: result });
+          }
+        });
+        return res.redirect("list");
+      });
+    },
+    exportStaff: async (req, res) => {
+      try {
+        await Staff.find()
+          .then(async (rs) => {
+            let staffArray = [];
+            if (rs.length > 0) {
+              await rs.forEach(async (item, index) => {
+                staffArray.push(SELF.mapStaffToExportData(item));
+              });
+            }
+
+            const workbook = xlsx.utils.book_new();
+            const worksheet = xlsx.utils.json_to_sheet(staffArray);
+            xlsx.utils.book_append_sheet(workbook, worksheet, "Sheet 1");
+
+            // Tạo file Excel tạm thời
+            const tempFilePath = "temp.xlsx";
+            xlsx.writeFile(workbook, tempFilePath);
+
+            // Gửi file Excel về cho người dùng tải xuống
+            res.download(tempFilePath, "data.xlsx", (err) => {
+              // Xóa file Excel tạm thời sau khi đã gửi
+              fs.unlink(tempFilePath, (err) => {
+                if (err) {
+                  console.error(err);
+                }
+              });
+            });
+          })
+          .catch((err) => {
+            console.log("error get list at export", err);
+          });
+      } catch (error) {
+        console.log("error at export: ", error);
       }
     },
   };
