@@ -1,6 +1,7 @@
 "use strict";
 const xlsx = require("xlsx");
 const fs = require("fs");
+const moment = require("moment");
 
 const Product = require("../models/product").Product;
 const Promotion = require("../models/promotion").Promotion;
@@ -19,6 +20,9 @@ function AdminController() {
         email: staff.email,
         active: staff.active,
       };
+    },
+    formatDateToString: (date) => {
+      return moment(date).format("DD/MM/YYYY, h:mm:ss a");
     },
   };
   return {
@@ -156,6 +160,10 @@ function AdminController() {
           .skip(skip) // số trang bỏ qua ==> skip = (số trang hiện tại - 1) * số item ở mỗi trang
           .limit(SELF.SIZE) // số item ở mỗi trang
           .then((rs) => {
+            rs.forEach((item)=>{
+              let td = SELF.formatDateToString(item.startDate);
+              item.startDate.toString().replace(item.startDate, td);
+            });
             res.render("pages/admin/adminPage", {
               promotion: rs,
               products: null,
@@ -176,10 +184,12 @@ function AdminController() {
     addPromotion: async (req, res) => {
       try {
         let data = req.body;
+        data.startDate = SELF.formatDateToString(data.startDate);
+        data.endDate = SELF.formatDateToString(data.endDate);
+
         return Promotion.create(data)
           .then((rs) => {
-            return rs;
-            
+            return res.redirect('list');
           })
           .catch((err) => {
             res.send({ s: 400, msg: err });
@@ -202,7 +212,6 @@ function AdminController() {
     },
     editPromotion: async (req, res) => {
       try {
-       
         let editData = req.body;
         let detailPromotion = await Promotion.findById(editData._id);
         if (!detailPromotion) {
@@ -361,8 +370,8 @@ function AdminController() {
           .then(async (rs) => {
             let staffArray = [];
             if (rs.length > 0) {
-              await rs.forEach( async(item, index) => {
-                 staffArray.push(SELF.mapStaffToExportData(item)); 
+              await rs.forEach(async (item, index) => {
+                staffArray.push(SELF.mapStaffToExportData(item));
               });
             }
 
