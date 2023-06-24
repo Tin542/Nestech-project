@@ -42,7 +42,18 @@ function orderController() {
         let uid = res.locals.user; // get current user id
         createData.userID = uid;
         let result = await Order.create(createData);
-        console.log('result: ',result);
+        let listCart = await Cart.find({ userID: uid });
+
+        listCart.forEach(async (item) => {
+          let orderDetailCreate = await SELF.mappingCreateItem(
+            item,
+            result._id,
+            uid
+          );
+          await OrderDetail.create(orderDetailCreate);
+        });
+        await Cart.deleteMany({ userID: uid });
+        return res.redirect('/cart');
       } catch (error) {
         console.log("error at create order", error);
       }

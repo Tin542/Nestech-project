@@ -179,6 +179,7 @@ function AdminController() {
         return Promotion.create(data)
           .then((rs) => {
             return rs;
+            
           })
           .catch((err) => {
             res.send({ s: 400, msg: err });
@@ -201,6 +202,7 @@ function AdminController() {
     },
     editPromotion: async (req, res) => {
       try {
+       
         let editData = req.body;
         let detailPromotion = await Promotion.findById(editData._id);
         if (!detailPromotion) {
@@ -223,7 +225,7 @@ function AdminController() {
     deletePromotion: async (req, res) => {
       try {
         const pId = req.params?.id;
-        const Promotion = await Promotion.findById(pId);
+        const promotion = await Promotion.findById(pId);
         if (!promotion) {
           return res.json({ s: 404, msg: "Promotion not found" });
         }
