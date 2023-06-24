@@ -1,6 +1,5 @@
 "use strict";
 const firebase = require("./firebaseService");
-const StaffController = require("../controllers/staffController");
 const xlsx = require("xlsx");
 const fs = require("fs");
 
@@ -42,17 +41,14 @@ function FileService() {
      * @param format MMDDYYYY | DDMMYYYY | YYYYMMDD (default: MMDDYYYY)
      * @param yourDate the date which to convert
      * @return String MMDDYYYY*/
-    getStrDate: (format = "MMDDYYYY", yourDate) => {
+    getStrDate: (format, yourDate) => {
       const now = "" + SELF.getDateISO(yourDate);
       if (format === "MMDDYYYY")
         return now.substring(4, 6) + now.substring(6) + now.substring(0, 4);
       if (format === "DDMMYYYY")
         return now.substring(6) + now.substring(4, 6) + now.substring(0, 4);
       if (format === "DD/MM/YYYY")
-        return `${now.substring(6)}/${now.substring(4, 6)}/${now.substring(
-          0,
-          4
-        )}`;
+        return `${now.substring(6)}/${now.substring(4, 6)}/${now.substring(0, 4)}`;
       if (format === "MM/YYYY")
         return `${now.substring(4, 6)}/${now.substring(0, 4)}`;
       if (format === "MMYYYY")

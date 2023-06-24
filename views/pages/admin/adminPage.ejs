@@ -54,6 +54,17 @@
         });
       }
 
+      function deletePromotion(id) {
+        $.ajax({
+          type: "DELETE",
+          url: `/admin/promotion/delete/${id}`,
+          success: function (rs) {
+            alert("delete success");
+            window.location.reload();
+          },
+        });
+      }
+
       function uploadImage() {
         var fileInput = document.getElementById("image_file");
         var file = fileInput.files[0];

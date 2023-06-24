@@ -3,7 +3,8 @@ const Product = require("../models/product").Product;
 const Promotion = require("../models/promotion").Promotion;
 const User = require("../models/user").User;
 const Staff = require("../models/staff").Staff;
-const moment = require('moment')
+const moment = require("moment");
+const dateService = require("../services/date");
 
 function AdminController() {
   // chua global var
@@ -107,7 +108,6 @@ function AdminController() {
         }
         Product.deleteOne({ _id: pId })
           .then((rs) => {
-            
             return res.json({ s: 200, msg: "Delete product success!!" });
           })
           .catch((e) => {
@@ -117,7 +117,7 @@ function AdminController() {
       } catch (error) {
         console.log(error);
       }
-    },  
+    },
 
     getPromotionList: async (req, res) => {
       try {
@@ -131,7 +131,9 @@ function AdminController() {
         let regex = new RegExp(keySearch);
 
         // pagination
-        let promotionCount = await Promotion.find({ name: regex }).countDocuments(); // lấy tổng số promotion hiện có
+        let promotionCount = await Promotion.find({
+          name: regex,
+        }).countDocuments(); // lấy tổng số promotion hiện có
         let pageCount = 0; // tổng số trang
         if (promotionCount % SELF.SIZE !== 0) {
           // nếu tổng số promotion chia SIZE có dư
@@ -144,7 +146,27 @@ function AdminController() {
           .skip(skip) // số trang bỏ qua ==> skip = (số trang hiện tại - 1) * số item ở mỗi trang
           .limit(SELF.SIZE) // số item ở mỗi trang
           .then((rs) => {
-            
+            for (let i = 0, ii = rs.length; i < ii; i++) {
+              let startDateFM = moment(rs[i].startDate).format(
+                "DD/MM/YYYY, h:mm:ss a"
+              );
+              let endDateFM = moment(rs[i].endDate).format(
+                "DD/MM/YYYY, h:mm:ss a"
+              );
+              console.log("s: ", startDateFM)
+              console.log("e: ", endDateFM)
+              // rs[i].startDate = rs[i].startDate.replace(
+              //   rs[i].startDate,
+              //   startDateFM
+              // );
+              // rs[i].endDate = rs[i].endDate.replace(
+              //   rs[i].endDate,
+              //   endDateFM
+              // );
+              // console.log("startDate: ", rs[i].startDate);
+              // console.log("endDate: ", rs[i].endDate);
+            }
+            // console.log(rs);
             res.render("pages/admin/adminPage", {
               promotion: rs,
               products: null,
@@ -165,6 +187,7 @@ function AdminController() {
     addPromotion: async (req, res) => {
       try {
         let data = req.body;
+        console.log("Data: ", data);
         return Promotion.create(data)
           .then((rs) => {
             return rs;
@@ -175,7 +198,6 @@ function AdminController() {
       } catch (error) {
         console.log(error);
       }
-
     },
     getPromotionDetail: async (req, res) => {
       try {
@@ -213,13 +235,12 @@ function AdminController() {
     deletePromotion: async (req, res) => {
       try {
         const pId = req.params?.id;
-        const Promotion = await Promotion.findById(pId);
+        const promotion = await Promotion.findById(pId);
         if (!promotion) {
           return res.json({ s: 404, msg: "Promotion not found" });
         }
         Promotion.deleteOne({ _id: pId })
           .then((rs) => {
-            
             return res.json({ s: 200, msg: "Delete promotion success!!" });
           })
           .catch((e) => {
@@ -263,7 +284,7 @@ function AdminController() {
               pages: pageCount, // tổng số trang
               users: rs,
               urlUploaded: null,
-              staffs: null
+              staffs: null,
             });
           })
           .catch((error) => {
@@ -306,7 +327,7 @@ function AdminController() {
               users: null,
               urlUploaded: null,
               staffs: rs,
-              promotion: null
+              promotion: null,
             });
           })
           .catch((error) => {
@@ -315,7 +336,7 @@ function AdminController() {
       } catch (error) {
         console.log(error);
       }
-    }
+    },
   };
 }
 
