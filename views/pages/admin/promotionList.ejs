@@ -25,7 +25,6 @@
                 <th scope="col-1">Giảm giá</th>
                 <th scope="col-2">Thời gian bắt đầu</th>
                 <th scope="col-2">Thời gian kết thúc</th>
-                <th scope="col-3">Sản phẩm áp dụng</th>
             </tr>
         </thead>
         <tbody>
@@ -42,7 +41,6 @@
                     </span>
                 </td>
                 <td scope="w-2"><%= item.GiamGia %>%</td>
-                <td scope="w-2"><%= item.productIdList %></td>
                 <td scope="w-2"><%= item.startDate %></td>
                 <td scope="w-2"><%= item.endDate %></td>
                 
@@ -73,7 +71,7 @@
                         </svg>
                     </button>
                     <button
-                        onclick='deleteItem("<%= item._id %>")'
+                        onclick='deletePromotion("<%= item._id %>")'
                         type="button"
                         class="btn btn-outline-danger"
                     >
@@ -155,7 +153,7 @@
                             <p>Sản phẩm áp dụng</p>
                             <% productIdList.forEach(function(item, index) { %>
                                 <div class="form-check">
-                                    <input class="form-check-input" type="checkbox" value="<%= item._id %>" id="productIdList" name="product" >
+                                    <input class="form-check-input" type="checkbox" value="<%= item._id %>" id="productIdList" name="productId" >
                                     <label 
                                         class="form-check-label" 
                                         for="product"
@@ -277,7 +275,7 @@
                             <p>Sản phẩm áp dụng</p>
                             <% productIdList.forEach(function(item, index) { %>
                                 <div class="form-check">
-                                    <input class="form-check-input" type="checkbox" value="<%= item._id %>" id="productIdList" name="product" >
+                                    <input class="form-check-input" type="checkbox" value="<%= item._id %>" id="productIdList" name="productId" >
                                     <label 
                                         class="form-check-label" 
                                         for="product"
@@ -292,7 +290,7 @@
                                 </div>
                             <% }); %>
                         </div>
-                        <div class="col-6">
+                        <div class="col-12">
                             <label for="name" class="form-label">Giảm giá</label>
                             <input
                                 type="text"
@@ -353,5 +351,4 @@
             </div>
         </div>
     </div>
-
 </div>

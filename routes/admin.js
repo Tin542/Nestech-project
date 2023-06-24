@@ -10,7 +10,7 @@ const upload = multer({
     storage: multer.memoryStorage(),
 })
 
-router.use(authController.checkLogin);
+// router.use(authController.checkLogin);
 // product
 router.get('/products/list', adminController.getList);
 router.post('/products/add', adminController.addProduct);
@@ -31,13 +31,15 @@ router.get('/user/list', adminController.users);
 
 // staff
 router.get('/staffs/list', adminController.staffs);
+router.post('/staffs/add', adminController.addStaff);
+router.get("/staffs/export", adminController.exportStaff);
 
 // Excel import, export
-router.get("/file", (req, res) => {
-    res.render("pages/testList");
-  });
-router.post("/import-excel", fileService.uploadFileExcel);
-router.get("/export-excel", fileService.exportFileExcel);
+// router.get("/file", (req, res) => {
+//     res.render("pages/testList");
+//   });
+// router.post("/import-excel", fileService.uploadFileExcel);
+
 
 // upload hinh anh
 router.post("/products/upload-image", upload.single("file"), fileService.uploadFile);

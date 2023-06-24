@@ -6,9 +6,27 @@ const fs = require("fs");
 function FileService() {
   const SELF = {
     sampleData: [
-      { Name: "John", Age: 25, Email: "john@example.com" },
-      { Name: "Jane", Age: 30, Email: "jane@example.com" },
-      { Name: "Bob", Age: 35, Email: "bob@example.com" },
+      {
+        fullname: "Nguyen Van A",
+        username: "anv",
+        phone: "0905448763",
+        email: "anv@gmail.com",
+        active: true,
+      },
+      {
+        fullname: "Nguyen Van B",
+        username: "bnv",
+        phone: "0905448778",
+        email: "bnv@gmail.com",
+        active: false,
+      },
+      {
+        fullname: "Nguyen Van C",
+        username: "cnv",
+        phone: "0905448256",
+        email: "cnv@gmail.com",
+        active: true,
+      },
     ],
   };
   return {
@@ -57,9 +75,7 @@ function FileService() {
           return res.json({ s: 400, msg: err });
         }
         //__dirname: C://Desktop//work//Neshctech/NESHTECH-EC/services
-        const workbook = xlsx.readFile(
-          __dirname + "/uploads/" + excelFile.name
-        );
+        const workbook = xlsx.readFile(__dirname + "/uploads/" + excelFile.name);
         const worksheet = workbook.Sheets[workbook.SheetNames[0]];
         const data = xlsx.utils.sheet_to_json(worksheet, { header: 1 });
         console.log(data);

@@ -1,14 +1,29 @@
 "use strict";
+const xlsx = require("xlsx");
+const fs = require("fs");
+const moment = require("moment");
+
 const Product = require("../models/product").Product;
 const Promotion = require("../models/promotion").Promotion;
 const User = require("../models/user").User;
 const Staff = require("../models/staff").Staff;
-const moment = require('moment')
 
 function AdminController() {
   // chua global var
   const SELF = {
     SIZE: 5,
+    mapStaffToExportData: (staff) => {
+      return {
+        fullname: staff.fullname,
+        username: staff.username,
+        phone: staff.phone,
+        email: staff.email,
+        active: staff.active,
+      };
+    },
+    formatDateToString: (date) => {
+      return moment(date).format("DD/MM/YYYY, h:mm:ss a");
+    },
   };
   return {
     getList: async (req, res) => {
@@ -107,7 +122,6 @@ function AdminController() {
         }
         Product.deleteOne({ _id: pId })
           .then((rs) => {
-            
             return res.json({ s: 200, msg: "Delete product success!!" });
           })
           .catch((e) => {
@@ -117,7 +131,7 @@ function AdminController() {
       } catch (error) {
         console.log(error);
       }
-    },  
+    },
 
     getPromotionList: async (req, res) => {
       try {
@@ -131,7 +145,9 @@ function AdminController() {
         let regex = new RegExp(keySearch);
 
         // pagination
-        let promotionCount = await Promotion.find({ name: regex }).countDocuments(); // lấy tổng số promotion hiện có
+        let promotionCount = await Promotion.find({
+          name: regex,
+        }).countDocuments(); // lấy tổng số promotion hiện có
         let pageCount = 0; // tổng số trang
         if (promotionCount % SELF.SIZE !== 0) {
           // nếu tổng số promotion chia SIZE có dư
@@ -144,7 +160,10 @@ function AdminController() {
           .skip(skip) // số trang bỏ qua ==> skip = (số trang hiện tại - 1) * số item ở mỗi trang
           .limit(SELF.SIZE) // số item ở mỗi trang
           .then((rs) => {
-            
+            rs.forEach((item)=>{
+              let td = SELF.formatDateToString(item.startDate);
+              item.startDate.toString().replace(item.startDate, td);
+            });
             res.render("pages/admin/adminPage", {
               promotion: rs,
               products: null,
@@ -165,9 +184,12 @@ function AdminController() {
     addPromotion: async (req, res) => {
       try {
         let data = req.body;
+        data.startDate = SELF.formatDateToString(data.startDate);
+        data.endDate = SELF.formatDateToString(data.endDate);
+
         return Promotion.create(data)
           .then((rs) => {
-            return rs;
+            return res.redirect('list');
           })
           .catch((err) => {
             res.send({ s: 400, msg: err });
@@ -175,7 +197,6 @@ function AdminController() {
       } catch (error) {
         console.log(error);
       }
-
     },
     getPromotionDetail: async (req, res) => {
       try {
@@ -213,13 +234,12 @@ function AdminController() {
     deletePromotion: async (req, res) => {
       try {
         const pId = req.params?.id;
-        const Promotion = await Promotion.findById(pId);
+        const promotion = await Promotion.findById(pId);
         if (!promotion) {
           return res.json({ s: 404, msg: "Promotion not found" });
         }
         Promotion.deleteOne({ _id: pId })
           .then((rs) => {
-            
             return res.json({ s: 200, msg: "Delete promotion success!!" });
           })
           .catch((e) => {
@@ -263,7 +283,7 @@ function AdminController() {
               pages: pageCount, // tổng số trang
               users: rs,
               urlUploaded: null,
-              staffs: null
+              staffs: null,
             });
           })
           .catch((error) => {
@@ -306,7 +326,7 @@ function AdminController() {
               users: null,
               urlUploaded: null,
               staffs: rs,
-              promotion: null
+              promotion: null,
             });
           })
           .catch((error) => {
@@ -315,7 +335,71 @@ function AdminController() {
       } catch (error) {
         console.log(error);
       }
-    }
+    },
+    addStaff: async (req, res) => {
+      const file = req.files;
+      if (!file) {
+        return res.json({ s: 400, msg: "No files" });
+      }
+
+      //Lưu file vào thư mục tạm
+      const excelFile = file.file;
+      excelFile.mv(__dirname + "/uploads/" + excelFile.name, (err) => {
+        if (err) {
+          return res.json({ s: 400, msg: err });
+        }
+        //__dirname: C://Desktop//work//Neshctech/NESHTECH-EC/services
+        const workbook = xlsx.readFile(
+          __dirname + "/uploads/" + excelFile.name
+        );
+        const worksheet = workbook.Sheets[workbook.SheetNames[0]];
+        const data = xlsx.utils.sheet_to_json(worksheet, { header: 2 });
+
+        data.forEach(async (item, index) => {
+          let result = await Staff.create(item);
+          if (!result) {
+            return res.json({ s: 400, msg: result });
+          }
+        });
+        return res.redirect("list");
+      });
+    },
+    exportStaff: async (req, res) => {
+      try {
+        await Staff.find()
+          .then(async (rs) => {
+            let staffArray = [];
+            if (rs.length > 0) {
+              await rs.forEach(async (item, index) => {
+                staffArray.push(SELF.mapStaffToExportData(item));
+              });
+            }
+
+            const workbook = xlsx.utils.book_new();
+            const worksheet = xlsx.utils.json_to_sheet(staffArray);
+            xlsx.utils.book_append_sheet(workbook, worksheet, "Sheet 1");
+
+            // Tạo file Excel tạm thời
+            const tempFilePath = "temp.xlsx";
+            xlsx.writeFile(workbook, tempFilePath);
+
+            // Gửi file Excel về cho người dùng tải xuống
+            res.download(tempFilePath, "data.xlsx", (err) => {
+              // Xóa file Excel tạm thời sau khi đã gửi
+              fs.unlink(tempFilePath, (err) => {
+                if (err) {
+                  console.error(err);
+                }
+              });
+            });
+          })
+          .catch((err) => {
+            console.log("error get list at export", err);
+          });
+      } catch (error) {
+        console.log("error at export: ", error);
+      }
+    },
   };
 }
 
