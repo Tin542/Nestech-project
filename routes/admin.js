@@ -10,7 +10,7 @@ const upload = multer({
     storage: multer.memoryStorage(),
 })
 
-// router.use(authController.checkLogin);
+router.use(authController.checkLogin);
 // product
 router.get('/products/list', adminController.getList);
 router.post('/products/add', adminController.addProduct);
