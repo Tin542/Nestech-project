@@ -58,7 +58,7 @@ function HomeController() {
           .skip(skip) // số trang bỏ qua ==> skip = (số trang hiện tại - 1) * số item ở mỗi trang
           .limit(SELF.SIZE) // số item ở mỗi trang
           .then((rs) => {
-            console.log(rs);
+          
             res.render("pages/products.ejs", {
               listItems: rs,
               pages: pageCount, // tổng số trang
