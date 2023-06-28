@@ -5,36 +5,108 @@
     <meta http-equiv="X-UA-Compatible" content="IE=edge" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>Chi tiết sản phẩm</title>
+    <link href="/public/assets/detail.css" rel="stylesheet" type="text/css" />
     <%- include('../partials/header.ejs') %>
   </head>
   <body>
     <!-- navbar -->
     <%- include('../partials/navbar.ejs') %>
     <!-- detail -->
-    <div class="container">
+    <div class="container mt-5">
       <div class="row">
         <div class="col d-flex justify-content-center text-center">
-          <img src="<%= data.imageUrl %>" class="rounded float-end" alt="...">
+          <img
+            src="<%= data.imageUrl %>"
+            style="width: 100%; height: 80%"
+            class="rounded float-end"
+            alt="..."
+          />
         </div>
         <div class="col">
           <div>
             <h3><%= data.name %></h3>
             <h6>Tác giả: <%= data.author %></h6>
-            <h2 style="color:red"><%= data.price %> $</h2>
+            <h2 style="color: red"><%= data.price %> $</h2>
             <p>
-                  <% for (var j = 0; j < 5; j++){ %> <% if (j < data.rate){ %>
-                  <span class="fa fa-star checked" style="color: yellow"></span>
-                  <% } else { %>
-                  <span class="fa fa-star"></span>
-                  <% } %> <% } %>
+              <% for (var j = 0; j < 5; j++){ %> <% if (j < data.rate){ %>
+              <span class="fa fa-star checked" style="color: yellow"></span>
+              <% } else { %>
+              <span class="fa fa-star"></span>
+              <% } %> <% } %>
             </p>
             <i><%= data.description %></i>
-	          <div style="padding-top: 20px;">
-              <button onclick="addToCart('<%= data._id %>')" type="button" class="btn btn-danger"><i class="bi bi-cart3"></i>&nbsp;Thêm vào giỏ hàng</button>
-              <button type="button" class="btn btn-danger" style="color:red; background-color: white; border: 1.5px solid red;">Mua ngay</button>
+            <div style="padding-top: 20px">
+              <button
+                onclick="addToCart('<%= data._id %>')"
+                type="button"
+                class="btn btn-danger"
+              >
+                <i class="bi bi-cart3"></i>&nbsp;Thêm vào giỏ hàng
+              </button>
+              <button
+                type="button"
+                class="btn btn-danger"
+                style="
+                  color: red;
+                  background-color: white;
+                  border: 1.5px solid red;
+                "
+              >
+                Mua ngay
+              </button>
             </div>
           </div>
         </div>
+      </div>
+      
+      <div class="row border border-2 gy-3">
+        <div class="d-flex justify-content-between">
+          <div><h5>Sản phẩm tưởng tự</h5></div>
+          <div><a href="/products" id="more-link">Xem thêm</a></div>
+        </div>
+
+        <div class="d-flex p-3">
+        <% for (var i = 0; i < listItems.length ; i++) { %>
+        <div
+          class="col col-12 col-sm-6 col-md-4 col-lg-3 d-flex justify-content-center"
+        >
+          <div class="card border border-1 rounded-3" id="productCard">
+            <div class="product-img">
+              <img src="<%= listItems[i].imageUrl %>" alt="..." />
+            </div>
+
+            <div class="card-body">
+              <% for (var j = 0; j < 5; j++){ %> <% if (j < listItems[i].rate){
+              %>
+              <span class="fa fa-star checked"></span>
+              <% } else { %>
+              <span class="fa fa-star"></span>
+              <% } %> <% } %>
+              <h5 class="card-title"><%= listItems[i].name %></h5>
+              <p class="card-text">$<%= listItems[i].price %></p>
+            </div>
+            <div class="overlay">
+              <div class="d-grid gap-2 col-8 mx-auto">
+                <a
+                  href="/products/detail/<%= listItems[i]._id %>"
+                  type="button"
+                  class="btn btn-outline-secondary"
+                >
+                  <i class="bi bi-eye-fill"></i> &nbsp;Xem chi tiết
+                </a>
+                <button
+                  onclick="addToCart('<%= listItems[i]._id %>')"
+                  class="btn btn-primary"
+                  type="button"
+                >
+                  <i class="bi bi-cart2"></i> &nbsp;Thêm vào giỏ
+                </button>
+              </div>
+            </div>
+          </div>
+        </div>
+        <% } %>
+      </div>
       </div>
     </div>
     <!-- Footer -->

@@ -24,12 +24,20 @@ function HomeController() {
     getProductDetail: async (req, res) => {
       try {
         let productId = req.params?.id;
-        
+
         let result = await Product.findById(productId);
+        let listSuggestItem = await Product.find().limit(4);
         if (!result) {
           return res.json({ s: 404, msg: "Product not found" });
         }
-        return res.render("pages/detail", { data: result });
+        if (!listSuggestItem) {
+          return res.json({ s: 404, msg: "Get list suggest fail" });
+        }
+
+        return res.render("pages/detail", {
+          data: result,
+          listItems: listSuggestItem,
+        });
       } catch (error) {
         console.error("get detail at homeControlelr error: " + err);
       }
@@ -58,7 +66,6 @@ function HomeController() {
           .skip(skip) // số trang bỏ qua ==> skip = (số trang hiện tại - 1) * số item ở mỗi trang
           .limit(SELF.SIZE) // số item ở mỗi trang
           .then((rs) => {
-          
             res.render("pages/products.ejs", {
               listItems: rs,
               pages: pageCount, // tổng số trang
@@ -71,7 +78,12 @@ function HomeController() {
         console.log(error);
       }
     },
-    
+    getComments: (req, res) => {
+      try {
+      } catch (error) {
+        console.log("error at get comments", error);
+      }
+    },
   };
 }
 
