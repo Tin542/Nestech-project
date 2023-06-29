@@ -8,6 +8,20 @@ function HomeController() {
   // chua global var
   const SELF = {
     SIZE: 8,
+    calRate: (listCmt, count) => {
+      let rate = 0;
+      let totalStar = 0;
+      for (let i = 0; i < listCmt.length; i++) {
+        totalStar = totalStar + listCmt[i].rate;
+      }
+      if (totalStar % count !== 0) {
+        // nếu tổng số star cmt chia count có dư
+        rate = Math.floor(totalStar / count) + 1; // làm tròn số xuống cận dưới rồi + 1
+      } else {
+        rate = totalStar / count; // nếu ko dư thì chia bth
+      }
+      return rate;
+    }
   };
   let detailProductGB = {};
   let listSuggestGB = [];
@@ -107,8 +121,12 @@ function HomeController() {
 
         if (checkBuyAlready) {
           Comment.create(commentData)
-            .then((rs) => {
+            .then(async (rs) => {
               if (rs) {
+                let commentCount = await Comment.find({productID: commentData?.productID});
+                let rateUpdate = SELF.calRate(commentCount, commentCount.length);
+                console.log("aaa", rateUpdate);
+                await Product.findByIdAndUpdate(commentData?.productID, {rate: rateUpdate});
                 return res.redirect(
                   `/products/detail/${commentData?.productID}`
                 );
