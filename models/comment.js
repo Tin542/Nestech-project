@@ -9,6 +9,7 @@ const Comment = mongoose.Schema(
     username: { type: String },
     rate: { type: Number },
     content: { type: String },
+    createDate: { type: String },
   },
   { version: false, timestamps: true }
 );

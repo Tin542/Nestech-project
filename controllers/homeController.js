@@ -1,4 +1,6 @@
 "use strict";
+const moment = require("moment");
+
 const Product = require("../models/product").Product;
 const User = require("../models/user").User;
 const OrderDetail = require("../models/orderDetail").OrderDetail;
@@ -21,7 +23,10 @@ function HomeController() {
         rate = totalStar / count; // nếu ko dư thì chia bth
       }
       return rate;
-    }
+    },
+    formatDateToString: (date) => {
+      return moment(date).format("DD/MM/YYYY, h:mm:ss a");
+    },
   };
   let detailProductGB = {};
   let listSuggestGB = [];
@@ -113,6 +118,7 @@ function HomeController() {
 
         commentData.userID = uid;
         commentData.username = currentUser.username;
+        commentData.createDate = SELF.formatDateToString(new Date());
 
         // Check if user already buy this item
         const checkBuyAlready = await OrderDetail.findOne({
