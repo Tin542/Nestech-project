@@ -131,7 +131,6 @@ function HomeController() {
               if (rs) {
                 let commentCount = await Comment.find({productID: commentData?.productID});
                 let rateUpdate = SELF.calRate(commentCount, commentCount.length);
-                console.log("aaa", rateUpdate);
                 await Product.findByIdAndUpdate(commentData?.productID, {rate: rateUpdate});
                 return res.redirect(
                   `/products/detail/${commentData?.productID}`
