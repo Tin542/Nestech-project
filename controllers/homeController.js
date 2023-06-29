@@ -1,11 +1,17 @@
 "use strict";
 const Product = require("../models/product").Product;
+const User = require("../models/user").User;
+const OrderDetail = require("../models/orderDetail").OrderDetail;
+const Comment = require("../models/comment").Comment;
 
 function HomeController() {
   // chua global var
   const SELF = {
     SIZE: 8,
   };
+  let detailProductGB = {};
+  let listSuggestGB = [];
+  let listCommentsGB = [];
   return {
     home: (req, res) => {
       try {
@@ -26,7 +32,8 @@ function HomeController() {
         let productId = req.params?.id;
 
         let result = await Product.findById(productId);
-        let listSuggestItem = await Product.find().limit(4);
+        let listSuggestItem = await Product.find().limit(4); // get 4 suggestions
+        let listComment = await Comment.find({productID: productId}); // get all comments
         if (!result) {
           return res.json({ s: 404, msg: "Product not found" });
         }
@@ -34,9 +41,14 @@ function HomeController() {
           return res.json({ s: 404, msg: "Get list suggest fail" });
         }
 
+        detailProductGB = result;
+        listSuggestGB = listSuggestItem;
+        listCommentsGB = listComment;
+
         return res.render("pages/detail", {
           data: result,
           listItems: listSuggestItem,
+          comments: listComment,
         });
       } catch (error) {
         console.error("get detail at homeControlelr error: " + err);
@@ -78,10 +90,43 @@ function HomeController() {
         console.log(error);
       }
     },
-    getComments: (req, res) => {
+    createComment: async (req, res) => {
       try {
+        let commentData = req.body;
+
+        let uid = res.locals.user; // get current user id;
+        let currentUser = await User.findById(uid);
+
+        commentData.userID = uid;
+        commentData.username = currentUser.username;
+
+        // Check if user already buy this item
+        const checkBuyAlready = await OrderDetail.findOne({
+          $and: [{ productID: commentData?.productID }, { userID: uid }],
+        }).lean();
+
+        if (checkBuyAlready) {
+          Comment.create(commentData)
+            .then((rs) => {
+              if (rs) {
+                return res.redirect(
+                  `/products/detail/${commentData?.productID}`
+                );
+              }
+            })
+            .catch((err) => {
+              console.log(err);
+            });
+        } else {
+          return res.render("pages/detail", {
+            data: detailProductGB,
+            listItems: listSuggestGB,
+            comments: listCommentsGB,
+            msg: 'Bạn không thể đánh giá sản phẩm khi chưa mua !!'
+          });
+        }
       } catch (error) {
-        console.log("error at get comments", error);
+        console.log("error at create comment", error);
       }
     },
   };

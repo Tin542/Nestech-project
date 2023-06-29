@@ -24,5 +24,8 @@ router.post('/cart/update-user-info', cartController.updateUserInfo);
 // router.use(authController.checkLogin);
 router.post('/order/create', orderControlelr.createOrder);
 
+//Comments
+router.post('/comments/create', homeController.createComment);
+
 
 module.exports = router;
