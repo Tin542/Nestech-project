@@ -18,6 +18,9 @@
           if(promotion) { %> <%- include('./promotionList.ejs') %> <% } %> <%
           if(users) { %> <%- include('./userList.ejs') %> <% } %> <% if(staffs)
           { %> <%- include('./staffList.ejs') %> <% } %>
+          <% if (category){ %>
+            <%- include('./category.ejs') %>
+            <% } %>
         </div>
       </div>
     </div>
@@ -43,10 +46,39 @@
           },
         });
       }
+      function editcategory(id) {
+        console.log(id)
+        $.ajax({
+          type: "GET",
+          url: `/admin/category/detail/${id}`,
+          success: function (rs) {
+            if (rs.s === 200) {
+              let data = rs.data;
+              console.log(data)
+              // set data vừa get đc lên <input>
+              document.getElementById("nameEdit").value = data?.name;
+              document.getElementById("_idEdit").value = data?._id;
+              
+              
+            }
+          },
+        });
+      }
       function deleteItem(id) {
         $.ajax({
           type: "DELETE",
           url: `/admin/products/delete/${id}`,
+          success: function (rs) {
+            alert("delete success");
+            window.location.reload();
+          },
+        });
+      }
+      function deletecategory(id) {
+        console.log(id)
+        $.ajax({
+          type: "DELETE",
+          url: `/admin/category/delete/${id}`,
           success: function (rs) {
             alert("delete success");
             window.location.reload();
