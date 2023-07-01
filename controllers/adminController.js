@@ -53,6 +53,7 @@ function AdminController() {
             res.render("pages/admin/adminPage", {
               products: rs,
               promotion: null,
+              category: null,
               pages: pageCount, // tổng số trang
               users: null,
               urlUploaded: null,
@@ -167,6 +168,7 @@ function AdminController() {
             res.render("pages/admin/adminPage", {
               promotion: rs,
               products: null,
+              category: null,
               pages: pageCount, // tổng số trang
               users: null,
               urlUploaded: null,
@@ -280,6 +282,7 @@ function AdminController() {
             res.render("pages/admin/adminPage", {
               products: null,
               promotion: null,
+              category: null,
               pages: pageCount, // tổng số trang
               users: rs,
               urlUploaded: null,
@@ -322,6 +325,7 @@ function AdminController() {
           .then((rs) => {
             res.render("pages/admin/adminPage", {
               products: null,
+              category: null,
               pages: pageCount, // tổng số trang
               users: null,
               urlUploaded: null,
