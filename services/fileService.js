@@ -49,7 +49,7 @@ function FileService() {
           console.log("Uploaded");
           const options = {
             action: "read",
-            expires: Date.now() + 1000 * 60 * 60 * 24 * 30, // 30 ngay
+            expires: Date.now() + 1000 * 60 * 60 * 24 * 365, // 365 ngay
           };
           blob.getSignedUrl(options).then(async (urls) => {
             return res.json({

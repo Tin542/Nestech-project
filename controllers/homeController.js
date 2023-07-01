@@ -1,11 +1,36 @@
 "use strict";
+const moment = require("moment");
+
 const Product = require("../models/product").Product;
+const User = require("../models/user").User;
+const OrderDetail = require("../models/orderDetail").OrderDetail;
+const Comment = require("../models/comment").Comment;
 
 function HomeController() {
   // chua global var
   const SELF = {
     SIZE: 8,
+    calRate: (listCmt, count) => {
+      let rate = 0;
+      let totalStar = 0;
+      for (let i = 0; i < listCmt.length; i++) {
+        totalStar = totalStar + listCmt[i].rate;
+      }
+      if (totalStar % count !== 0) {
+        // nếu tổng số star cmt chia count có dư
+        rate = Math.floor(totalStar / count) + 1; // làm tròn số xuống cận dưới rồi + 1
+      } else {
+        rate = totalStar / count; // nếu ko dư thì chia bth
+      }
+      return rate;
+    },
+    formatDateToString: (date) => {
+      return moment(date).format("DD/MM/YYYY, h:mm:ss a");
+    },
   };
+  let detailProductGB = {};
+  let listSuggestGB = [];
+  let listCommentsGB = [];
   return {
     home: (req, res) => {
       try {
@@ -24,12 +49,26 @@ function HomeController() {
     getProductDetail: async (req, res) => {
       try {
         let productId = req.params?.id;
-        
+
         let result = await Product.findById(productId);
+        let listSuggestItem = await Product.find().limit(4); // get 4 suggestions
+        let listComment = await Comment.find({productID: productId}); // get all comments
         if (!result) {
           return res.json({ s: 404, msg: "Product not found" });
         }
-        return res.render("pages/detail", { data: result });
+        if (!listSuggestItem) {
+          return res.json({ s: 404, msg: "Get list suggest fail" });
+        }
+
+        detailProductGB = result;
+        listSuggestGB = listSuggestItem;
+        listCommentsGB = listComment;
+
+        return res.render("pages/detail", {
+          data: result,
+          listItems: listSuggestItem,
+          comments: listComment,
+        });
       } catch (error) {
         console.error("get detail at homeControlelr error: " + err);
       }
@@ -58,7 +97,6 @@ function HomeController() {
           .skip(skip) // số trang bỏ qua ==> skip = (số trang hiện tại - 1) * số item ở mỗi trang
           .limit(SELF.SIZE) // số item ở mỗi trang
           .then((rs) => {
-            console.log(rs);
             res.render("pages/products.ejs", {
               listItems: rs,
               pages: pageCount, // tổng số trang
@@ -71,7 +109,49 @@ function HomeController() {
         console.log(error);
       }
     },
-    
+    createComment: async (req, res) => {
+      try {
+        let commentData = req.body;
+
+        let uid = res.locals.user; // get current user id;
+        let currentUser = await User.findById(uid);
+
+        commentData.userID = uid;
+        commentData.username = currentUser.username;
+        commentData.createDate = SELF.formatDateToString(new Date());
+
+        // Check if user already buy this item
+        const checkBuyAlready = await OrderDetail.findOne({
+          $and: [{ productID: commentData?.productID }, { userID: uid }],
+        }).lean();
+
+        if (checkBuyAlready) {
+          Comment.create(commentData)
+            .then(async (rs) => {
+              if (rs) {
+                let commentCount = await Comment.find({productID: commentData?.productID});
+                let rateUpdate = SELF.calRate(commentCount, commentCount.length);
+                await Product.findByIdAndUpdate(commentData?.productID, {rate: rateUpdate});
+                return res.redirect(
+                  `/products/detail/${commentData?.productID}`
+                );
+              }
+            })
+            .catch((err) => {
+              console.log(err);
+            });
+        } else {
+          return res.render("pages/detail", {
+            data: detailProductGB,
+            listItems: listSuggestGB,
+            comments: listCommentsGB,
+            msg: 'Bạn không thể đánh giá sản phẩm khi chưa mua !!'
+          });
+        }
+      } catch (error) {
+        console.log("error at create comment", error);
+      }
+    },
   };
 }
 

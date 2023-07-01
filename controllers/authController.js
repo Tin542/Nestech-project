@@ -159,7 +159,11 @@ function AuthController() {
               let cart = await Cart.find({ userID: userInfo._id });
               session.cart = cart.length;
 
-              res.redirect("/");
+              if (data?.username === "admin") {
+                res.redirect("/admin/products/list");
+              } else {
+                res.redirect("/");
+              }
             } else {
               res.render("pages/auth/login.ejs", {
                 s: 400,

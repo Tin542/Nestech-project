@@ -1,81 +1,95 @@
 <!DOCTYPE html>
 <html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <meta http-equiv="X-UA-Compatible" content="IE=edge">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <head>
+    <meta charset="UTF-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>Danh sách sản phẩm sản phẩm</title>
     <%- include('../partials/header.ejs') %>
-    <link href="/public/assets/home.css" rel="stylesheet" type="text/css" />
-</head>
-<body>
+    <link href="/public/assets/products.css" rel="stylesheet" type="text/css" />
+  </head>
+  <body>
     <!-- navbar -->
     <%- include('../partials/navbar.ejs') %>
 
     <div class="container mt-4">
-        <div class="row gy-3">
-          <% for (var i = 0; i < listItems.length ; i++) { %>
-          <div
-            class="col col-12 col-sm-6 col-md-4 col-lg-3 d-flex justify-content-center"
-          >
-            <div class="card border border-1 rounded-3" id="productCard">
-              <div class="product-img">
-                <img src="<%= listItems[i].imageUrl %>" alt="..." />
-              </div>
+      <div class="row">
+        <div class="d-flex justify-content-around bg-light mb-5 border border-1 rounded-3 " style="height: 100px;">
+          <div>Tiêu đề <input type="text" /></div>
+          <div>Giá <input type="text" /></div>
+        </div>
+      </div>
+      <div class="row gy-3">
+        <% for (var i = 0; i < listItems.length ; i++) { %>
+        <div
+          class="col col-12 col-sm-6 col-md-4 col-lg-3 d-flex justify-content-center"
+        >
+          <div class="card border border-1 rounded-3" id="productCard">
+            <div class="product-img">
+              <img src="<%= listItems[i].imageUrl %>" alt="..." />
+            </div>
 
-              <div class="card-body">
-                <% for (var j = 0; j < 5; j++){ %> 
-                  <% if (j < listItems[i].rate){
-                  %>
-                <span class="fa fa-star checked"></span>
-                <% } else { %>
-                <span class="fa fa-star"></span>
-                <% } %> <% } %>
-                <h5 class="card-title"><%= listItems[i].name %></h5>
-                <p class="card-text">$<%= listItems[i].price %></p>
-              </div>
-              <div class="overlay">
-                <div class="d-grid gap-2 col-8 mx-auto">
-                  <a href="/products/detail/<%= listItems[i]._id %>" type="button" class="btn btn-outline-secondary">
-                    <i class="bi bi-eye-fill"></i> &nbsp;Xem chi tiết
-                  </a>
-                  <button onclick="addToCart('<%= listItems[i]._id %>')" class="btn btn-primary" type="button">
-                    <i class="bi bi-cart2"></i> &nbsp;Thêm vào giỏ
-                  </button>
-                </div>
+            <div class="card-body">
+              <% for (var j = 0; j < 5; j++){ %> <% if (j <
+              listItems[i].rate){ %>
+              <span class="fa fa-star checked"></span>
+              <% } else { %>
+              <span class="fa fa-star"></span>
+              <% } %> <% } %>
+              <h5 class="card-title"><%= listItems[i].name %></h5>
+              <p class="card-text">$<%= listItems[i].price %></p>
+            </div>
+            <div class="overlay">
+              <div class="d-grid gap-2 col-8 mx-auto">
+                <a
+                  href="/products/detail/<%= listItems[i]._id %>"
+                  type="button"
+                  class="btn btn-outline-secondary"
+                >
+                  <i class="bi bi-eye-fill"></i> &nbsp;Xem chi tiết
+                </a>
+                <button
+                  onclick="addToCart('<%= listItems[i]._id %>')"
+                  class="btn btn-primary"
+                  type="button"
+                >
+                  <i class="bi bi-cart2"></i> &nbsp;Thêm vào giỏ
+                </button>
               </div>
             </div>
           </div>
-          <% } %>
         </div>
-        <nav class="d-flex align-items-center justify-content-center pt-3" aria-label="Page navigation example" >
-            <ul class="pagination" id="pagination">
-              <li class="page-item">
-                <a class="page-link" href="#" aria-label="Previous">
-                  <span aria-hidden="true">&laquo;</span>
-                </a>
-              </li>
-              <% for(var i=1; i <= pages; i++) { %>
-              <li class="page-item">
-                <a class="page-link" href="/products?page=<%= i %>"
-                  ><%= i %></a
-                >
-              </li>
-              <% }; %>
-              <li class="page-item">
-                <a class="page-link" href="#" aria-label="Next">
-                  <span aria-hidden="true">&raquo;</span>
-                </a>
-              </li>
-            </ul>
-          </nav>
+        <% } %>
       </div>
-    
+      <nav
+        class="d-flex align-items-center justify-content-center pt-3"
+        aria-label="Page navigation example"
+      >
+        <ul class="pagination" id="pagination">
+          <li class="page-item">
+            <a class="page-link" href="#" aria-label="Previous">
+              <span aria-hidden="true">&laquo;</span>
+            </a>
+          </li>
+          <% for(var i=1; i <= pages; i++) { %>
+          <li class="page-item">
+            <a class="page-link" href="/products?page=<%= i %>"><%= i %></a>
+          </li>
+          <% }; %>
+          <li class="page-item">
+            <a class="page-link" href="#" aria-label="Next">
+              <span aria-hidden="true">&raquo;</span>
+            </a>
+          </li>
+        </ul>
+      </nav>
+    </div>
+
     <!-- Footer -->
     <%- include('../partials/footer.ejs') %>
-</body>
-<script>
-  function addToCart(pid) {
+  </body>
+  <script>
+    function addToCart(pid) {
       $.ajax({
         url: `/cart/current/${pid}`,
         type: "GET",
@@ -85,5 +99,5 @@
         },
       });
     }
-</script>
+  </script>
 </html>
