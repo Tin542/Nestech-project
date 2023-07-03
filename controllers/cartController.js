@@ -57,7 +57,6 @@ function CartController() {
         let uid = res.locals.user; // get current user id
         let pid = req.params?.id; // get current product id
         let product = await Product.findById(pid);
-
         if (!product) {
           return res.json({ s: 404, msg: "Product not found" });
         }

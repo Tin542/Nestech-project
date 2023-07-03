@@ -5,6 +5,7 @@
     <meta http-equiv="X-UA-Compatible" content="IE=edge" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>Admin</title>
+
     <link href="/public/assets/admin.css" rel="stylesheet" type="text/css" />
     <%- include('../../partials/header.ejs') %>
   </head>
@@ -17,10 +18,8 @@
           <% if(products) { %> <%- include('./productList.ejs') %> <% } %> <%
           if(promotion) { %> <%- include('./promotionList.ejs') %> <% } %> <%
           if(users) { %> <%- include('./userList.ejs') %> <% } %> <% if(staffs)
-          { %> <%- include('./staffList.ejs') %> <% } %>
-          <% if (category){ %>
-            <%- include('./category.ejs') %>
-            <% } %>
+          { %> <%- include('./staffList.ejs') %> <% } %> <% if (category){ %>
+          <%- include('./category.ejs') %> <% } %>
         </div>
       </div>
     </div>
@@ -36,7 +35,7 @@
               document.getElementById("_idEdit").value = data._id;
               document.getElementById("nameEdit").value = data.name;
               document.getElementById("priceEdit").value = data.price;
-              document.getElementById("rateEdit").value = data.rate;
+              document.getElementById("categoriEdit").value = data.categoryId;
               document.getElementById("descriptionEdit").value =
                 data.description;
               document.getElementById("imageUrlEdit").value = data.imageUrl;
@@ -47,19 +46,17 @@
         });
       }
       function editcategory(id) {
-        console.log(id)
+        console.log(id);
         $.ajax({
           type: "GET",
           url: `/admin/category/detail/${id}`,
           success: function (rs) {
             if (rs.s === 200) {
               let data = rs.data;
-              console.log(data)
+              console.log(data);
               // set data vừa get đc lên <input>
               document.getElementById("nameEdit").value = data?.name;
               document.getElementById("_idEdit").value = data?._id;
-              
-              
             }
           },
         });
@@ -75,7 +72,7 @@
         });
       }
       function deletecategory(id) {
-        console.log(id)
+        console.log(id);
         $.ajax({
           type: "DELETE",
           url: `/admin/category/delete/${id}`,
@@ -147,7 +144,6 @@
           },
         });
       }
-
     </script>
   </body>
 </html>

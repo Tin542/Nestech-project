@@ -8,7 +8,7 @@ const mongoose = require("mongoose");
 const bodyParser = require("body-parser");
 const cookieParser = require("cookie-parser");
 const sessions = require("express-session");
-const fileUpload = require('express-fileupload');
+// const fileUpload = require('express-fileupload');
 
 // MongoDB connection
 const db = CONFIG.MONGODB_URL;
@@ -19,7 +19,7 @@ mongoose
 
 app.set("view engine", "ejs");
 app.use('/public', express.static('public'));
-app.use(fileUpload());
+// app.use(fileUpload());
 app.use(bodyParser.urlencoded({ extended: true }));
 app.use(
   sessions({

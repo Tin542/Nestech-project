@@ -23,6 +23,7 @@
       <tr>
         <th scope="col">Hình ảnh</th>
         <th scope="col">Tên sản phẩm</th>
+        <th scope="col">Danh mục</th>
         <th scope="col">Tác giả</th>
         <th scope="col">Đánh giá</th>
         <th scope="col">Giá</th>
@@ -45,6 +46,9 @@
             <%= item.name %>
           </span>
         </td>
+        <td class="w-25">
+          <%= item.catName %>
+        </td>
         <td scope="w-2"><%= item.author %></td>
         <td class="w-2">
           <% for (var j = 0; j < 5; j++){ %> <% if (j < item.rate){ %>
@@ -52,7 +56,6 @@
           <% } else { %>
           <span class="fa fa-star"></span>
           <% } %> <% } %>
-        
         </td>
         <td class="w-2"><%= item.price %> $</td>
         <td class="w-2">
@@ -193,16 +196,19 @@
               />
             </div>
             <div class="col-6">
-              <label for="rate" class="form-label">Đánh giá</label>
-              <input
-                type="number"
-                class="form-control"
-                id="rate"
-                name="rate"
-                placeholder="Nhập đánh giá"
-                min="0" max="5"
+              <label for="category" class="form-label">Danh mục</label>
+              <select
+                name="categoryId"
+                id="category"
+                class="form-select"
+                aria-label="Select ategory"
                 required
-              />
+              >
+                <option>---</option>
+                <% listCategories.forEach((item) => { %>
+                <option value="<%= item._id %>"><%= item.name %></option>
+                <% }) %>
+              </select>
             </div>
             <div class="col-6">
               <label for="author" class="form-label">Tác giả</label>
@@ -318,17 +324,19 @@
               />
             </div>
             <div class="col-6">
-              <label for="rate" class="form-label">Đánh giá</label>
-              <input
-                type="number"
-                class="form-control"
-                id="rateEdit"
-                name="rate"
-                placeholder="Nhập đánh giá"
-                value=""
-                min="0" max="5"
+              <label for="categoriEdit" class="form-label">Danh mục</label>
+              <select
+                name="categoryId"
+                id="categoriEdit"
+                class="form-select"
+                aria-label="Select ategory"
                 required
-              />
+              >
+                <option>---</option>
+                <% listCategories.forEach((item) => { %>
+                <option value="<%= item._id %>"><%= item.name %></option>
+                <% }) %>
+              </select>
             </div>
             <div class="col-6">
               <label for="author" class="form-label">Tác giả</label>
@@ -373,4 +381,3 @@
     </div>
   </div>
 </div>
-
