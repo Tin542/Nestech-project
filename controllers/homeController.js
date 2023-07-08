@@ -106,11 +106,10 @@ function HomeController() {
 
         //get all categories
         let category = await SELF.getAllCategories();
-
+       
          // Map all filter to obj
-         let filterObj = await SELF.mappingFilter(textRegex, categoryRegex, starRegex);
-         console.log(filterObj);
-
+         let filterObj = SELF.mappingFilter(textRegex, categoryRegex, starRegex);
+         console.log(filterObj)
         // pagination
         Promise.all([
           // 2 hàm bên trong sẽ thực thi đồng thời ==> giảm thời gian thực thi ==> improve performance
@@ -134,6 +133,9 @@ function HomeController() {
               listItems: rs[1],
               pages: pageCount, // tổng số trang
               listCategories: category,
+              searchText: keySearch || "",
+              searchCategory: categorySearch,
+
             });
           })
           .catch((error) => {

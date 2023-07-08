@@ -108,7 +108,7 @@ function categoryControler() {
     deletecategory: async (req, res) => {
       try {
         const pId = req.params?.id;
-        console.log(pId);
+      
         const categoryDetail = await category.findById(pId);
         if (!categoryDetail) {
           return res.json({ s: 404, msg: "category not found" });

@@ -318,8 +318,7 @@
       $.ajax({
         url: `/cart/current/${pid}`,
         type: "GET",
-        success: function (rs) {
-          // console.log(rs);
+        success: function (rs)
           alert(rs.msg);
         },
       });
