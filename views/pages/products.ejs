@@ -86,10 +86,6 @@
             <button
               class="btn btn-light"
               type="button"
-              data-bs-toggle="collapse"
-              data-bs-target="#collapseExample"
-              aria-expanded="false"
-              aria-controls="collapseExample"
             >
               <svg
                 xmlns="http://www.w3.org/2000/svg"
@@ -110,23 +106,23 @@
           class="bg-info mb-5 border border-1 rounded-3"
           style="height: auto"
         >
-          <div class="collapse" id="collapseExample">
+          <div>
               <div class="d-flex justify-content-between align-items-center p-3">
                 
                 <div>
                   <label for="category" class="form-label">Danh mục</label>
-                  <select
-                    name="category"
-                    id="category"
-                    class="form-select"
-                    aria-label="Select ategory"
-                    
-                  >
+                  <select id="category" name="category" class="form-select">
                     <option value="">---</option>
-                    <% listCategories.forEach((item) => { %>
-                      <option value="<%= item._id %>"><%= item.name %></option>
-                    <% }) %>
-                  </select>
+                    <%
+                    
+                    for ( var i = 0; i < listCategories.length; i++ )
+                    {
+                        var selected = ( listCategories[i]._id.toString() === filters.category ) ? "selected" : "";
+                        
+                        %><option value="<%= listCategories[i]._id %>" <%= selected %>><%= listCategories[i].name %></option><%
+                    }
+                    %>
+                    </select>
                 </div>
                 <div>
                   <label for="price" class="form-label">Giá $</label>
@@ -138,10 +134,10 @@
                     
                   >
                     <option value="">---</option>
-                    <option value="0-100">0 - 100</option>
-                    <option value="100-200">100 - 200</option>
-                    <option value="200-300">200 - 300</option>
-                    <option value="300">Trên 300</option>
+                    <option value="0-100" <%= filters.prices==='0-100' ? 'selected' : "" %>>0 - 100</option>
+                    <option value="100-200" <%= filters.prices==='100-200' ? 'selected' : "" %>>100 - 200</option>
+                    <option value="200-300" <%= filters.prices==='200-300' ? 'selected' : "" %>>200 - 300</option>
+                    <option value="300-500" <%= filters.prices==='300-500' ? 'selected' : "" %>>300-500</option>
 
                   </select>
                 </div>
@@ -155,13 +151,12 @@
                     
                   >
                     <option value="">---</option>
-                    <option value="0">0 sao</option>
-                    <option value="1">1 sao</option>
-                    <option value="2">2 sao</option>
-                    <option value="3">3 sao</option>
-                    <option value="4">4 sao</option>
-                    <option value="5">5 sao</option>
-
+                    <option value="0" <%= filters.star==='0' ? 'selected' : "" %>>0 sao</option>
+                    <option value="1" <%= filters.star==='1' ? 'selected' : "" %>>1 sao</option>
+                    <option value="2" <%= filters.star==='2' ? 'selected' : "" %>>2 sao</option>
+                    <option value="3" <%= filters.star==='3' ? 'selected' : "" %>>3 sao</option>
+                    <option value="4" <%= filters.star==='4' ? 'selected' : "" %>>4 sao</option>
+                    <option value="5" <%= filters.star==='5' ? 'selected' : "" %>>5 sao</option>
                   </select>
                 </div>
                 <div>

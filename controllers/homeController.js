@@ -35,13 +35,6 @@ function HomeController() {
           console.error(error);
         });
     },
-    mappingFilter: (text, category, price, star) => {
-      return {
-        name: text,
-        categoryId: category,
-        // rate: Number.parseInt(star),
-      };
-    },
   };
   let detailProductGB = {};
   let listSuggestGB = [];
@@ -90,31 +83,44 @@ function HomeController() {
     },
     getList: async (req, res) => {
       try {
+        // let {page, searchValue, category, star} = req.query
         let page = req.query.page;
         let keySearch = req.query.searchValue || "";
         let categorySearch = req.query.category || "";
         let priceRange = req.query.priceRange || "";
-        let rateStar = req.query.star;
+        let rateStar = req.query.star || "";
 
         if (!page || parseInt(page) <= 0) {
           page = 1;
         }
         let skip = (parseInt(page) - 1) * SELF.SIZE;
-        let textRegex = new RegExp(keySearch);
-        let categoryRegex = new RegExp(categorySearch);
-        let starRegex = new RegExp(rateStar);
+
+        let filter = {};
+
+        if (keySearch) {
+          filter["name"] = new RegExp(keySearch, "i");
+        }
+        if (categorySearch) {
+          filter["categoryId"] = categorySearch;
+        }
+        if (rateStar) {
+          filter["rate"] = parseInt(rateStar);
+        }
+        if (priceRange) {
+          let maxPrice = priceRange.split("-")[1];
+          let minPrice = priceRange.split("-")[0];
+
+          filter["price"] = {$gte: parseInt(minPrice), $lte: parseInt(maxPrice)}
+        }
 
         //get all categories
-        let category = await SELF.getAllCategories();
-       
-         // Map all filter to obj
-         let filterObj = SELF.mappingFilter(textRegex, categoryRegex, starRegex);
-         console.log(filterObj)
+        let categoryList = await SELF.getAllCategories();
+
         // pagination
         Promise.all([
           // 2 hàm bên trong sẽ thực thi đồng thời ==> giảm thời gian thực thi ==> improve performance
-          Product.countDocuments(filterObj).lean(), // Lấy tổng số product
-          Product.find(filterObj)
+          Product.countDocuments(filter).lean(), // Lấy tổng số product
+          Product.find(filter)
             .skip(skip) // số trang bỏ qua ==> skip = (số trang hiện tại - 1) * số item ở mỗi trang
             .limit(SELF.SIZE)
             .lean(), // số item ở mỗi trang
@@ -132,10 +138,13 @@ function HomeController() {
             res.render("pages/products.ejs", {
               listItems: rs[1],
               pages: pageCount, // tổng số trang
-              listCategories: category,
+              listCategories: categoryList,
               searchText: keySearch || "",
-              searchCategory: categorySearch,
-
+              filters: {
+                category: categorySearch,
+                star: rateStar,
+                prices: priceRange,
+              },
             });
           })
           .catch((error) => {
