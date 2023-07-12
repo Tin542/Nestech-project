@@ -7,20 +7,118 @@
     <title>Danh sách sản phẩm sản phẩm</title>
     <%- include('../partials/header.ejs') %>
     <link href="/public/assets/products.css" rel="stylesheet" type="text/css" />
+
+    <link
+    rel="stylesheet"
+    href="https://cdn.jsdelivr.net/npm/bootstrap@5.1.1/dist/css/bootstrap.min.css"
+  />
+</head>
   </head>
   <body>
     <!-- navbar -->
     <%- include('../partials/navbar.ejs') %>
 
     <div class="container mt-4">
+      <form action="/products" method="GET">
       <div class="row">
-        <div class="d-flex justify-content-around bg-light mb-5 border border-1 rounded-3 " style="height: 100px;">
-          <div>Tiêu đề <input type="text" /></div>
-          <div>Giá <input type="text" /></div>
+        <div
+          class="d-flex justify-content-between bg-info border border-1 rounded-3 p-3"
+          style="height: auto"
+        >
+          <div>
+              <div class="input-group">
+                <input
+                  type="text"
+                  id="searchText"
+                  class="form-control"
+                  placeholder="Tiêu đề..."
+                  aria-label="name"
+                  aria-describedby="button-addon2"
+                  name="searchValue"
+                  value="<%= searchText %>"
+                />
+                <button class="btn btn-light" type="submit" id="button-addon2">
+                  <svg
+                    xmlns="http://www.w3.org/2000/svg"
+                    width="16"
+                    height="16"
+                    fill="currentColor"
+                    class="bi bi-search"
+                    viewBox="0 0 16 16"
+                  >
+                    <path
+                      d="M11.742 10.344a6.5 6.5 0 1 0-1.397 1.398h-.001c.03.04.062.078.098.115l3.85 3.85a1 1 0 0 0 1.415-1.414l-3.85-3.85a1.007 1.007 0 0 0-.115-.1zM12 6.5a5.5 5.5 0 1 1-11 0 5.5 5.5 0 0 1 11 0z"
+                    />
+                  </svg>
+                </button>
+              </div>
+            </form>
+          </div>
         </div>
+        <div
+          class="bg-info mb-5 border border-1 rounded-3"
+          style="height: auto"
+        >
+          <div>
+              <div class="d-flex justify-content-between align-items-center p-3">
+                <div>
+                  <label for="category" class="form-label">Danh mục</label>
+                  <select id="category" name="category" class="form-select">
+                    <option value="">---</option>
+                    <%
+                    for ( var i = 0; i < listCategories.length; i++ )
+                    {
+                        var selected = ( listCategories[i]._id.toString() === filters.category ) ? "selected" : "";
+                        
+                        %><option value="<%= listCategories[i]._id %>" <%= selected %>><%= listCategories[i].name %></option><%
+                    }
+                    %>
+                    </select>
+                </div>
+                <div>
+                  <label for="price" class="form-label">Giá $</label>
+                  <select
+                    name="priceRange"
+                    id="price"
+                    class="form-select"
+                    aria-label="Select price"
+                  >
+                    <option value="">---</option>
+                    <option value="0-100" <%= filters.prices==='0-100' ? 'selected' : "" %>>0 - 100</option>
+                    <option value="100-200" <%= filters.prices==='100-200' ? 'selected' : "" %>>100 - 200</option>
+                    <option value="200-300" <%= filters.prices==='200-300' ? 'selected' : "" %>>200 - 300</option>
+                    <option value="300-500" <%= filters.prices==='300-500' ? 'selected' : "" %>>300-500</option>
+                  </select>
+                </div>
+                <div>
+                  <label for="price" class="form-label">Đánh giá</label>
+                  <select
+                    name="star"
+                    id="star"
+                    class="form-select"
+                    aria-label="Select star"
+                  >
+                    <option value="">---</option>
+                    <option value="0" <%= filters.star==='0' ? 'selected' : "" %>>0 sao</option>
+                    <option value="1" <%= filters.star==='1' ? 'selected' : "" %>>1 sao</option>
+                    <option value="2" <%= filters.star==='2' ? 'selected' : "" %>>2 sao</option>
+                    <option value="3" <%= filters.star==='3' ? 'selected' : "" %>>3 sao</option>
+                    <option value="4" <%= filters.star==='4' ? 'selected' : "" %>>4 sao</option>
+                    <option value="5" <%= filters.star==='5' ? 'selected' : "" %>>5 sao</option>
+                  </select>
+                </div>
+                <div>
+                  <button type="submit" class="btn btn-light">Lọc</button>
+                </div>
+              </div>
+            
+          </div>
+        </div>
+      </form>
       </div>
       <div class="row gy-3">
-        <% for (var i = 0; i < listItems.length ; i++) { %>
+        <% if(listItems.length !== 0) { %> <% for (var i = 0; i <
+        listItems.length ; i++) { %>
         <div
           class="col col-12 col-sm-6 col-md-4 col-lg-3 d-flex justify-content-center"
         >
@@ -30,8 +128,8 @@
             </div>
 
             <div class="card-body">
-              <% for (var j = 0; j < 5; j++){ %> <% if (j <
-              listItems[i].rate){ %>
+              <% for (var j = 0; j < 5; j++){ %> <% if (j < listItems[i].rate){
+              %>
               <span class="fa fa-star checked"></span>
               <% } else { %>
               <span class="fa fa-star"></span>
@@ -56,6 +154,20 @@
                   <i class="bi bi-cart2"></i> &nbsp;Thêm vào giỏ
                 </button>
               </div>
+            </div>
+          </div>
+        </div>
+        <% } %> <% } else { %>
+        <div class="col-12">
+          <div class="card bg-light p-5">
+            <img
+              style="margin: auto"
+              width="200px"
+              height="200px"
+              src="https://cdn0.fahasa.com/skin//frontend/ma_vanese/fahasa/images/checkout_cart/ico_emptycart.svg"
+            />
+            <div class="fst-italic m-auto">
+              Không tìm thấy sản phẩm phù hợp =(T.T)=
             </div>
           </div>
         </div>
@@ -89,12 +201,12 @@
     <%- include('../partials/footer.ejs') %>
   </body>
   <script>
+    
     function addToCart(pid) {
       $.ajax({
         url: `/cart/current/${pid}`,
         type: "GET",
-        success: function (rs) {
-          // console.log(rs);
+        success: function (rs) { 
           alert(rs.msg);
         },
       });

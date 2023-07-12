@@ -7,6 +7,7 @@ const Product = require("../models/product").Product;
 const Promotion = require("../models/promotion").Promotion;
 const User = require("../models/user").User;
 const Staff = require("../models/staff").Staff;
+const Category = require("../models/category").category;
 
 function AdminController() {
   // chua global var
@@ -24,8 +25,16 @@ function AdminController() {
     formatDateToString: (date) => {
       return moment(date).format("DD/MM/YYYY, h:mm:ss a");
     },
+    getAllCategories: () => {
+      return Category.find()
+        .then()
+        .catch((error) => {
+          console.error(error);
+        });
+    },
   };
   return {
+    // Products
     getList: async (req, res) => {
       try {
         let page = req.query.page;
@@ -36,28 +45,42 @@ function AdminController() {
         let skip = (parseInt(page) - 1) * SELF.SIZE;
         let regex = new RegExp(keySearch);
 
-        // pagination
-        let productCount = await Product.find({ name: regex }).countDocuments(); // lấy tổng số product hiện có
-        let pageCount = 0; // tổng số trang
-        if (productCount % SELF.SIZE !== 0) {
-          // nếu tổng số product chia SIZE có dư
-          pageCount = Math.floor(productCount / SELF.SIZE) + 1; // làm tròn số xuống cận dưới rồi + 1
-        } else {
-          pageCount = productCount / SELF.SIZE; // nếu ko dư thì chia bth
-        }
+        //get all categories
+        let category = await SELF.getAllCategories();
 
-        return Product.find({ name: regex })
-          .skip(skip) // số trang bỏ qua ==> skip = (số trang hiện tại - 1) * số item ở mỗi trang
-          .limit(SELF.SIZE) // số item ở mỗi trang
-          .then((rs) => {
+        // pagination
+        Promise.all([
+          // 2 hàm bên trong sẽ thực thi đồng thời ==> giảm thời gian thực thi ==> improve performance
+          Product.countDocuments({ name: regex }).lean(), // Lấy tổng số product
+          Product.find({ name: regex })
+            .skip(skip) // số trang bỏ qua ==> skip = (số trang hiện tại - 1) * số item ở mỗi trang
+            .limit(SELF.SIZE)
+            .lean(), // số item ở mỗi trang
+        ])
+          .then(async (rs) => {
+            // rs trả ra 1 array [kết quả của function 1, kết quả của function 2, ..]
+            let productCount = rs[0]; // tổng số product
+            let pageCount = 0; // tổng số trang
+            if (productCount % SELF.SIZE !== 0) {
+              // nếu tổng số product chia SIZE có dư
+              pageCount = Math.floor(productCount / SELF.SIZE) + 1; // làm tròn số xuống cận dưới rồi + 1
+            } else {
+              pageCount = productCount / SELF.SIZE; // nếu ko dư thì chia bth
+            }
+
+            for (let i = 0; i < rs[1].length; i++) {
+              let catInfo = await Category.findById(rs[1][i].categoryId).lean();
+              rs[1][i]["catName"] = catInfo.name;
+            }
             res.render("pages/admin/adminPage", {
-              products: rs,
+              products: rs[1],
               promotion: null,
               category: null,
               pages: pageCount, // tổng số trang
               users: null,
               urlUploaded: null,
               staffs: null,
+              listCategories: category,
             });
           })
           .catch((error) => {
@@ -70,6 +93,7 @@ function AdminController() {
     addProduct: (req, res) => {
       try {
         let data = req.body;
+        data.rate = 0;
         return Product.create(data)
           .then((rs) => {
             return res.redirect("list");
@@ -134,6 +158,7 @@ function AdminController() {
       }
     },
 
+    // Promotion
     getPromotionList: async (req, res) => {
       try {
         let productIdList = [];
@@ -161,10 +186,6 @@ function AdminController() {
           .skip(skip) // số trang bỏ qua ==> skip = (số trang hiện tại - 1) * số item ở mỗi trang
           .limit(SELF.SIZE) // số item ở mỗi trang
           .then((rs) => {
-            rs.forEach((item)=>{
-              let td = SELF.formatDateToString(item.startDate);
-              item.startDate.toString().replace(item.startDate, td);
-            });
             res.render("pages/admin/adminPage", {
               promotion: rs,
               products: null,
@@ -191,7 +212,7 @@ function AdminController() {
 
         return Promotion.create(data)
           .then((rs) => {
-            return res.redirect('list');
+            return res.redirect("list");
           })
           .catch((err) => {
             res.send({ s: 400, msg: err });
@@ -253,6 +274,7 @@ function AdminController() {
       }
     },
 
+    // user
     users: async (req, res) => {
       try {
         let page = req.query.page;
@@ -297,6 +319,7 @@ function AdminController() {
       }
     },
 
+    // Staff
     staffs: async (req, res) => {
       try {
         let page = req.query.page;

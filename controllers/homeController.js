@@ -5,6 +5,7 @@ const Product = require("../models/product").Product;
 const User = require("../models/user").User;
 const OrderDetail = require("../models/orderDetail").OrderDetail;
 const Comment = require("../models/comment").Comment;
+const Category = require("../models/category").category;
 
 function HomeController() {
   // chua global var
@@ -26,6 +27,13 @@ function HomeController() {
     },
     formatDateToString: (date) => {
       return moment(date).format("DD/MM/YYYY, h:mm:ss a");
+    },
+    getAllCategories: () => {
+      return Category.find()
+        .then()
+        .catch((error) => {
+          console.error(error);
+        });
     },
   };
   let detailProductGB = {};
@@ -52,7 +60,7 @@ function HomeController() {
 
         let result = await Product.findById(productId);
         let listSuggestItem = await Product.find().limit(4); // get 4 suggestions
-        let listComment = await Comment.find({productID: productId}); // get all comments
+        let listComment = await Comment.find({ productID: productId }); // get all comments
         if (!result) {
           return res.json({ s: 404, msg: "Product not found" });
         }
@@ -75,31 +83,68 @@ function HomeController() {
     },
     getList: async (req, res) => {
       try {
+        // let {page, searchValue, category, star} = req.query
         let page = req.query.page;
         let keySearch = req.query.searchValue || "";
+        let categorySearch = req.query.category || "";
+        let priceRange = req.query.priceRange || "";
+        let rateStar = req.query.star || "";
+        //paging
         if (!page || parseInt(page) <= 0) {
           page = 1;
         }
         let skip = (parseInt(page) - 1) * SELF.SIZE;
-        let regex = new RegExp(keySearch);
-
-        // pagination
-        let productCount = await Product.find({ name: regex }).countDocuments(); // lấy tổng số product hiện có
-        let pageCount = 0; // tổng số trang
-        if (productCount % SELF.SIZE !== 0) {
-          // nếu tổng số product chia SIZE có dư
-          pageCount = Math.floor(productCount / SELF.SIZE) + 1; // làm tròn số xuống cận dưới rồi + 1
-        } else {
-          pageCount = productCount / SELF.SIZE; // nếu ko dư thì chia bth
+        //filter
+        let filter = {};
+        // filter by name
+        if (keySearch) {
+          filter["name"] = new RegExp(keySearch, "i");
         }
-
-        return Product.find({ name: regex })
-          .skip(skip) // số trang bỏ qua ==> skip = (số trang hiện tại - 1) * số item ở mỗi trang
-          .limit(SELF.SIZE) // số item ở mỗi trang
-          .then((rs) => {
+        // filter by category
+        if (categorySearch) {
+          filter["categoryId"] = categorySearch;
+        }
+        // filter by rate
+        if (rateStar) {
+          filter["rate"] = parseInt(rateStar);
+        }
+        // filter by price
+        if (priceRange) {
+          let maxPrice = priceRange.split("-")[1];
+          let minPrice = priceRange.split("-")[0];
+          filter["price"] = {$gte: parseInt(minPrice), $lte: parseInt(maxPrice)}
+        }
+        //get all categories
+        let categoryList = await SELF.getAllCategories();
+        // pagination
+        Promise.all([
+          // 2 hàm bên trong sẽ thực thi đồng thời ==> giảm thời gian thực thi ==> improve performance
+          Product.countDocuments(filter).lean(), // Lấy tổng số product
+          Product.find(filter)
+            .skip(skip) // số trang bỏ qua ==> skip = (số trang hiện tại - 1) * số item ở mỗi trang
+            .limit(SELF.SIZE)
+            .lean(), // số item ở mỗi trang
+        ])
+          .then(async (rs) => {
+            // rs trả ra 1 array [kết quả của function 1, kết quả của function 2, ..]
+            let productCount = rs[0]; // tổng số product
+            let pageCount = 0; // tổng số trang
+            if (productCount % SELF.SIZE !== 0) {
+              // nếu tổng số product chia SIZE có dư
+              pageCount = Math.floor(productCount / SELF.SIZE) + 1; // làm tròn số xuống cận dưới rồi + 1
+            } else {
+              pageCount = productCount / SELF.SIZE; // nếu ko dư thì chia bth
+            }
             res.render("pages/products.ejs", {
-              listItems: rs,
+              listItems: rs[1],
               pages: pageCount, // tổng số trang
+              listCategories: categoryList,
+              searchText: keySearch || "",
+              filters: {
+                category: categorySearch,
+                star: rateStar,
+                prices: priceRange,
+              },
             });
           })
           .catch((error) => {
@@ -129,9 +174,16 @@ function HomeController() {
           Comment.create(commentData)
             .then(async (rs) => {
               if (rs) {
-                let commentCount = await Comment.find({productID: commentData?.productID});
-                let rateUpdate = SELF.calRate(commentCount, commentCount.length);
-                await Product.findByIdAndUpdate(commentData?.productID, {rate: rateUpdate});
+                let commentCount = await Comment.find({
+                  productID: commentData?.productID,
+                });
+                let rateUpdate = SELF.calRate(
+                  commentCount,
+                  commentCount.length
+                );
+                await Product.findByIdAndUpdate(commentData?.productID, {
+                  rate: rateUpdate,
+                });
                 return res.redirect(
                   `/products/detail/${commentData?.productID}`
                 );
@@ -145,7 +197,7 @@ function HomeController() {
             data: detailProductGB,
             listItems: listSuggestGB,
             comments: listCommentsGB,
-            msg: 'Bạn không thể đánh giá sản phẩm khi chưa mua !!'
+            msg: "Bạn không thể đánh giá sản phẩm khi chưa mua !!",
           });
         }
       } catch (error) {

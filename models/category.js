@@ -4,9 +4,9 @@ const mongoose = require("mongoose");
 // define model schema
 const category = mongoose.Schema(
   {
-
     name: { type: String },
-
+    addDate: { type: String },
+    editDate: { type: String },
   },
   { version: false, timestamps: true }
 );
