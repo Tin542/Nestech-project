@@ -89,33 +89,33 @@ function HomeController() {
         let categorySearch = req.query.category || "";
         let priceRange = req.query.priceRange || "";
         let rateStar = req.query.star || "";
-
+        //paging
         if (!page || parseInt(page) <= 0) {
           page = 1;
         }
         let skip = (parseInt(page) - 1) * SELF.SIZE;
-
+        //filter
         let filter = {};
-
+        // filter by name
         if (keySearch) {
           filter["name"] = new RegExp(keySearch, "i");
         }
+        // filter by category
         if (categorySearch) {
           filter["categoryId"] = categorySearch;
         }
+        // filter by rate
         if (rateStar) {
           filter["rate"] = parseInt(rateStar);
         }
+        // filter by price
         if (priceRange) {
           let maxPrice = priceRange.split("-")[1];
           let minPrice = priceRange.split("-")[0];
-
           filter["price"] = {$gte: parseInt(minPrice), $lte: parseInt(maxPrice)}
         }
-
         //get all categories
         let categoryList = await SELF.getAllCategories();
-
         // pagination
         Promise.all([
           // 2 hàm bên trong sẽ thực thi đồng thời ==> giảm thời gian thực thi ==> improve performance
