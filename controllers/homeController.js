@@ -57,9 +57,8 @@ function HomeController() {
     getProductDetail: async (req, res) => {
       try {
         let productId = req.params?.id;
-
         let result = await Product.findById(productId);
-        let listSuggestItem = await Product.find().limit(4); // get 4 suggestions
+        let listSuggestItem = await Product.find({categoryId: result.categoryId}).limit(4); // get 4 suggestions
         let listComment = await Comment.find({ productID: productId }); // get all comments
         if (!result) {
           return res.json({ s: 404, msg: "Product not found" });
@@ -67,11 +66,9 @@ function HomeController() {
         if (!listSuggestItem) {
           return res.json({ s: 404, msg: "Get list suggest fail" });
         }
-
         detailProductGB = result;
         listSuggestGB = listSuggestItem;
         listCommentsGB = listComment;
-
         return res.render("pages/detail", {
           data: result,
           listItems: listSuggestItem,

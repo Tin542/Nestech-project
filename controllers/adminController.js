@@ -8,6 +8,7 @@ const Promotion = require("../models/promotion").Promotion;
 const User = require("../models/user").User;
 const Staff = require("../models/staff").Staff;
 const Category = require("../models/category").category;
+const Order = require("../models/order").Order;
 
 function AdminController() {
   // chua global var
@@ -31,6 +32,22 @@ function AdminController() {
         .catch((error) => {
           console.error(error);
         });
+    },
+    // Dashboard
+    getRevenueInDay: async (date) => {
+      let totalPriceInDay = 0;
+      let formatDate = moment(date).format("YYYY-MM-DD");
+
+      let listOrderInDay = await Order.find({
+        createdAt: {
+          $gte: new Date(`${formatDate}T00:00:00`),
+          $lte: new Date(`${formatDate}T23:59:59`),
+        },
+      });
+      for (let i = 0; i < listOrderInDay.length; i++) {
+        totalPriceInDay = totalPriceInDay + listOrderInDay[i].totalPrice;
+      }
+      return totalPriceInDay;
     },
   };
   return {
@@ -72,6 +89,10 @@ function AdminController() {
               let catInfo = await Category.findById(rs[1][i].categoryId).lean();
               rs[1][i]["catName"] = catInfo.name;
             }
+            
+            const testtt = await SELF.getRevenueInDay(Date.now());
+            console.log("test dashboard: ", testtt);
+            
             res.render("pages/admin/adminPage", {
               products: rs[1],
               promotion: null,
@@ -157,7 +178,6 @@ function AdminController() {
         console.log(error);
       }
     },
-
     // Promotion
     getPromotionList: async (req, res) => {
       try {
@@ -273,7 +293,6 @@ function AdminController() {
         console.log(error);
       }
     },
-
     // user
     users: async (req, res) => {
       try {
@@ -318,7 +337,6 @@ function AdminController() {
         console.log(error);
       }
     },
-
     // Staff
     staffs: async (req, res) => {
       try {
@@ -427,6 +445,7 @@ function AdminController() {
         console.log("error at export: ", error);
       }
     },
+    // Dashboard
   };
 }
 

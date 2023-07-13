@@ -24,6 +24,7 @@
       </div>
     </div>
     <script>
+      function editPromotion()
       function editProduct(id) {
         $.ajax({
           type: "GET",
@@ -45,7 +46,7 @@
           },
         });
       }
-      function editcategory(id) 
+      function editcategory(id) {
         $.ajax({
           type: "GET",
           url: `/admin/category/detail/${id}`,
@@ -80,7 +81,6 @@
           },
         });
       }
-
       function deletePromotion(id) {
         $.ajax({
           type: "DELETE",
@@ -91,7 +91,6 @@
           },
         });
       }
-
       function uploadImage() {
         var fileInput = document.getElementById("image_file");
         var file = fileInput.files[0];

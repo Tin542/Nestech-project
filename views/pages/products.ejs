@@ -207,7 +207,12 @@
         url: `/cart/current/${pid}`,
         type: "GET",
         success: function (rs) { 
-          alert(rs.msg);
+          if(rs.msg !== undefined){
+            alert(rs.msg);
+          } else {
+            window.location.href = "/auth/login";
+          }
+          
         },
       });
     }
