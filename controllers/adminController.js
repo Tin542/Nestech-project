@@ -35,20 +35,27 @@ function AdminController() {
         });
     },
     // Dashboard
-    getRevenueInDay: async (date) => {
-      let totalPriceInDay = 0;
-      let formatDate = moment(date).format("YYYY-MM-DD");
+    getRevenueInMonth: async (month, year) => {
+      // let totalPriceInDay = 0;
+      let totalDayinMonth = moment(`${year}-${month}`, "YYYY-MM").daysInMonth();// get total date in 1 month
+
+      let startDateOfMonth = `${year}-${month}-01`;
+      let endDateOfMonth = `${year}-${month}-${totalDayinMonth}`;
 
       let listOrderInDay = await Order.find({
         createdAt: {
-          $gte: new Date(`${formatDate}T00:00:00`),
-          $lte: new Date(`${formatDate}T23:59:59`),
+          $gte: new Date(`${startDateOfMonth}T00:00:00`),
+          $lte: new Date(`${endDateOfMonth}T23:59:59`),
         },
       });
-      for (let i = 0; i < listOrderInDay.length; i++) {
-        totalPriceInDay = totalPriceInDay + listOrderInDay[i].totalPrice;
-      }
-      return totalPriceInDay;
+      // for (let i = 0; i < listOrderInDay.length; i++) {
+      //   totalPriceInDay = totalPriceInDay + listOrderInDay[i].totalPrice;
+      // }
+      const totalPriceInMonth = listOrderInDay.reduce(
+        (accumulator, currentValue) => accumulator + currentValue.totalPrice,
+        0
+      );
+      return totalPriceInMonth;
     },
     getPopularProduct: async () => {
       try {
@@ -56,30 +63,72 @@ function AdminController() {
         // Đếm số lần xuất hiện
         let arrayResult = [];
         for (let i = 0; i < listOrderDetails.length; i++) {
-          let counts = {};
-          let flag = false;
-          let element = listOrderDetails[i].productID;
-          for (let j = 0; j < arrayResult.length; j++) {
-            // Nếu phần tử đã xuất hiện trước đó, tăng giá trị đếm lên 1
-            if (arrayResult[j].pid === element) {
-              arrayResult[j].count += 1;
-              flag = true;
-            }
+          let idx = arrayResult.findIndex(el => el.pid === listOrderDetails[i].productID)
+          if (idx > -1) {
+            arrayResult[idx]['count'] += 1
+          } else {
+            arrayResult.push({
+              pid: listOrderDetails[i].productID,
+              count: 1
+            })
           }
-          if (flag === false) {
-            counts["pid"] = element;
-            counts["count"] = 1;
-            arrayResult.push(counts);
+          // let counts = {}; // include: pid, count
+          // let flag = false; // check if product already in list
+          // let element = listOrderDetails[i].productID; // get pid at i
+          // for (let j = 0; j < arrayResult.length; j++) {
+          //   // Nếu phần tử đã xuất hiện trước đó, tăng count lên 1, set flag là true
+          //   if (arrayResult[j].pid === element) {
+          //     arrayResult[j].count += 1;
+          //     flag = true;
+          //   }
+          // }
+          // // nếu pid chưa có trong list => tạo mới counts => thêm vào list
+          // if (flag === false) {
+          //   counts["pid"] = element;
+          //   counts["count"] = 1;
+          //   arrayResult.push(counts);
+          // }
+        }
+        arrayResult.sort((a, b) => b.count - a.count); // sort list theo thứ tự giảm dần count
+        return arrayResult.slice(0, 10); // lấy 10 pid đầu tiên
+      } catch (error) {
+        console.log("error: " + error);
+      }
+    },
+    getPopularCategories: async () => {
+      try {
+        let listCateId = []; // list category id
+        let arrResult = []; // list result
+        let listOrderDetails = await OrderDetail.find(); // get all order details
+        // lấy list category id dựa trên productID trong orderDetail
+        for (let i = 0; i < listOrderDetails.length; i++) {
+          let pDetail = await Product.findById(listOrderDetails[i].productID);
+          listCateId.push(pDetail.categoryId);
+        }
+        // đếm số lần category xuất hiện
+        for (let i = 0; i < listCateId.length; i++) {
+          let idx = arrResult.findIndex(el => el.cid === listCateId[i])
+          if (idx > -1) {
+            arrResult[idx]['count'] += 1
+          } else {
+            arrResult.push({
+              cid: listCateId[i],
+              count: 1
+            })
           }
         }
-        arrayResult.sort((a, b) => b.count - a.count);
-        return arrayResult;
+        arrResult.sort((a, b) => b.count - a.count); // sort list theo thứ tự giảm dần count
+        return arrResult.slice(0, 3); // lấy 3 cid đầu tiên
       } catch (error) {
         console.log("error: " + error);
       }
     },
   };
   return {
+    // getRevenueInMonth: (month, year) => {
+    //   // console.log(SELF.getRevenueInDay(month, year));
+    //   // return SELF.getRevenueInDay(month, year);
+    // },
     // Products
     getList: async (req, res) => {
       try {
@@ -119,11 +168,14 @@ function AdminController() {
               rs[1][i]["catName"] = catInfo.name;
             }
             //test
-            const testtt = await SELF.getRevenueInDay(Date.now());
-            console.log("test revenue in day: ", testtt);
+            const testtt = await SELF.getRevenueInMonth("07", "2023");
+            console.log("test revenue in month: ", testtt);
 
             const testPopPd = await SELF.getPopularProduct();
             console.log("test poppd: ", testPopPd);
+
+            const testPopCate = await SELF.getPopularCategories();
+            console.log("test popcate: ", testPopCate);
 
             res.render("pages/admin/adminPage", {
               products: rs[1],
