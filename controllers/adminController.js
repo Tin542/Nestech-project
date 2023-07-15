@@ -9,6 +9,7 @@ const User = require("../models/user").User;
 const Staff = require("../models/staff").Staff;
 const Category = require("../models/category").category;
 const Order = require("../models/order").Order;
+const OrderDetail = require("../models/orderDetail").OrderDetail;
 
 function AdminController() {
   // chua global var
@@ -48,6 +49,34 @@ function AdminController() {
         totalPriceInDay = totalPriceInDay + listOrderInDay[i].totalPrice;
       }
       return totalPriceInDay;
+    },
+    getPopularProduct: async () => {
+      try {
+        let listOrderDetails = await OrderDetail.find();
+        // Đếm số lần xuất hiện
+        let arrayResult = [];
+        for (let i = 0; i < listOrderDetails.length; i++) {
+          let counts = {};
+          let flag = false;
+          let element = listOrderDetails[i].productID;
+          for (let j = 0; j < arrayResult.length; j++) {
+            // Nếu phần tử đã xuất hiện trước đó, tăng giá trị đếm lên 1
+            if (arrayResult[j].pid === element) {
+              arrayResult[j].count += 1;
+              flag = true;
+            }
+          }
+          if (flag === false) {
+            counts["pid"] = element;
+            counts["count"] = 1;
+            arrayResult.push(counts);
+          }
+        }
+        arrayResult.sort((a, b) => b.count - a.count);
+        return arrayResult;
+      } catch (error) {
+        console.log("error: " + error);
+      }
     },
   };
   return {
@@ -89,10 +118,13 @@ function AdminController() {
               let catInfo = await Category.findById(rs[1][i].categoryId).lean();
               rs[1][i]["catName"] = catInfo.name;
             }
-            
+            //test
             const testtt = await SELF.getRevenueInDay(Date.now());
-            console.log("test dashboard: ", testtt);
-            
+            console.log("test revenue in day: ", testtt);
+
+            const testPopPd = await SELF.getPopularProduct();
+            console.log("test poppd: ", testPopPd);
+
             res.render("pages/admin/adminPage", {
               products: rs[1],
               promotion: null,
