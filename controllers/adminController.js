@@ -48,9 +48,6 @@ function AdminController() {
           $lte: new Date(`${endDateOfMonth}T23:59:59`),
         },
       });
-      // for (let i = 0; i < listOrderInDay.length; i++) {
-      //   totalPriceInDay = totalPriceInDay + listOrderInDay[i].totalPrice;
-      // }
       const totalPriceInMonth = listOrderInDay.reduce(
         (accumulator, currentValue) => accumulator + currentValue.totalPrice,
         0
@@ -72,22 +69,6 @@ function AdminController() {
               count: 1
             })
           }
-          // let counts = {}; // include: pid, count
-          // let flag = false; // check if product already in list
-          // let element = listOrderDetails[i].productID; // get pid at i
-          // for (let j = 0; j < arrayResult.length; j++) {
-          //   // Nếu phần tử đã xuất hiện trước đó, tăng count lên 1, set flag là true
-          //   if (arrayResult[j].pid === element) {
-          //     arrayResult[j].count += 1;
-          //     flag = true;
-          //   }
-          // }
-          // // nếu pid chưa có trong list => tạo mới counts => thêm vào list
-          // if (flag === false) {
-          //   counts["pid"] = element;
-          //   counts["count"] = 1;
-          //   arrayResult.push(counts);
-          // }
         }
         arrayResult.sort((a, b) => b.count - a.count); // sort list theo thứ tự giảm dần count
         return arrayResult.slice(0, 10); // lấy 10 pid đầu tiên
@@ -125,11 +106,7 @@ function AdminController() {
     },
   };
   return {
-    // getRevenueInMonth: (month, year) => {
-    //   // console.log(SELF.getRevenueInDay(month, year));
-    //   // return SELF.getRevenueInDay(month, year);
-    // },
-    // Products
+   
     getList: async (req, res) => {
       try {
         let page = req.query.page;
