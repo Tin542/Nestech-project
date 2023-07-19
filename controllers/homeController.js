@@ -86,11 +86,14 @@ function HomeController() {
         let categorySearch = req.query.category || "";
         let priceRange = req.query.priceRange || "";
         let rateStar = req.query.star || "";
+        let sortValue = req.query.sortValue || -1;
+        let size = req.query.size || 12;
+        
         //paging
         if (!page || parseInt(page) <= 0) {
           page = 1;
         }
-        let skip = (parseInt(page) - 1) * SELF.SIZE;
+        let skip = (parseInt(page) - 1) * parseInt(size);
         //filter
         let filter = {};
         // filter by name
@@ -117,21 +120,22 @@ function HomeController() {
         Promise.all([
           // 2 hàm bên trong sẽ thực thi đồng thời ==> giảm thời gian thực thi ==> improve performance
           Product.countDocuments(filter).lean(), // Lấy tổng số product
-          Product.find(filter)
+          Product.find(filter).sort({price: parseInt(sortValue)})
             .skip(skip) // số trang bỏ qua ==> skip = (số trang hiện tại - 1) * số item ở mỗi trang
-            .limit(SELF.SIZE)
+            .limit(parseInt(size))
             .lean(), // số item ở mỗi trang
         ])
           .then(async (rs) => {
             // rs trả ra 1 array [kết quả của function 1, kết quả của function 2, ..]
             let productCount = rs[0]; // tổng số product
             let pageCount = 0; // tổng số trang
-            if (productCount % SELF.SIZE !== 0) {
+            if (productCount % parseInt(size) !== 0) {
               // nếu tổng số product chia SIZE có dư
-              pageCount = Math.floor(productCount / SELF.SIZE) + 1; // làm tròn số xuống cận dưới rồi + 1
+              pageCount = Math.floor(productCount / parseInt(size)) + 1; // làm tròn số xuống cận dưới rồi + 1
             } else {
-              pageCount = productCount / SELF.SIZE; // nếu ko dư thì chia bth
+              pageCount = productCount / parseInt(size); // nếu ko dư thì chia bth
             }
+            console.log('sort: ', sortValue);
             res.render("pages/products.ejs", {
               listItems: rs[1],
               pages: pageCount, // tổng số trang
@@ -142,6 +146,8 @@ function HomeController() {
                 star: rateStar,
                 prices: priceRange,
               },
+              sort: sortValue.toString(),
+              size: size.toString(),
             });
           })
           .catch((error) => {

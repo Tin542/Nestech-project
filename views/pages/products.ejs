@@ -19,8 +19,8 @@
 
     <div class="container-fluid bg-light p-3">
       <div class="row">
-        <div class="col-sm-3">
-          <div class="card p-3">
+        <div class="col-md-3">
+          <div class="card p-3 mb-3">
             <form action="/products" method="GET">
               <div class="row">
                 
@@ -97,8 +97,44 @@
             </form>
           </div>
         </div>
-        <div class="col-sm-9">
+        <div class="col-md-9">
           <div class="card p-3">
+            <div class="row p-3">
+              <div class="d-flex align-items-center">
+                Sắp xếp theo:
+            
+                <select
+              
+                id="selectSort"
+                name="sort"
+                class="form-select ms-3"
+                aria-label="Select sort"
+                style="width: 10rem;"
+               onchange="handleOnchange()"
+              >
+                <option value="-1" <%= sort==='-1' ? 'selected' : "" %>>Giá giảm dần</option>
+                <option value="1" <%= sort==='1' ? 'selected' : "" %>>Giá tăng dần</option>
+              </select>
+
+              <select
+              
+              id="selectSize"
+              name="size"
+              class="form-select ms-3"
+              aria-label="Select size"
+              style="width: 10rem;"
+             onchange="handleOnchangeSize()"
+            >
+              <option value="8" <%= size==='8' ? 'selected' : "" %>>8 Sản phẩm</option>
+              <option value="12" <%= size==='12' ? 'selected' : "" %>>12 Sản phẩm</option>
+              <option value="16" <%= size==='16' ? 'selected' : "" %>>16 Sản phẩm</option>
+              <option value="20" <%= size==='20' ? 'selected' : "" %>>20 Sản phẩm</option>
+            </select>
+           
+              </div>
+              
+            </div>
+            <hr/>
             <div class="row gy-3">
               <% if(listItems.length !== 0) { %> <% for (var i = 0; i <
               listItems.length ; i++) { %>
@@ -195,6 +231,33 @@
     <%- include('../partials/footer.ejs') %>
   </body>
   <script>
+    function handleOnchangeSize(){
+      let x = document.getElementById("selectSize").value;
+      $.ajax({
+        url: '/products',
+        type: 'GET',
+        data: {
+          Size: x
+        },
+        success: function (rs) {
+          
+        }
+      })
+    }
+
+    function handleOnchange(){
+      let x = document.getElementById("selectSort").value;
+      $.ajax({
+        url: '/products',
+        type: 'GET',
+        data: {
+          sortValue: x
+        },
+        success: function (rs) {
+          
+        }
+      })
+    }
     function addToCart(pid) {
       $.ajax({
         url: `/cart/current/${pid}`,
