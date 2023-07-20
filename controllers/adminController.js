@@ -12,9 +12,17 @@ const Order = require("../models/order").Order;
 const OrderDetail = require("../models/orderDetail").OrderDetail;
 
 function AdminController() {
+  
   // chua global var
   const SELF = {
     SIZE: 5,
+    ORDER_STATUS: {
+      PENDING: 'pending', // đang đợi xác nhận
+      APPROVED: 'approved', // đã xác nhận
+      REJECTED: 'rejected', // đã hủy
+      PROCESSING: 'processing', // đang giao hàng
+      SUCCESS: 'success', // giao hàng thành công
+    },
     mapStaffToExportData: (staff) => {
       return {
         fullname: staff.fullname,
@@ -37,7 +45,7 @@ function AdminController() {
     // Dashboard
     getRevenueInMonth: async (month, year) => {
       // let totalPriceInDay = 0;
-      let totalDayinMonth = moment(`${year}-${month}`, "YYYY-MM").daysInMonth();// get total date in 1 month
+      let totalDayinMonth = moment(`${year}-${month}`, "YYYY-MM").daysInMonth(); // get total date in 1 month
 
       let startDateOfMonth = `${year}-${month}-01`;
       let endDateOfMonth = `${year}-${month}-${totalDayinMonth}`;
@@ -60,14 +68,16 @@ function AdminController() {
         // Đếm số lần xuất hiện
         let arrayResult = [];
         for (let i = 0; i < listOrderDetails.length; i++) {
-          let idx = arrayResult.findIndex(el => el.pid === listOrderDetails[i].productID)
+          let idx = arrayResult.findIndex(
+            (el) => el.pid === listOrderDetails[i].productID
+          );
           if (idx > -1) {
-            arrayResult[idx]['count'] += 1
+            arrayResult[idx]["count"] += 1;
           } else {
             arrayResult.push({
               pid: listOrderDetails[i].productID,
-              count: 1
-            })
+              count: 1,
+            });
           }
         }
         arrayResult.sort((a, b) => b.count - a.count); // sort list theo thứ tự giảm dần count
@@ -88,14 +98,14 @@ function AdminController() {
         }
         // đếm số lần category xuất hiện
         for (let i = 0; i < listCateId.length; i++) {
-          let idx = arrResult.findIndex(el => el.cid === listCateId[i])
+          let idx = arrResult.findIndex((el) => el.cid === listCateId[i]);
           if (idx > -1) {
-            arrResult[idx]['count'] += 1
+            arrResult[idx]["count"] += 1;
           } else {
             arrResult.push({
               cid: listCateId[i],
-              count: 1
-            })
+              count: 1,
+            });
           }
         }
         arrResult.sort((a, b) => b.count - a.count); // sort list theo thứ tự giảm dần count
@@ -106,7 +116,6 @@ function AdminController() {
     },
   };
   return {
-   
     getList: async (req, res) => {
       try {
         let page = req.query.page;
@@ -125,6 +134,7 @@ function AdminController() {
           // 2 hàm bên trong sẽ thực thi đồng thời ==> giảm thời gian thực thi ==> improve performance
           Product.countDocuments({ name: regex }).lean(), // Lấy tổng số product
           Product.find({ name: regex })
+            .sort({ updatedAt: -1 })
             .skip(skip) // số trang bỏ qua ==> skip = (số trang hiện tại - 1) * số item ở mỗi trang
             .limit(SELF.SIZE)
             .lean(), // số item ở mỗi trang
@@ -163,6 +173,7 @@ function AdminController() {
               urlUploaded: null,
               staffs: null,
               listCategories: category,
+              orders: null,
             });
           })
           .catch((error) => {
@@ -276,6 +287,7 @@ function AdminController() {
               urlUploaded: null,
               productIdList: productIdList,
               staffs: null,
+              orders: null,
             });
           })
           .catch((error) => {
@@ -366,34 +378,83 @@ function AdminController() {
         let regex = new RegExp(keySearch);
 
         // pagination
-        let userCount = await User.find({
-          $or: [{ fullname: regex }, { username: regex }],
-        }).countDocuments(); // lấy tổng số product hiện có
-        let pageCount = 0; // tổng số trang
-        if (userCount % SELF.SIZE !== 0) {
-          // nếu tổng số product chia SIZE có dư
-          pageCount = Math.floor(userCount / SELF.SIZE) + 1; // làm tròn số xuống cận dưới rồi + 1
-        } else {
-          pageCount = userCount / SELF.SIZE; // nếu ko dư thì chia bth
-        }
+        Promise.all([
+          // 2 hàm bên trong sẽ thực thi đồng thời ==> giảm thời gian thực thi ==> improve performance
+          User.countDocuments({
+            $or: [{ fullname: regex }, { username: regex }],
+          }).lean(), // Lấy tổng số product
+          User.find({
+            $or: [{ fullname: regex }, { username: regex }],
+          })
+            .sort({ createdAt: -1 })
+            .skip(skip) // số trang bỏ qua ==> skip = (số trang hiện tại - 1) * số item ở mỗi trang
+            .limit(SELF.SIZE)
+            .lean(), // số item ở mỗi trang
+        ])
+          .then(async (rs) => {
+            // rs trả ra 1 array [kết quả của function 1, kết quả của function 2, ..]
+            let productCount = rs[0]; // tổng số product
+            let pageCount = 0; // tổng số trang
+            if (productCount % SELF.SIZE !== 0) {
+              // nếu tổng số product chia SIZE có dư
+              pageCount = Math.floor(productCount / SELF.SIZE) + 1; // làm tròn số xuống cận dưới rồi + 1
+            } else {
+              pageCount = productCount / SELF.SIZE; // nếu ko dư thì chia bth
+            }
 
-        return User.find({ $or: [{ fullname: regex }, { username: regex }] })
-          .skip(skip) // số item bỏ qua ==> skip = (số trang hiện tại - 1) * số item ở mỗi trang
-          .limit(SELF.SIZE) // số item ở mỗi trang
-          .then((rs) => {
+            for (let i = 0; i < rs[1].length; i++) {
+              let total = await Order.find({userID: rs[1][i]._id}).lean();
+              if(total){
+                rs[1][i]["orders"] = total.length;
+              }
+               
+            }
             res.render("pages/admin/adminPage", {
               products: null,
               promotion: null,
               category: null,
               pages: pageCount, // tổng số trang
-              users: rs,
+              users: rs[1],
               urlUploaded: null,
               staffs: null,
+              orders: null,
             });
           })
           .catch((error) => {
             res.send({ s: 400, msg: error });
           });
+      } catch (error) {
+        console.log(error);
+      }
+    },
+    activeUser: async(req, res) => {
+      try {
+        let uid = req.body.uid;
+        return User.findByIdAndUpdate(uid, {active: true})
+        .then((rs) => {
+          if (rs) {
+            res.redirect("/admin/user/list");
+          }
+        })
+        .catch((err) => {
+          console.log(err);
+        });
+      } catch (error) {
+        console.log(error);
+      }
+    },
+    blockUser: async(req, res) => {
+      try {
+        let uid = req.body.uid;
+        return User.findByIdAndUpdate(uid, {active: false})
+        .then((rs) => {
+          if (rs) {
+            res.redirect("/admin/user/list");
+          }
+        })
+        .catch((err) => {
+          console.log(err);
+        });
       } catch (error) {
         console.log(error);
       }
@@ -433,6 +494,7 @@ function AdminController() {
               urlUploaded: null,
               staffs: rs,
               promotion: null,
+              orders: null,
             });
           })
           .catch((error) => {
@@ -506,7 +568,53 @@ function AdminController() {
         console.log("error at export: ", error);
       }
     },
-    // Dashboard
+    // Orders
+    orders: async (req, res) => {
+      try {
+        let page = req.query.page;
+        if (!page || parseInt(page) <= 0) {
+          page = 1;
+        }
+        let skip = (parseInt(page) - 1) * SELF.SIZE;
+
+        // pagination
+        Promise.all([
+          // 2 hàm bên trong sẽ thực thi đồng thời ==> giảm thời gian thực thi ==> improve performance
+          Order.countDocuments().lean(), // Lấy tổng số product
+          Order.find()
+            .sort({ createdAt: -1 })
+            .skip(skip) // số trang bỏ qua ==> skip = (số trang hiện tại - 1) * số item ở mỗi trang
+            .limit(SELF.SIZE)
+            .lean(), // số item ở mỗi trang
+        ])
+          .then(async (rs) => {
+            // rs trả ra 1 array [kết quả của function 1, kết quả của function 2, ..]
+            let productCount = rs[0]; // tổng số product
+            let pageCount = 0; // tổng số trang
+            if (productCount % SELF.SIZE !== 0) {
+              // nếu tổng số product chia SIZE có dư
+              pageCount = Math.floor(productCount / SELF.SIZE) + 1; // làm tròn số xuống cận dưới rồi + 1
+            } else {
+              pageCount = productCount / SELF.SIZE; // nếu ko dư thì chia bth
+            }
+            res.render("pages/admin/adminPage", {
+              products: null,
+              promotion: null,
+              category: null,
+              pages: pageCount, // tổng số trang
+              users: null,
+              urlUploaded: null,
+              staffs: null,
+              orders: rs[1],
+            });
+          })
+          .catch((error) => {
+            res.send({ s: 400, msg: error });
+          });
+      } catch (error) {
+        console.log(error);
+      }
+    }
   };
 }
 

@@ -31,7 +31,7 @@ function categoryControler() {
           pageCount = categoryCount / SELF.SIZE; // nếu ko dư thì chia bth
         }
         return category
-          .find({ name: regex })
+          .find({ name: regex }).sort({updatedAt: -1})
           .skip(skip) // số item bỏ qua ==> skip = (số trang hiện tại - 1) * số item ở mỗi trang
           .limit(SELF.SIZE) // số item ở mỗi trang
           .then((rs) => {

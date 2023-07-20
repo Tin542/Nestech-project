@@ -135,7 +135,6 @@ function HomeController() {
             } else {
               pageCount = productCount / parseInt(size); // nếu ko dư thì chia bth
             }
-            console.log('sort: ', sortValue);
             res.render("pages/products.ejs", {
               listItems: rs[1],
               pages: pageCount, // tổng số trang

@@ -20,11 +20,13 @@
           if(users) { %> <%- include('./userList.ejs') %> <% } %> <% if(staffs)
           { %> <%- include('./staffList.ejs') %> <% } %> <% if (category){ %>
           <%- include('./category.ejs') %> <% } %>
+          <% if(orders) { %>
+            <%- include('./orderList.ejs') %>
+            <% } %>
         </div>
       </div>
     </div>
     <script>
-      function editPromotion()
       function editProduct(id) {
         $.ajax({
           type: "GET",

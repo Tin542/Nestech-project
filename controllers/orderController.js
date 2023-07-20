@@ -41,6 +41,7 @@ function orderController() {
         let createData = req.body;
         let uid = res.locals.user; // get current user id
         createData.userID = uid;
+        createData.status = 'pending';
         let result = await Order.create(createData);
         let listCart = await Cart.find({ userID: uid });
 
