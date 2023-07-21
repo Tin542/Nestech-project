@@ -43,6 +43,7 @@ function categoryControler() {
               users: null,
               urlUploaded: null,
               products: null,
+              orders: null,
             });
           })
           .catch((error) => {
