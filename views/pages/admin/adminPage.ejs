@@ -27,6 +27,11 @@
       </div>
     </div>
     <script>
+      function onClickReset(){
+        document.getElementById('idSearch').value = '';
+        document.getElementById('status').value = '';
+        document.getElementById('paid').value = '';
+      }
       function editProduct(id) {
         $.ajax({
           type: "GET",

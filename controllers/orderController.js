@@ -41,7 +41,12 @@ function orderController() {
         let createData = req.body;
         let uid = res.locals.user; // get current user id
         createData.userID = uid;
-        createData.status = 'pending';
+        createData.status = "pending";
+        if (createData.paymentMethod === "COD") {
+          createData.isPaid = true;
+        } else {
+          createData.isPaid = false;
+        }
         let result = await Order.create(createData);
         let listCart = await Cart.find({ userID: uid });
 
@@ -54,7 +59,7 @@ function orderController() {
           await OrderDetail.create(orderDetailCreate);
         });
         await Cart.deleteMany({ userID: uid });
-        return res.redirect('/cart');
+        return res.redirect("/cart");
       } catch (error) {
         console.log("error at create order", error);
       }

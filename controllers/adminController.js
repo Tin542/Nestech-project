@@ -2,6 +2,7 @@
 const xlsx = require("xlsx");
 const fs = require("fs");
 const moment = require("moment");
+const  ObjectID = require('mongodb').ObjectId;
 
 const Product = require("../models/product").Product;
 const Promotion = require("../models/promotion").Promotion;
@@ -15,13 +16,13 @@ function AdminController() {
   
   // chua global var
   const SELF = {
-    SIZE: 5,
+    SIZE: 10,
     ORDER_STATUS: {
-      PENDING: 'pending', // đang đợi xác nhận
+      PENDING: 'pending', // đang xử lý
       APPROVED: 'approved', // đã xác nhận
       REJECTED: 'rejected', // đã hủy
-      PROCESSING: 'processing', // đang giao hàng
-      SUCCESS: 'success', // giao hàng thành công
+      DELIVERING: 'delivering', // đang giao hàng
+      SUCCESS: 'success', // đã hoàn thành
     },
     mapStaffToExportData: (staff) => {
       return {
@@ -572,6 +573,21 @@ function AdminController() {
     orders: async (req, res) => {
       try {
         let page = req.query.page;
+        let idSearch = req.query.id || '';
+        let statusSearch = req.query.status || '';
+        let isPaidSearch = req.query.isPaid || '';
+        let filter = {};
+
+        if (idSearch) {
+          filter["_id"] = new ObjectID(idSearch);
+        }
+        if (statusSearch) {
+          filter["status"] = statusSearch
+        }
+        if (isPaidSearch) {
+          filter["isPaid"] = /^true$/i.test(isPaidSearch);
+        }
+
         if (!page || parseInt(page) <= 0) {
           page = 1;
         }
@@ -580,8 +596,8 @@ function AdminController() {
         // pagination
         Promise.all([
           // 2 hàm bên trong sẽ thực thi đồng thời ==> giảm thời gian thực thi ==> improve performance
-          Order.countDocuments().lean(), // Lấy tổng số product
-          Order.find()
+          Order.countDocuments(filter).lean(), // Lấy tổng số product
+          Order.find(filter)
             .sort({ createdAt: -1 })
             .skip(skip) // số trang bỏ qua ==> skip = (số trang hiện tại - 1) * số item ở mỗi trang
             .limit(SELF.SIZE)
@@ -606,6 +622,11 @@ function AdminController() {
               urlUploaded: null,
               staffs: null,
               orders: rs[1],
+              filters: {
+                idInput: idSearch || '',
+                statusSelectd: statusSearch || '',
+                paidSelectd: isPaidSearch || ''
+              }
             });
           })
           .catch((error) => {
