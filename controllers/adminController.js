@@ -635,6 +635,13 @@ function AdminController() {
       } catch (error) {
         console.log(error);
       }
+    },
+    cancelOrder: async(req, res) => {
+      try {
+        let order = await Order.findById(req.params.id);
+      } catch (error) {
+        console.log('error', error);
+      }
     }
   };
 }

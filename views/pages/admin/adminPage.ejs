@@ -27,6 +27,16 @@
       </div>
     </div>
     <script>
+      function cancelOrder(oid) {
+        $.ajax({
+          type: "POST",
+          url: `/admin/category/delete/${id}`,
+          success: function (rs) {
+            alert("Hủy đơn hàng thành công");
+            window.location.reload();
+          },
+        });
+      }
       function onClickReset(){
         document.getElementById('idSearch').value = '';
         document.getElementById('status').value = '';

@@ -40,6 +40,7 @@ router.post('/category/edit', categoryControler.editcategory);
 router.delete('/category/delete/:id', categoryControler.deletecategory);
 // Order
 router.get('/order/list', adminController.orders);
+router.post('/order/cancle', adminController.cancelOrder);
 // Excel import, export
 // router.get("/file", (req, res) => {
 //     res.render("pages/testList");
