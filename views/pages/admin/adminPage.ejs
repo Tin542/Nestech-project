@@ -20,10 +20,28 @@
           if(users) { %> <%- include('./userList.ejs') %> <% } %> <% if(staffs)
           { %> <%- include('./staffList.ejs') %> <% } %> <% if (category){ %>
           <%- include('./category.ejs') %> <% } %>
+          <% if(orders) { %>
+            <%- include('./orderList.ejs') %>
+            <% } %>
         </div>
       </div>
     </div>
     <script>
+      function cancelOrder(oid) {
+        $.ajax({
+          type: "POST",
+          url: `/admin/category/delete/${id}`,
+          success: function (rs) {
+            alert("Hủy đơn hàng thành công");
+            window.location.reload();
+          },
+        });
+      }
+      function onClickReset(){
+        document.getElementById('idSearch').value = '';
+        document.getElementById('status').value = '';
+        document.getElementById('paid').value = '';
+      }
       function editProduct(id) {
         $.ajax({
           type: "GET",
@@ -45,7 +63,7 @@
           },
         });
       }
-      function editcategory(id) 
+      function editcategory(id) {
         $.ajax({
           type: "GET",
           url: `/admin/category/detail/${id}`,
@@ -80,7 +98,6 @@
           },
         });
       }
-
       function deletePromotion(id) {
         $.ajax({
           type: "DELETE",
@@ -91,7 +108,6 @@
           },
         });
       }
-
       function uploadImage() {
         var fileInput = document.getElementById("image_file");
         var file = fileInput.files[0];

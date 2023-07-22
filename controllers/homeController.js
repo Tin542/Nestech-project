@@ -57,9 +57,8 @@ function HomeController() {
     getProductDetail: async (req, res) => {
       try {
         let productId = req.params?.id;
-
         let result = await Product.findById(productId);
-        let listSuggestItem = await Product.find().limit(4); // get 4 suggestions
+        let listSuggestItem = await Product.find({categoryId: result.categoryId}).limit(4); // get 4 suggestions
         let listComment = await Comment.find({ productID: productId }); // get all comments
         if (!result) {
           return res.json({ s: 404, msg: "Product not found" });
@@ -67,11 +66,9 @@ function HomeController() {
         if (!listSuggestItem) {
           return res.json({ s: 404, msg: "Get list suggest fail" });
         }
-
         detailProductGB = result;
         listSuggestGB = listSuggestItem;
         listCommentsGB = listComment;
-
         return res.render("pages/detail", {
           data: result,
           listItems: listSuggestItem,
@@ -89,11 +86,14 @@ function HomeController() {
         let categorySearch = req.query.category || "";
         let priceRange = req.query.priceRange || "";
         let rateStar = req.query.star || "";
+        let sortValue = req.query.sortValue || -1;
+        let size = req.query.size || 12;
+        
         //paging
         if (!page || parseInt(page) <= 0) {
           page = 1;
         }
-        let skip = (parseInt(page) - 1) * SELF.SIZE;
+        let skip = (parseInt(page) - 1) * parseInt(size);
         //filter
         let filter = {};
         // filter by name
@@ -120,20 +120,20 @@ function HomeController() {
         Promise.all([
           // 2 hàm bên trong sẽ thực thi đồng thời ==> giảm thời gian thực thi ==> improve performance
           Product.countDocuments(filter).lean(), // Lấy tổng số product
-          Product.find(filter)
+          Product.find(filter).sort({price: parseInt(sortValue)})
             .skip(skip) // số trang bỏ qua ==> skip = (số trang hiện tại - 1) * số item ở mỗi trang
-            .limit(SELF.SIZE)
+            .limit(parseInt(size))
             .lean(), // số item ở mỗi trang
         ])
           .then(async (rs) => {
             // rs trả ra 1 array [kết quả của function 1, kết quả của function 2, ..]
             let productCount = rs[0]; // tổng số product
             let pageCount = 0; // tổng số trang
-            if (productCount % SELF.SIZE !== 0) {
+            if (productCount % parseInt(size) !== 0) {
               // nếu tổng số product chia SIZE có dư
-              pageCount = Math.floor(productCount / SELF.SIZE) + 1; // làm tròn số xuống cận dưới rồi + 1
+              pageCount = Math.floor(productCount / parseInt(size)) + 1; // làm tròn số xuống cận dưới rồi + 1
             } else {
-              pageCount = productCount / SELF.SIZE; // nếu ko dư thì chia bth
+              pageCount = productCount / parseInt(size); // nếu ko dư thì chia bth
             }
             res.render("pages/products.ejs", {
               listItems: rs[1],
@@ -145,6 +145,8 @@ function HomeController() {
                 star: rateStar,
                 prices: priceRange,
               },
+              sort: sortValue.toString(),
+              size: size.toString(),
             });
           })
           .catch((error) => {

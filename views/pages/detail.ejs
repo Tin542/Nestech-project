@@ -43,210 +43,227 @@
     <!-- navbar -->
     <%- include('../partials/navbar.ejs') %>
     <!-- detail -->
-    <div class="container mt-5">
-      <div class="row mb-5">
-        <div
-          class="col col-12 col-sm-12 col-md-6 col-lg-6 d-flex justify-content-center"
-        >
-          <img
-            src="<%= data.imageUrl %>"
-            style="width: 100%; height: 100%"
-            class="rounded float-end"
-            alt="..."
-          />
-        </div>
-        <div class="col">
-          <div>
-            <h3><%= data.name %></h3>
-            <h6>Tác giả: <%= data.author %></h6>
-            <h2 style="color: red"><%= data.price %> $</h2>
-            <p>
-              <% for (var j = 0; j < 5; j++){ %> <% if (j < data.rate){ %>
-              <span class="fa fa-star checked" style="color: yellow"></span>
-              <% } else { %>
-              <span class="fa fa-star"></span>
-              <% } %> <% } %>
-            </p>
-            <i><%= data.description %></i>
-            <div style="padding-top: 20px">
-              <button
-                onclick="addToCart('<%= data._id %>')"
-                type="button"
-                class="btn btn-danger"
-              >
-                <i class="bi bi-cart3"></i>&nbsp;Thêm vào giỏ hàng
-              </button>
-              <button
-                type="button"
-                class="btn btn-danger"
-                style="
-                  color: red;
-                  background-color: white;
-                  border: 1.5px solid red;
-                "
-              >
-                Mua ngay
-              </button>
-            </div>
-          </div>
-        </div>
-      </div>
-    </div>
-    <div class="container-fluid mb-5">
-      <div class="row border border-2">
-        <div class="card-header d-flex justify-content-between bg-light">
-          <div><h5>Sản phẩm liên quan</h5></div>
-          <div><a href="/products" id="more-link">Xem thêm</a></div>
-        </div>
-
-        <div class="d-flex flex-wrap p-3 bg-light bg-gradient">
-          <% for (var i = 0; i < listItems.length ; i++) { %>
-          <div
-            class="col col-12 col-sm-6 col-md-4 col-lg-3 d-flex justify-content-center"
-          >
-            <div class="card border border-1 rounded-3 mb-3" id="productCard">
-              <div class="product-img">
-                <img src="<%= listItems[i].imageUrl %>" alt="..." />
-              </div>
-
-              <div class="card-body">
-                <% for (var j = 0; j < 5; j++){ %> <% if (j <
-                listItems[i].rate){ %>
-                <span class="fa fa-star checked"></span>
-                <% } else { %>
-                <span class="fa fa-star"></span>
-                <% } %> <% } %>
-                <h5 class="card-title"><%= listItems[i].name %></h5>
-                <p class="card-text">$<%= listItems[i].price %></p>
-              </div>
-              <div class="overlay">
-                <div class="d-grid gap-2 col-8 mx-auto">
-                  <a
-                    href="/products/detail/<%= listItems[i]._id %>"
-                    type="button"
-                    class="btn btn-outline-secondary"
-                  >
-                    <i class="bi bi-eye-fill"></i> &nbsp;Xem chi tiết
-                  </a>
-                  <button
-                    onclick="addToCart('<%= listItems[i]._id %>')"
-                    class="btn btn-primary"
-                    type="button"
-                  >
-                    <i class="bi bi-cart2"></i> &nbsp;Thêm vào giỏ
-                  </button>
-                </div>
-              </div>
-            </div>
-          </div>
-          <% } %>
-        </div>
-      </div>
-    </div>
-    <div class="container">
-      <div class="row">
-        <div class="mb-3">
-          <h4>Đánh Giá Sản Phẩm</h4>
-          <div>(<%= comments.length %> đánh giá)</div>
-        </div>
-        <div class="container bootstrap snippets bootdey">
-          <div class="row">
-            <hr />
-            <div class="col-md-8">
-              <div class="blog-comment">
-                <ul class="comments">
-                  <% if (comments.length !== 0) { %>
-                  <% comments.forEach((cmt) => { %>
-                  <li class="clearfix">
+    <div class="container-fluid bg-light p-3">
+      <div class="container p-3">
+        <div class="row mb-5">
+          <div class="card p-3">
+            <div class="container-fluid">
+              <div class="row">
+                <div class="col-sm-12 col-md-6">
+                  <div class="border border-2 rounded-3">
                     <img
-                      src="https://bootdey.com/img/Content/user_1.jpg"
-                      class="avatar"
-                      alt=""
+                      src="<%= data.imageUrl %>"
+                      style="width: 100%; height: 100%"
+                      alt="..."
                     />
-                    <div class="post-comments">
-                      <p class="meta">
-                        <a href="#"><%= cmt.username %></a> - <%= cmt.createDate %>
-                        <i class="pull-right">
-                          <% for (var j = 0; j < 5; j++){ %> <% if (j <
-                          cmt.rate){ %>
-                          <span class="fa fa-star checked"></span>
-                          <% } else { %>
-                          <span class="fa fa-star"></span>
-                          <% } %> <% } %>
-                        </i>
-                      </p>
-                      <p><%= cmt.content %></p>
-                    </div>
-                  </li>
-                  <% }) %>
-                  <% } else { %>
-                    <div class="card bg-light p-5">
-                      <img
-                        style="margin: auto"
-                        width="200px"
-                        height="200px"
-                        src="https://plus24h.com/upload/images/Comment-edit-icon.png"
-                      />
-                      <div class="fst-italic m-auto">
-                        Chưa có đánh giá nào (T.T)
-                      </div>
-                     
-                    </div>
-                    <% } %>
-                </ul>
-              </div>
-            </div>
-            <div class="col-md-4">
-              <div class="card w-100" style="height: auto">
-                <div class="card-header">
-                  <div class="d-flex justify-content-between">
-                    <div>Để lại đánh giá</div>
                   </div>
                 </div>
+                <div class="col-sm-12 col-md-6">
+                  <div class="p-3 ms-3">
+                    <h3><%= data.name %></h3>
+                    <h6>Tác giả: <%= data.author %></h6>
+                    <h2 style="color: red"><%= data.price %> $</h2>
+                    <p>
+                      <% for (var j = 0; j < 5; j++){ %> <% if (j < data.rate){
+                      %>
+                      <span
+                        class="fa fa-star checked"
+                        style="color: yellow"
+                      ></span>
+                      <% } else { %>
+                      <span class="fa fa-star"></span>
+                      <% } %> <% } %>
+                    </p>
+                    <i><%= data.description %></i>
+                    <div style="padding-top: 20px">
+                      <button
+                        onclick="addToCart('<%= data._id %>')"
+                        type="button"
+                        class="btn btn-danger"
+                      >
+                        <i class="bi bi-cart3"></i>&nbsp;Thêm vào giỏ hàng
+                      </button>
+                      <button
+                        type="button"
+                        class="btn btn-outline-danger"
+                      >
+                        Mua ngay
+                      </button>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div class="row border border-2 bg-white mb-5">
+          <div class="card-header p-3 d-flex justify-content-between bg-white">
+            <div><h5>Sản phẩm liên quan</h5></div>
+            <div><a href="/products" id="more-link">Xem thêm</a></div>
+          </div>
+
+          <div class="d-flex flex-wrap p-3 bg-white">
+            <% for (var i = 0; i < listItems.length ; i++) { %>
+            <div
+              class="col col-12 col-sm-6 col-md-4 col-lg-3 d-flex justify-content-center"
+            >
+              <div class="card border border-1 rounded-3 mb-3" id="productCard">
+                <div class="product-img">
+                  <img src="<%= listItems[i].imageUrl %>" alt="..." />
+                </div>
+
                 <div class="card-body">
-                  <form method="POST" action="/comments/create">
-                    <div class="mb-3">
-                      <input
-                        type="hidden"
-                        name="productID"
-                        value="<%= data._id %>"
-                      />
-                      <label for="content" class="form-label"
-                        >Nội dung đánh giá</label
-                      >
-                      <textarea
-                        class="form-control"
-                        id="content"
-                        rows="5"
-                        name="content"
-                        required
-                      ></textarea>
-                    </div>
-                    <div class="mb-3">
-                      <input
-                        required
-                        name="rate"
-                        class="rating rating-loading"
-                        data-min="0"
-                        data-max="5"
-                        data-step="1"
-                        data-size="sm"
-                      />
-                    </div>
-                    <% if(typeof msg !== "undefined"){ %>
-                    <div class="mb-3 col-md-12">
-                      <div
-                        class="badge bg-danger text-wrap"
-                        style="width: 100%"
-                      >
-                        <%= msg %>
+                  <% for (var j = 0; j < 5; j++){ %> <% if (j <
+                  listItems[i].rate){ %>
+                  <span class="fa fa-star checked"></span>
+                  <% } else { %>
+                  <span class="fa fa-star"></span>
+                  <% } %> <% } %>
+                  <h6
+                    class="card-title"
+                    data-bs-toggle="tooltip"
+                    data-bs-placement="right"
+                    title="<%= listItems[i].name %>"
+                  >
+                    <span class="text-wrap text-truncate">
+                      <%= listItems[i].name %>
+                    </span>
+                  </h6>
+                  <p class="card-text">$<%= listItems[i].price %></p>
+                </div>
+                <div class="overlay">
+                  <div class="d-grid gap-2 col-8 mx-auto">
+                    <a
+                      href="/products/detail/<%= listItems[i]._id %>"
+                      type="button"
+                      class="btn btn-outline-secondary"
+                    >
+                      <i class="bi bi-eye-fill"></i> &nbsp;Xem chi tiết
+                    </a>
+                    <button
+                      onclick="addToCart('<%= listItems[i]._id %>')"
+                      class="btn btn-primary"
+                      type="button"
+                    >
+                      <i class="bi bi-cart2"></i> &nbsp;Thêm vào giỏ
+                    </button>
+                  </div>
+                </div>
+              </div>
+            </div>
+            <% } %>
+          </div>
+        </div>
+
+        <div class="row">
+          <div class="card p-3">
+            <div class="mb-3">
+              <h4>Đánh Giá Sản Phẩm</h4>
+              <div>(<%= comments.length %> đánh giá)</div>
+            </div>
+            <div class="container bootstrap snippets bootdey">
+              <div class="row">
+                <hr />
+                <div class="col-md-8">
+                  <div class="blog-comment">
+                    <ul class="comments">
+                      <% if (comments.length !== 0) { %> <%
+                      comments.forEach((cmt)=> { %>
+                      <li class="clearfix">
+                        <img
+                          src="https://bootdey.com/img/Content/user_1.jpg"
+                          class="avatar"
+                          alt=""
+                        />
+                        <div class="post-comments">
+                          <p class="meta">
+                            <a href="#"><%= cmt.username %></a> - <%=
+                            cmt.createDate %>
+                            <i class="pull-right">
+                              <% for (var j = 0; j < 5; j++){ %> <% if (j <
+                              cmt.rate){ %>
+                              <span class="fa fa-star checked"></span>
+                              <% } else { %>
+                              <span class="fa fa-star"></span>
+                              <% } %> <% } %>
+                            </i>
+                          </p>
+                          <p><%= cmt.content %></p>
+                        </div>
+                      </li>
+                      <% }) %> <% } else { %>
+                      <div class="card bg-light p-5">
+                        <img
+                          style="margin: auto"
+                          width="200px"
+                          height="200px"
+                          src="https://plus24h.com/upload/images/Comment-edit-icon.png"
+                        />
+                        <div class="fst-italic m-auto">
+                          Chưa có đánh giá nào (T.T)
+                        </div>
+                      </div>
+                      <% } %>
+                    </ul>
+                  </div>
+                </div>
+                <div class="col-md-4">
+                  <div class="card w-100" style="height: auto">
+                    <div class="card-header">
+                      <div class="d-flex justify-content-between">
+                        <div>Để lại đánh giá</div>
                       </div>
                     </div>
-                    <% } %>
-                    <button type="submit" class="btn btn-primary mt-5 w-100">
-                      Gửi đánh giá
-                    </button>
-                  </form>
+                    <div class="card-body">
+                      <form method="POST" action="/comments/create">
+                        <div class="mb-3">
+                          <input
+                            type="hidden"
+                            name="productID"
+                            value="<%= data._id %>"
+                          />
+                          <label for="content" class="form-label"
+                            >Nội dung đánh giá</label
+                          >
+                          <textarea
+                            class="form-control"
+                            id="content"
+                            rows="5"
+                            name="content"
+                            required
+                          ></textarea>
+                        </div>
+                        <div class="mb-3">
+                          <input
+                            required
+                            name="rate"
+                            class="rating rating-loading"
+                            data-min="0"
+                            data-max="5"
+                            data-step="1"
+                            data-size="sm"
+                          />
+                        </div>
+                        <% if(typeof msg !== "undefined"){ %>
+                        <div class="mb-3 col-md-12">
+                          <div
+                            class="badge bg-danger text-wrap"
+                            style="width: 100%"
+                          >
+                            <%= msg %>
+                          </div>
+                        </div>
+                        <% } %>
+                        <button
+                          type="submit"
+                          class="btn btn-primary mt-5 w-100"
+                        >
+                          Gửi đánh giá
+                        </button>
+                      </form>
+                    </div>
+                  </div>
                 </div>
               </div>
             </div>
@@ -263,8 +280,11 @@
         url: `/cart/current/${pid}`,
         type: "GET",
         success: function (rs) {
-  
-          alert(rs.msg);
+          if (rs.msg !== undefined) {
+            alert(rs.msg);
+          } else {
+            window.location.href = "/auth/login";
+          }
         },
       });
     }
