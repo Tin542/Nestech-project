@@ -6,7 +6,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>Admin</title>
 
-    <link href="/public/assets/admin.css" rel="stylesheet" type="text/css" />
+    <link href="/views/assets/admin.css" rel="stylesheet" type="text/css" />
     <%- include('../../partials/header.ejs') %>
   </head>
   <body>
@@ -19,10 +19,9 @@
           if(promotion) { %> <%- include('./promotionList.ejs') %> <% } %> <%
           if(users) { %> <%- include('./userList.ejs') %> <% } %> <% if(staffs)
           { %> <%- include('./staffList.ejs') %> <% } %> <% if (category){ %>
-          <%- include('./category.ejs') %> <% } %>
-          <% if(orders) { %>
-            <%- include('./orderList.ejs') %>
-            <% } %>
+          <%- include('./category.ejs') %> <% } %> <% if(orders) { %> <%-
+          include('./orderList.ejs') %> <% } %> <% if(dashboard) { %> <%-
+          include('./dashboard.ejs') %> <% } %>
         </div>
       </div>
     </div>
@@ -30,17 +29,20 @@
       function cancelOrder(oid) {
         $.ajax({
           type: "POST",
-          url: `/admin/category/delete/${id}`,
+          data: {
+            orderId: oid
+          },
+          url: `/admin/order/cancel`,
           success: function (rs) {
             alert("Hủy đơn hàng thành công");
             window.location.reload();
           },
         });
       }
-      function onClickReset(){
-        document.getElementById('idSearch').value = '';
-        document.getElementById('status').value = '';
-        document.getElementById('paid').value = '';
+      function onClickReset() {
+        document.getElementById("idSearch").value = "";
+        document.getElementById("status").value = "";
+        document.getElementById("paid").value = "";
       }
       function editProduct(id) {
         $.ajax({
@@ -70,7 +72,7 @@
           success: function (rs) {
             if (rs.s === 200) {
               let data = rs.data;
-        
+
               // set data vừa get đc lên <input>
               document.getElementById("nameEdit").value = data?.name;
               document.getElementById("_idEdit").value = data?._id;

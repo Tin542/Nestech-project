@@ -44,6 +44,7 @@ function categoryControler() {
               urlUploaded: null,
               products: null,
               orders: null,
+              dashboard: null,
             });
           })
           .catch((error) => {

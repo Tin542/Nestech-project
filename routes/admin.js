@@ -11,7 +11,7 @@ const upload = multer({
     storage: multer.memoryStorage(),
 })
 
-router.use(authController.checkLogin);
+// router.use(authController.checkLogin);
 // product
 router.get('/products/list', adminController.getList);
 router.post('/products/add', adminController.addProduct);
@@ -40,14 +40,10 @@ router.post('/category/edit', categoryControler.editcategory);
 router.delete('/category/delete/:id', categoryControler.deletecategory);
 // Order
 router.get('/order/list', adminController.orders);
-router.post('/order/cancle', adminController.cancelOrder);
-// Excel import, export
-// router.get("/file", (req, res) => {
-//     res.render("pages/testList");
-//   });
-// router.post("/import-excel", fileService.uploadFileExcel);
-
-
+router.post('/order/cancel', adminController.cancelOrder);
+// Dashboard
+router.get('/dashboard', adminController.dashboard);
+router.get('/dashboard/chart', adminController.getRevernueChart);
 // upload hinh anh
 router.post("/products/upload-image", upload.single("file"), fileService.uploadFile);
 

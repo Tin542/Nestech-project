@@ -2,7 +2,8 @@
 const xlsx = require("xlsx");
 const fs = require("fs");
 const moment = require("moment");
-const  ObjectID = require('mongodb').ObjectId;
+const ObjectID = require("mongodb").ObjectId;
+const Chart = require("chart.js/auto");
 
 const Product = require("../models/product").Product;
 const Promotion = require("../models/promotion").Promotion;
@@ -13,16 +14,15 @@ const Order = require("../models/order").Order;
 const OrderDetail = require("../models/orderDetail").OrderDetail;
 
 function AdminController() {
-  
   // chua global var
   const SELF = {
     SIZE: 10,
     ORDER_STATUS: {
-      PENDING: 'pending', // đang xử lý
-      APPROVED: 'approved', // đã xác nhận
-      REJECTED: 'rejected', // đã hủy
-      DELIVERING: 'delivering', // đang giao hàng
-      SUCCESS: 'success', // đã hoàn thành
+      PENDING: "pending", // đang xử lý
+      APPROVED: "approved", // đã xác nhận
+      REJECTED: "rejected", // đã hủy
+      DELIVERING: "delivering", // đang giao hàng
+      SUCCESS: "success", // đã hoàn thành
     },
     mapStaffToExportData: (staff) => {
       return {
@@ -56,6 +56,8 @@ function AdminController() {
           $gte: new Date(`${startDateOfMonth}T00:00:00`),
           $lte: new Date(`${endDateOfMonth}T23:59:59`),
         },
+        isPaid: true,
+        status: "success",
       });
       const totalPriceInMonth = listOrderInDay.reduce(
         (accumulator, currentValue) => accumulator + currentValue.totalPrice,
@@ -175,6 +177,7 @@ function AdminController() {
               staffs: null,
               listCategories: category,
               orders: null,
+              dashboard: null,
             });
           })
           .catch((error) => {
@@ -289,6 +292,7 @@ function AdminController() {
               productIdList: productIdList,
               staffs: null,
               orders: null,
+              dashboard: null,
             });
           })
           .catch((error) => {
@@ -404,11 +408,10 @@ function AdminController() {
             }
 
             for (let i = 0; i < rs[1].length; i++) {
-              let total = await Order.find({userID: rs[1][i]._id}).lean();
-              if(total){
+              let total = await Order.find({ userID: rs[1][i]._id }).lean();
+              if (total) {
                 rs[1][i]["orders"] = total.length;
               }
-               
             }
             res.render("pages/admin/adminPage", {
               products: null,
@@ -419,6 +422,7 @@ function AdminController() {
               urlUploaded: null,
               staffs: null,
               orders: null,
+              dashboard: null,
             });
           })
           .catch((error) => {
@@ -428,34 +432,34 @@ function AdminController() {
         console.log(error);
       }
     },
-    activeUser: async(req, res) => {
+    activeUser: async (req, res) => {
       try {
         let uid = req.body.uid;
-        return User.findByIdAndUpdate(uid, {active: true})
-        .then((rs) => {
-          if (rs) {
-            res.redirect("/admin/user/list");
-          }
-        })
-        .catch((err) => {
-          console.log(err);
-        });
+        return User.findByIdAndUpdate(uid, { active: true })
+          .then((rs) => {
+            if (rs) {
+              res.redirect("/admin/user/list");
+            }
+          })
+          .catch((err) => {
+            console.log(err);
+          });
       } catch (error) {
         console.log(error);
       }
     },
-    blockUser: async(req, res) => {
+    blockUser: async (req, res) => {
       try {
         let uid = req.body.uid;
-        return User.findByIdAndUpdate(uid, {active: false})
-        .then((rs) => {
-          if (rs) {
-            res.redirect("/admin/user/list");
-          }
-        })
-        .catch((err) => {
-          console.log(err);
-        });
+        return User.findByIdAndUpdate(uid, { active: false })
+          .then((rs) => {
+            if (rs) {
+              res.redirect("/admin/user/list");
+            }
+          })
+          .catch((err) => {
+            console.log(err);
+          });
       } catch (error) {
         console.log(error);
       }
@@ -496,6 +500,7 @@ function AdminController() {
               staffs: rs,
               promotion: null,
               orders: null,
+              dashboard: null,
             });
           })
           .catch((error) => {
@@ -573,16 +578,16 @@ function AdminController() {
     orders: async (req, res) => {
       try {
         let page = req.query.page;
-        let idSearch = req.query.id || '';
-        let statusSearch = req.query.status || '';
-        let isPaidSearch = req.query.isPaid || '';
+        let idSearch = req.query.id || "";
+        let statusSearch = req.query.status || "";
+        let isPaidSearch = req.query.isPaid || "";
         let filter = {};
 
         if (idSearch) {
           filter["_id"] = new ObjectID(idSearch);
         }
         if (statusSearch) {
-          filter["status"] = statusSearch
+          filter["status"] = statusSearch;
         }
         if (isPaidSearch) {
           filter["isPaid"] = /^true$/i.test(isPaidSearch);
@@ -622,11 +627,12 @@ function AdminController() {
               urlUploaded: null,
               staffs: null,
               orders: rs[1],
+              dashboard: null,
               filters: {
-                idInput: idSearch || '',
-                statusSelectd: statusSearch || '',
-                paidSelectd: isPaidSearch || ''
-              }
+                idInput: idSearch || "",
+                statusSelectd: statusSearch || "",
+                paidSelectd: isPaidSearch || "",
+              },
             });
           })
           .catch((error) => {
@@ -636,13 +642,51 @@ function AdminController() {
         console.log(error);
       }
     },
-    cancelOrder: async(req, res) => {
+    cancelOrder: async (req, res) => {
       try {
-        let order = await Order.findById(req.params.id);
+        let oid = req.body.orderId;
+        let order = await Order.findById(oid);
+        if (order) {
+          return await Order.findByIdAndUpdate(order._id, {
+            status: SELF.ORDER_STATUS.REJECTED,
+          })
+            .then((rs) => {
+              if (rs) {
+                return res.json({ s: 200, msg: "Hủy đơn hàng thành công" });
+              }
+            })
+            .catch((err) => {
+              console.log(err);
+            });
+        }
       } catch (error) {
-        console.log('error', error);
+        console.log("error", error);
       }
-    }
+    },
+    // Dashboard
+    dashboard: async (req, res) => {
+      return res.render("pages/admin/adminPage", {
+        products: null,
+        category: null,
+        users: null,
+        urlUploaded: null,
+        staffs: null,
+        promotion: null,
+        orders: null,
+        dashboard: 1,
+      });
+    },
+    getRevernueChart: async (req, res) => {
+      const data = [
+        { time: "01/2023", totalPriceOrder: 10000000 },
+        { time: "02/2023", totalPriceOrder: 30000000 },
+        { time: "03/2023", totalPriceOrder: 20000000 },
+        { time: "04/2023", totalPriceOrder: 50000000 },
+        { time: "05/2023", totalPriceOrder: 50000000 },
+        { time: "06/2023", totalPriceOrder: 90000000 },
+      ];
+      return res.json({ s: 200, data: data });
+    },
   };
 }
 
