@@ -18,7 +18,7 @@ router.post('/products/add', adminController.addProduct);
 router.get('/products/detail/:id', adminController.getProductDetail);
 router.post('/products/edit', adminController.editProduct);
 router.delete('/products/delete/:id', adminController.deleteProduct);
-//promotion
+// promotion
 router.get('/promotion/list', adminController.getPromotionList);
 router.post('/promotion/add', adminController.addPromotion);
 router.get('/promotion/detail/:id', adminController.getPromotionDetail);
@@ -40,14 +40,12 @@ router.post('/category/edit', categoryControler.editcategory);
 router.delete('/category/delete/:id', categoryControler.deletecategory);
 // Order
 router.get('/order/list', adminController.orders);
-router.post('/order/cancle', adminController.cancelOrder);
-// Excel import, export
-// router.get("/file", (req, res) => {
-//     res.render("pages/testList");
-//   });
-// router.post("/import-excel", fileService.uploadFileExcel);
-
-
+router.get('/order/detail/:id', adminController.getDetailOrder);
+router.post('/order/cancel', adminController.cancelOrder);
+router.post('/order/update-status', adminController.updateStatusOrder);
+// Dashboard
+router.get('/dashboard', adminController.dashboard);
+router.get('/dashboard/chart', adminController.getRevernueChart);
 // upload hinh anh
 router.post("/products/upload-image", upload.single("file"), fileService.uploadFile);
 

@@ -157,7 +157,7 @@ function AuthController() {
               session.cart = cart.length;
 
               if (data?.username === "admin") {
-                res.redirect("/admin/products/list");
+                res.redirect("/admin/dashboard");
               } else {
                 res.redirect("/");
               }
