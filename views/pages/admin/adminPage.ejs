@@ -14,14 +14,15 @@
     <div class="container-fluid">
       <div class="row flex-nowrap">
         <%- include('../../partials/admin/adminSidebar.ejs') %>
-        <div class="col py-3">
+        <div class="col bg-light">
           <% if(products) { %> <%- include('./productList.ejs') %> <% } %> <%
           if(promotion) { %> <%- include('./promotionList.ejs') %> <% } %> <%
           if(users) { %> <%- include('./userList.ejs') %> <% } %> <% if(staffs)
           { %> <%- include('./staffList.ejs') %> <% } %> <% if (category){ %>
           <%- include('./category.ejs') %> <% } %> <% if(orders) { %> <%-
           include('./orderList.ejs') %> <% } %> <% if(dashboard) { %> <%-
-          include('./dashboard.ejs') %> <% } %>
+          include('./dashboard.ejs') %> <% } %> <% if(orderDetail){ %> <%-
+          include('./orderDetail.ejs') %> <% } %>
         </div>
       </div>
     </div>
@@ -30,7 +31,7 @@
         $.ajax({
           type: "POST",
           data: {
-            orderId: oid
+            orderId: oid,
           },
           url: `/admin/order/cancel`,
           success: function (rs) {

@@ -178,6 +178,7 @@ function AdminController() {
               listCategories: category,
               orders: null,
               dashboard: null,
+              orderDetail: null,
             });
           })
           .catch((error) => {
@@ -293,6 +294,7 @@ function AdminController() {
               staffs: null,
               orders: null,
               dashboard: null,
+              orderDetail: null,
             });
           })
           .catch((error) => {
@@ -423,6 +425,7 @@ function AdminController() {
               staffs: null,
               orders: null,
               dashboard: null,
+              orderDetail: null,
             });
           })
           .catch((error) => {
@@ -501,6 +504,7 @@ function AdminController() {
               promotion: null,
               orders: null,
               dashboard: null,
+              orderDetail: null,
             });
           })
           .catch((error) => {
@@ -628,6 +632,7 @@ function AdminController() {
               staffs: null,
               orders: rs[1],
               dashboard: null,
+              orderDetail: null,
               filters: {
                 idInput: idSearch || "",
                 statusSelectd: statusSearch || "",
@@ -663,6 +668,53 @@ function AdminController() {
         console.log("error", error);
       }
     },
+    getDetailOrder: async (req, res) => {
+      try {
+        let oid = req.params.id;
+        let order = await Order.findById(oid);
+        if (order) {
+          await OrderDetail.find({ orderID: order._id })
+            .then((rs) => {
+             
+              return res.render("pages/admin/adminPage", {
+                products: null,
+                promotion: null,
+                category: null,
+                users: null,
+                staffs: null,
+                orders: null,
+                dashboard: null,
+                orderDetail: order,
+                listProduct: rs,
+              });
+            })
+            .catch((error) => console.log(error));
+        } else {
+          return res.json({ s: 404, msg: "Order not found" });
+        }
+      } catch (error) {
+        console.log("error", error);
+      }
+    },
+    updateStatusOrder: async(req, res) => {
+      try {
+        let oid = req.body.oid;
+        let statusOrder = req.body.status;
+        let statusPayment = req.body.isPaid;
+        let order = await Order.findById(oid);
+        if(!order){
+          return res.json({s: 404, msg: 'order not found'});
+        }
+        return await Order.findByIdAndUpdate(order._id, {
+          status: statusOrder,
+          isPaid: statusPayment
+        }).then(()=>{
+          res.redirect(`/admin/order/detail/${order._id}`);
+        }).catch((error) => connsole.log(error));
+      } catch (error) {
+        console.log("error", error);
+      }
+    },
     // Dashboard
     dashboard: async (req, res) => {
       return res.render("pages/admin/adminPage", {
@@ -674,6 +726,7 @@ function AdminController() {
         promotion: null,
         orders: null,
         dashboard: 1,
+        orderDetail: null,
       });
     },
     getRevernueChart: async (req, res) => {

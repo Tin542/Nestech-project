@@ -11,14 +11,14 @@ const upload = multer({
     storage: multer.memoryStorage(),
 })
 
-// router.use(authController.checkLogin);
+router.use(authController.checkLogin);
 // product
 router.get('/products/list', adminController.getList);
 router.post('/products/add', adminController.addProduct);
 router.get('/products/detail/:id', adminController.getProductDetail);
 router.post('/products/edit', adminController.editProduct);
 router.delete('/products/delete/:id', adminController.deleteProduct);
-//promotion
+// promotion
 router.get('/promotion/list', adminController.getPromotionList);
 router.post('/promotion/add', adminController.addPromotion);
 router.get('/promotion/detail/:id', adminController.getPromotionDetail);
@@ -40,7 +40,9 @@ router.post('/category/edit', categoryControler.editcategory);
 router.delete('/category/delete/:id', categoryControler.deletecategory);
 // Order
 router.get('/order/list', adminController.orders);
+router.get('/order/detail/:id', adminController.getDetailOrder);
 router.post('/order/cancel', adminController.cancelOrder);
+router.post('/order/update-status', adminController.updateStatusOrder);
 // Dashboard
 router.get('/dashboard', adminController.dashboard);
 router.get('/dashboard/chart', adminController.getRevernueChart);
