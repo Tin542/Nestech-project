@@ -11,7 +11,7 @@ const upload = multer({
     storage: multer.memoryStorage(),
 })
 
-router.use(authController.checkLogin);
+// router.use(authController.checkLoginAdmin);
 // product
 router.get('/products/list', adminController.getList);
 router.post('/products/add', adminController.addProduct);
@@ -46,6 +46,7 @@ router.post('/order/update-status', adminController.updateStatusOrder);
 // Dashboard
 router.get('/dashboard', adminController.dashboard);
 router.get('/dashboard/chart', adminController.getRevernueChart);
+router.get('/dashboard/summary', adminController.getAllSummary);
 // upload hinh anh
 router.post("/products/upload-image", upload.single("file"), fileService.uploadFile);
 

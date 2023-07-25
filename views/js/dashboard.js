@@ -12,13 +12,26 @@
           labels: data.map((el) => el.time),
           datasets: [
             {
-              label: "# of Votes",
-              data: data.map((el) => el.totalPriceOrder),
+              label: "Tổng doanh thu trong tháng",
+              data: data.map((el) => el.revenue),
               borderWidth: 1,
             },
           ],
         },
       });
+    },
+  });
+})();
+(function renderSummary() {
+  $.ajax({
+    type: "GET",
+    url: `/admin/dashboard/summary`,
+    success: function (rs) {
+      let data = rs.data;
+      document.getElementById("revernue").innerHTML = data.revenue;
+      document.getElementById("order").innerHTML = data.order;
+      document.getElementById("user").innerHTML = data.user;
+      document.getElementById("product").innerHTML = data.product;
     },
   });
 })();
