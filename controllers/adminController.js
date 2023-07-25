@@ -67,18 +67,27 @@ function AdminController() {
     },
     getPopularProduct: async () => {
       try {
-        let listOrderDetails = await OrderDetail.find();
+        let listOrder = await Order.find({ status: "success", isPaid: true });
+        let listTmp = [];
+        for (let i = 0; i < listOrder.length; i++) {
+          let orderDetails = await OrderDetail.find({
+            orderID: new ObjectID(listOrder[i]._id),
+          });
+          if (orderDetails.length > 0) {
+            listTmp = listTmp.concat(orderDetails);
+          }
+        }
         // Đếm số lần xuất hiện
         let arrayResult = [];
-        for (let i = 0; i < listOrderDetails.length; i++) {
+        for (let i = 0; i < listTmp.length; i++) {
           let idx = arrayResult.findIndex(
-            (el) => el.pid === listOrderDetails[i].productID
+            (el) => el.pid === listTmp[i].productID
           );
           if (idx > -1) {
             arrayResult[idx]["count"] += 1;
           } else {
             arrayResult.push({
-              pid: listOrderDetails[i].productID,
+              pid: listTmp[i].productID,
               count: 1,
             });
           }
@@ -93,10 +102,19 @@ function AdminController() {
       try {
         let listCateId = []; // list category id
         let arrResult = []; // list result
-        let listOrderDetails = await OrderDetail.find(); // get all order details
+        let listOrder = await Order.find({ status: "success", isPaid: true });
+        let listTmp = [];
+        for (let i = 0; i < listOrder.length; i++) {
+          let orderDetails = await OrderDetail.find({
+            orderID: new ObjectID(listOrder[i]._id),
+          });
+          if (orderDetails.length > 0) {
+            listTmp = listTmp.concat(orderDetails);
+          }
+        }
         // lấy list category id dựa trên productID trong orderDetail
-        for (let i = 0; i < listOrderDetails.length; i++) {
-          let pDetail = await Product.findById(listOrderDetails[i].productID);
+        for (let i = 0; i < listTmp.length; i++) {
+          let pDetail = await Product.findById(listTmp[i].productID);
           listCateId.push(pDetail.categoryId);
         }
         // đếm số lần category xuất hiện
@@ -157,16 +175,6 @@ function AdminController() {
               let catInfo = await Category.findById(rs[1][i].categoryId).lean();
               rs[1][i]["catName"] = catInfo.name;
             }
-            //test
-            const testtt = await SELF.getRevenueInMonth("07", "2023");
-            console.log("test revenue in month: ", testtt);
-
-            const testPopPd = await SELF.getPopularProduct();
-            console.log("test poppd: ", testPopPd);
-
-            const testPopCate = await SELF.getPopularCategories();
-            console.log("test popcate: ", testPopCate);
-
             res.render("pages/admin/adminPage", {
               products: rs[1],
               promotion: null,
@@ -675,7 +683,6 @@ function AdminController() {
         if (order) {
           await OrderDetail.find({ orderID: order._id })
             .then((rs) => {
-             
               return res.render("pages/admin/adminPage", {
                 products: null,
                 promotion: null,
@@ -696,27 +703,42 @@ function AdminController() {
         console.log("error", error);
       }
     },
-    updateStatusOrder: async(req, res) => {
+    updateStatusOrder: async (req, res) => {
       try {
         let oid = req.body.oid;
         let statusOrder = req.body.status;
         let statusPayment = req.body.isPaid;
         let order = await Order.findById(oid);
-        if(!order){
-          return res.json({s: 404, msg: 'order not found'});
+        if (!order) {
+          return res.json({ s: 404, msg: "order not found" });
         }
         return await Order.findByIdAndUpdate(order._id, {
           status: statusOrder,
-          isPaid: statusPayment
-        }).then(()=>{
-          res.redirect(`/admin/order/detail/${order._id}`);
-        }).catch((error) => connsole.log(error));
+          isPaid: statusPayment,
+        })
+          .then(() => {
+            res.redirect(`/admin/order/detail/${order._id}`);
+          })
+          .catch((error) => connsole.log(error));
       } catch (error) {
         console.log("error", error);
       }
     },
     // Dashboard
     dashboard: async (req, res) => {
+      let listPid = await SELF.getPopularProduct();
+      let listProduct = [];
+      for (let i = 0; i < listPid.length; i++) {
+        let product = await Product.findById(listPid[i].pid);
+        listProduct.push(product);
+      }
+
+      let listCid = await SELF.getPopularCategories();
+      let listCategories = [];
+      for (let i = 0; i < listCid.length; i++) {
+        let category = await Category.findById(listCid[i].cid);
+        listCategories.push(category);
+      }
       return res.render("pages/admin/adminPage", {
         products: null,
         category: null,
@@ -725,20 +747,57 @@ function AdminController() {
         staffs: null,
         promotion: null,
         orders: null,
-        dashboard: 1,
+        dashboard: {
+          listProduct: listProduct,  
+          listCategory: listCategories
+        },
         orderDetail: null,
       });
     },
     getRevernueChart: async (req, res) => {
-      const data = [
-        { time: "01/2023", totalPriceOrder: 10000000 },
-        { time: "02/2023", totalPriceOrder: 30000000 },
-        { time: "03/2023", totalPriceOrder: 20000000 },
-        { time: "04/2023", totalPriceOrder: 50000000 },
-        { time: "05/2023", totalPriceOrder: 50000000 },
-        { time: "06/2023", totalPriceOrder: 90000000 },
-      ];
-      return res.json({ s: 200, data: data });
+      let listData = [];
+      let currentDate = new Date();
+      let year = String(currentDate.getFullYear());
+      for(let i = 1; i <= 12; i++){
+        let month = String(i).padStart(2, "0");
+        listData.push({
+          time: `${i}/${year}`,
+          revenue: await SELF.getRevenueInMonth(month, year)
+        })
+      }
+      return res.json({ s: 200, data: listData });
+    },
+    getAllSummary: async (req, res) => {
+      try {
+        // Get revenue
+        let currentDate = new Date();
+        let month = String(currentDate.getMonth() + 1).padStart(2, "0");
+        let year = String(currentDate.getFullYear());
+        let totalRevernue = await SELF.getRevenueInMonth(month, year);
+        // Get total order
+        let totalOrder = await Order.find({
+          status: "success",
+          isPaid: true,
+        }).count();
+        // Get total User
+        let totalUser = await User.find({
+          role: "customer",
+          active: true,
+        }).count();
+        // Get total Product
+        let totalProduct = await Product.find().count();
+        return res.json({
+          s: 200,
+          data: {
+            revenue: totalRevernue,
+            order: totalOrder,
+            user: totalUser,
+            product: totalProduct,
+          },
+        });
+      } catch (error) {
+        console.log(error);
+      }
     },
   };
 }
