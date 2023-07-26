@@ -9,7 +9,7 @@ const Promotion = mongoose.Schema(
     startDate: { type: String },
     endDate: { type: String },
     productId: { type: Array },
-    desc: {type: String}
+    desc: { type: String },
   },
   { version: false, timestamps: true }
 );
@@ -23,3 +23,12 @@ Promotion.statics.objectId = function (id) {
 module.exports = {
   Promotion: mongoose.model("promotion", Promotion),
 };
+
+// var element = document.getElementById("myElement");
+// element.addEventListener("click", function () {
+//   if (element.style.height === "300px") {
+//     element.style.height = "0px";
+//   } else {
+//     element.style.height = "300px";
+//   }
+// });

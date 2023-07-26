@@ -1,3 +1,8 @@
 .checked {
   color: #ffff00;
 }
+
+#myElement {
+  height: 300;
+  overflow-y: auto;
+}

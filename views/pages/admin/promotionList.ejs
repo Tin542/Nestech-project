@@ -149,25 +149,33 @@
                                 required
                             />
                         </div>
-                        <div class="col-12">
-                            <p>Sản phẩm áp dụng</p>
-                            <% productIdList.forEach(function(item, index) { %>
-                                <div class="form-check">
-                                    <input class="form-check-input" type="checkbox" value="<%= item._id %>" id="productIdList" name="productId" >
-                                    <label 
-                                        class="form-check-label" 
-                                        for="product"
-                                        data-bs-toggle="tooltip"
-                                        data-bs-placement="right"
-                                        title="<%= item.name %>"
-                                    >
-                                        <span class="d-inline-block text-truncate" style="max-width: 400px">
-                                            <%= item.name %>
-                                        </span>
-                                    </label>
-                                </div>
-                            <% }); %>
+                        
+                        <div class="accordion-item col-12" style=" overflow-y: auto; height: 300px;">
+                            <h3 class="accordion-header" id="flush-headingOne">
+                                <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#flush-collapseOne" aria-expanded="false" aria-controls="flush-collapseOne">
+                                    Sản phẩm áp dụng
+                                </button>
+                            </h3>
+                            <div id="flush-collapseOne" class="accordion-collapse collapse" aria-labelledby="flush-headingOne" data-bs-parent="#accordionFlushExample" >
+                                <% productIdList.forEach(function(item, index) { %>
+                                    <div class="form-check">
+                                        <input class="form-check-input" type="checkbox" value="<%= item._id %>" id="productIdList" name="productId" >
+                                        <label 
+                                            class="form-check-label" 
+                                            for="product"
+                                            data-bs-toggle="tooltip"
+                                            data-bs-placement="right"
+                                            title="<%= item.name %>"
+                                        >
+                                            <span class="d-inline-block text-truncate" style="max-width: 400px">
+                                                <%= item.name %>
+                                            </span>
+                                        </label>
+                                    </div>
+                                <% }); %>
+                            </div>
                         </div>
+
                         <div class="col-12">
                             <label for="name" class="form-label">Giảm giá</label>
                             <input
@@ -271,24 +279,30 @@
                                 required
                             />
                         </div>
-                        <div class="col-12">
-                            <p>Sản phẩm áp dụng</p>
-                            <% productIdList.forEach(function(item, index) { %>
-                                <div class="form-check">
-                                    <input class="form-check-input" type="checkbox" value="<%= item._id %>" id="productIdList" name="productId" >
-                                    <label 
-                                        class="form-check-label" 
-                                        for="product"
-                                        data-bs-toggle="tooltip"
-                                        data-bs-placement="right"
-                                        title="<%= item.name %>"
-                                    >
-                                        <span class="d-inline-block text-truncate" style="max-width: 400px">
-                                            <%= item.name %>
-                                        </span>
-                                    </label>
-                                </div>
-                            <% }); %>
+                        <div class="accordion-item col-12">
+                            <h2 class="accordion-header" id="flush-headingOne">
+                                <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#flush-collapseOne" aria-expanded="false" aria-controls="flush-collapseOne">
+                                    Sản phẩm áp dụng
+                                </button>
+                            </h2>
+                            <div id="flush-collapseOne" class="accordion-collapse collapse" aria-labelledby="flush-headingOne" data-bs-parent="#accordionFlushExample">
+                                <% productIdList.forEach(function(item, index) { %>
+                                    <div class="form-check">
+                                        <input class="form-check-input" type="checkbox" value="<%= item._id %>" id="productIdList" name="productId" >
+                                        <label 
+                                            class="form-check-label" 
+                                            for="product"
+                                            data-bs-toggle="tooltip"
+                                            data-bs-placement="right"
+                                            title="<%= item.name %>"
+                                        >
+                                            <span class="d-inline-block text-truncate" style="max-width: 400px">
+                                                <%= item.name %>
+                                            </span>
+                                        </label>
+                                    </div>
+                                <% }); %>
+                            </div>
                         </div>
                         <div class="col-12">
                             <label for="name" class="form-label">Giảm giá</label>

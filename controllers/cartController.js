@@ -2,6 +2,7 @@
 const Cart = require("../models/cart").Cart;
 const Product = require("../models/product").Product;
 const User = require("../models/user").User;
+const Promotion = require("../models/promotion").Promotion;
 
 function CartController() {
   // chua global var
