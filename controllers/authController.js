@@ -67,6 +67,7 @@ function AuthController() {
                 password: hash,
                 email: data?.email,
                 otp: otp,
+                role: "customer",
               });
               await localStorage.setItem("email", data?.email);
               return await res.redirect("/auth/verifyEmail");
@@ -152,12 +153,13 @@ function AuthController() {
               let session = req.session;
               session.token = token;
               session.userId = userInfo._id;
+              session.role = userInfo.role;
 
               let cart = await Cart.find({ userID: userInfo._id });
               session.cart = cart.length;
 
-              if (data?.username === "admin") {
-                res.redirect("/admin/products/list");
+              if (userInfo?.role === "admin") {
+                res.redirect("/admin/dashboard");
               } else {
                 res.redirect("/");
               }
@@ -280,11 +282,26 @@ function AuthController() {
         console.log("reset error: ", error);
       }
     },
+    checkLoginAdmin: async (req, res, next) => {
+      try {
+        let session = req.session;
+        if (session.userId) {
+          if (session.role === "admin") {
+            return next();
+          } else {
+            return res.redirect("/auth/403");
+          }
+        } else {
+          return res.redirect("/auth/login");
+        }
+      } catch (error) {
+        Logger.error(`checkLogin - fail: ${error}`);
+      }
+    },
     checkLogin: async (req, res, next) => {
       try {
         let session = req.session;
         if (session.userId) {
-          //Todo: token => verify Database
           return next();
         } else {
           return res.redirect("/auth/login");

@@ -8,6 +8,7 @@ const mongoose = require("mongoose");
 const bodyParser = require("body-parser");
 const cookieParser = require("cookie-parser");
 const sessions = require("express-session");
+const path = require("path");
 // const fileUpload = require('express-fileupload');
 
 // MongoDB connection
@@ -18,7 +19,8 @@ mongoose
   .catch((err) => console.log('failed to connect to mongodb =(T.T)='));
 
 app.set("view engine", "ejs");
-app.use('/public', express.static('public'));
+app.use('/views', express.static('views'));
+
 // app.use(fileUpload());
 app.use(bodyParser.urlencoded({ extended: true }));
 app.use(
