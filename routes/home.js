@@ -21,8 +21,11 @@ router.delete('/cart/delete/:id', cartController.deleteItem);
 router.post('/cart/update-user-info', cartController.updateUserInfo);
 
 // Order
-router.use(authController.checkLogin);
+// router.use(authController.checkLogin);
 router.post('/order/create', orderControlelr.createOrder);
+
+//Comments
+router.post('/comments/create', homeController.createComment);
 
 
 module.exports = router;

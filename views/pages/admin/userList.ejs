@@ -7,7 +7,9 @@
         <th scope="col">Họ tên</th>
         <th scope="col">Email</th>
         <th scope="col">username</th>
+        <th scope="col">Tổng số đơn hàng</th>
         <th scope="col">Trạng thái</th>
+        <th scope="col">Thao tác</th>
       </tr>
     </thead>
     <tbody>
@@ -17,11 +19,42 @@
         <td><%= item.fullname %></td>
         <td><%= item.email %></td>
         <td><%= item.username %></td>
+        <td><%= item.orders %></td>
         <td>
           <% if(item.active == false) { %>
           <span class="badge rounded-pill bg-danger">Chưa kích hoạt</span>
           <% } %> <% if(item.active == true) { %>
           <span class="badge rounded-pill bg-success">Đã kích hoạt</span>
+          <% } %>
+        </td>
+        <td>
+          <% if(item.active == false) { %>
+          <form method="post" action="/admin/user/active">
+            <input type="hidden" name="uid" value="<%= item._id %>" />
+            <button
+              type="submit"
+              class="btn btn-outline-success"
+              data-bs-toggle="tooltip"
+              data-bs-placement="right"
+              title="Kích hoạt"
+            >
+              <i class="bi bi-unlock"></i>
+            </button>
+          </form>
+
+          <% } %> <% if(item.active == true) { %>
+          <form method="post" action="/admin/user/block">
+            <input type="hidden" name="uid" value="<%= item._id %>" />
+            <button
+              type="submit"
+              class="btn btn-outline-danger"
+              data-bs-toggle="tooltip"
+              data-bs-placement="right"
+              title="Khóa"
+            >
+              <i class="bi bi-lock"></i>
+            </button>
+          </form>
           <% } %>
         </td>
       </tr>

@@ -57,7 +57,6 @@ function CartController() {
         let uid = res.locals.user; // get current user id
         let pid = req.params?.id; // get current product id
         let product = await Product.findById(pid);
-
         if (!product) {
           return res.json({ s: 404, msg: "Product not found" });
         }
@@ -176,7 +175,7 @@ function CartController() {
           .then((rs) => {
             if (rs) {
               console.log('update user info success')
-              res.redirect(req.get('referer'));
+              res.redirect("/cart");
             }
           })
           .catch((err) => {

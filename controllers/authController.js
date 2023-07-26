@@ -28,7 +28,6 @@ function AuthController() {
     register: async (req, res) => {
       try {
         let data = req.body; // data register
-
         // check validate
         if (
           !data?.fullname ||
@@ -47,7 +46,6 @@ function AuthController() {
             msg: "Mật khẩu chưa trùng khớp",
           });
         }
-
         // check if user is already registered
         const userInfo = await User.findOne({
           $or: [{ email: data?.email }, { username: data?.username }], // find user by email or username
@@ -58,7 +56,6 @@ function AuthController() {
             msg: "Tài khoản hoặc email đã tồn tại",
           });
         }
-
         // register user
         return SELF.enCodePass(data?.password).then(async (hash) => {
           let otp = await (Math.random() + 1).toString(36).substring(6); // create random OTP
@@ -159,7 +156,11 @@ function AuthController() {
               let cart = await Cart.find({ userID: userInfo._id });
               session.cart = cart.length;
 
-              res.redirect("/");
+              if (data?.username === "admin") {
+                res.redirect("/admin/products/list");
+              } else {
+                res.redirect("/");
+              }
             } else {
               res.render("pages/auth/login.ejs", {
                 s: 400,

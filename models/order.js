@@ -10,6 +10,8 @@ const Order = mongoose.Schema(
     address: { type: String },
     totalPrice: { type: Number },
     paymentMethod: { type: String },
+    status: { type: String },
+    isPaid: { type: Boolean },
   },
   { version: false, timestamps: true }
 );
