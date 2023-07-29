@@ -46,6 +46,7 @@ function categoryControler() {
               orders: null,
               dashboard: null,
               orderDetail: null,
+              name: keySearch,
             });
           })
           .catch((error) => {
