@@ -140,7 +140,23 @@ function AdminController() {
     getList: async (req, res) => {
       try {
         let page = req.query.page;
-        let keySearch = req.query.searchValue || "";
+        let keySearch = req.query.pName || "";
+        let rateStar = req.query.star || "";
+        let categorySearch = req.query.category || "";
+
+        let filter = {};
+        if (keySearch) {
+          filter["name"] = new RegExp(keySearch, "i");
+        }
+        // filter by category
+        if (categorySearch) {
+          filter["categoryId"] = categorySearch;
+        }
+        // filter by rate
+        if (rateStar) {
+          filter["rate"] = parseInt(rateStar);
+        }
+
         if (!page || parseInt(page) <= 0) {
           page = 1;
         }
@@ -153,8 +169,8 @@ function AdminController() {
         // pagination
         Promise.all([
           // 2 hàm bên trong sẽ thực thi đồng thời ==> giảm thời gian thực thi ==> improve performance
-          Product.countDocuments({ name: regex }).lean(), // Lấy tổng số product
-          Product.find({ name: regex })
+          Product.countDocuments(filter).lean(), // Lấy tổng số product
+          Product.find(filter)
             .sort({ updatedAt: -1 })
             .skip(skip) // số trang bỏ qua ==> skip = (số trang hiện tại - 1) * số item ở mỗi trang
             .limit(SELF.SIZE)
@@ -187,10 +203,15 @@ function AdminController() {
               orders: null,
               dashboard: null,
               orderDetail: null,
+              filters: {
+                name: keySearch,
+                category: categorySearch,
+                star: rateStar,
+              },
             });
           })
           .catch((error) => {
-            res.send({ s: 400, msg: error });
+            console.log('error: ' + error);
           });
       } catch (error) {
         console.log(error);
@@ -748,8 +769,8 @@ function AdminController() {
         promotion: null,
         orders: null,
         dashboard: {
-          listProduct: listProduct,  
-          listCategory: listCategories
+          listProduct: listProduct,
+          listCategory: listCategories,
         },
         orderDetail: null,
       });
@@ -758,12 +779,12 @@ function AdminController() {
       let listData = [];
       let currentDate = new Date();
       let year = String(currentDate.getFullYear());
-      for(let i = 1; i <= 12; i++){
+      for (let i = 1; i <= 12; i++) {
         let month = String(i).padStart(2, "0");
         listData.push({
           time: `${i}/${year}`,
-          revenue: await SELF.getRevenueInMonth(month, year)
-        })
+          revenue: await SELF.getRevenueInMonth(month, year),
+        });
       }
       return res.json({ s: 200, data: listData });
     },

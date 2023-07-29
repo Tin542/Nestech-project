@@ -1,24 +1,77 @@
-<div class="jumbotron">
-  <div class="container">
-    <div class="row justify-content-between">
-      <div class="col-4">
-        <h3>Danh sách sản phẩm</h3>
-      </div>
-      <div class="col-4 d-flex flex-row-reverse">
-        <!-- Button trigger modal -->
-        <button
-          type="button"
-          class="btn btn-primary"
-          data-bs-toggle="modal"
-          data-bs-target="#createModal"
-        >
-          Thêm sản phẩm
-        </button>
-      </div>
+<div class="jumbotron p-3">
+  <div class="d-flex bd-highlight mb-3">
+    <div class="me-auto p-2 bd-highlight"><h3>Danh sách sản phẩm</h3></div>
+    <div class="p-2 bd-highlight">
+      <button
+        type="button"
+        class="btn btn-primary"
+        data-bs-toggle="modal"
+        data-bs-target="#createModal"
+      >
+        Thêm sản phẩm
+      </button>
     </div>
   </div>
-
-  <table class="table mt-3">
+  <div class="card p-3 mb-3">
+    <form action="/admin/products/list" method="get">
+      <div class="d-flex justify-content-around align-items-center">
+        <div class="p-2">
+          <input
+            id="pName"
+            name="pName"
+            type="text"
+            class="form-control"
+            placeholder="Tên sản phẩm"
+            value="<%= filters.name %>"
+          />
+        </div>
+     
+          <div style="width: 250px;" class="p-2">
+            
+            <select id="category" name="category" class="form-select">
+              <option hidden value="">-Danh mục-</option>
+              <%
+              for ( var i = 0; i < listCategories.length; i++ )
+              {
+                  var selected = ( listCategories[i]._id.toString() === filters.category ) ? "selected" : "";
+                  
+                  %><option value="<%= listCategories[i]._id %>" <%= selected %>><%= listCategories[i].name %></option><%
+              }
+              %>
+              </select>
+          </div>
+          <div style="width: 250px;" class="p-2">
+  
+            <select
+              name="star"
+              id="star"
+              class="form-select"
+              aria-label="Select star"
+            >
+              <option hidden value="">-Đánh giá-</option>
+              <option value="0" <%= filters.star==='0' ? 'selected' : "" %>>0 sao</option>
+              <option value="1" <%= filters.star==='1' ? 'selected' : "" %>>1 sao</option>
+              <option value="2" <%= filters.star==='2' ? 'selected' : "" %>>2 sao</option>
+              <option value="3" <%= filters.star==='3' ? 'selected' : "" %>>3 sao</option>
+              <option value="4" <%= filters.star==='4' ? 'selected' : "" %>>4 sao</option>
+              <option value="5" <%= filters.star==='5' ? 'selected' : "" %>>5 sao</option>
+            </select>
+          </div>
+        <div class="p-2">
+          <button class="btn btn-primary" type="submit">Tìm kiếm</button>
+          <button
+            type="button"
+            class="btn btn-outline-secondary"
+            onclick="onClickResetProduct()"
+          >
+            Reset
+          </button>
+        </div>
+      </div>
+    </form>
+  </div>
+  <% if(products.length > 0) { %>
+  <table class="table table-bordered bg-white mt-3">
     <thead>
       <tr>
         <th scope="col">Hình ảnh</th>
@@ -46,9 +99,7 @@
             <%= item.name %>
           </span>
         </td>
-        <td class="w-25">
-          <%= item.catName %>
-        </td>
+        <td class="w-25"><%= item.catName %></td>
         <td scope="w-2"><%= item.author %></td>
         <td class="w-2">
           <% for (var j = 0; j < 5; j++){ %> <% if (j < item.rate){ %>
@@ -132,6 +183,21 @@
       </li>
     </ul>
   </nav>
+  <% } else { %>
+    <div class="col-12">
+      <div class="card bg-light p-5">
+        <img
+          style="margin: auto"
+          width="200px"
+          height="200px"
+          src="https://cdn0.fahasa.com/skin//frontend/ma_vanese/fahasa/images/checkout_cart/ico_emptycart.svg"
+        />
+        <div class="fst-italic m-auto">
+          Không tìm thấy Sản phẩm phù hợp &#128517;
+        </div>
+      </div>
+    </div>
+  <% } %>
   <div
     class="modal fade"
     id="createModal"
