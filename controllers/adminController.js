@@ -161,8 +161,6 @@ function AdminController() {
           page = 1;
         }
         let skip = (parseInt(page) - 1) * SELF.SIZE;
-        let regex = new RegExp(keySearch);
-
         //get all categories
         let category = await SELF.getAllCategories();
 
@@ -406,22 +404,30 @@ function AdminController() {
     users: async (req, res) => {
       try {
         let page = req.query.page;
-        let keySearch = req.query.searchValue || "";
+        let email = req.query.email || "";
+        let username = req.query.username || "";
+        let status = req.query.status || "";
         if (!page || parseInt(page) <= 0) {
           page = 1;
         }
         let skip = (parseInt(page) - 1) * SELF.SIZE;
-        let regex = new RegExp(keySearch);
+        
+        let filter = {};
+        if(email) {
+          filter["email"] = new RegExp(email, "i");
+        }
+        if(username) {
+          filter["username"] = new RegExp(username, "i");
+        }
+        if(status) {
+          filter["active"] = /^true$/i.test(status);
+        }
 
         // pagination
         Promise.all([
           // 2 hàm bên trong sẽ thực thi đồng thời ==> giảm thời gian thực thi ==> improve performance
-          User.countDocuments({
-            $or: [{ fullname: regex }, { username: regex }],
-          }).lean(), // Lấy tổng số product
-          User.find({
-            $or: [{ fullname: regex }, { username: regex }],
-          })
+          User.countDocuments(filter).lean(), // Lấy tổng số product
+          User.find(filter)
             .sort({ createdAt: -1 })
             .skip(skip) // số trang bỏ qua ==> skip = (số trang hiện tại - 1) * số item ở mỗi trang
             .limit(SELF.SIZE)
@@ -455,6 +461,11 @@ function AdminController() {
               orders: null,
               dashboard: null,
               orderDetail: null,
+              filters: {
+                email: email,
+                username: username,
+                status: status
+              }
             });
           })
           .catch((error) => {

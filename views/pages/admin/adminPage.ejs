@@ -50,6 +50,11 @@
         document.getElementById("category").value = "";
         document.getElementById("star").value = "";
       }
+      function onClickResetUser(){
+        document.getElementById("username").value = "";
+        document.getElementById("status").value = "";
+        document.getElementById("email").value = "";
+      }
       function editProduct(id) {
         $.ajax({
           type: "GET",
