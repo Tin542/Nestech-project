@@ -1,12 +1,40 @@
-<div class="jumbotron">
-  <h3>Danh sách khách hàng</h3>
-  <table class="table">
+<div class="jumbotron p-3">
+  
+  <div class="d-flex bd-highlight mb-3">
+    <div class="me-auto p-2 bd-highlight"><h3>Danh sách khách hàng</h3></div>
+    
+  </div>
+  <div class="card p-3 mb-3">
+    <form action="/admin/user/list" method="get">
+      <div class="d-flex justify-content-around align-items-center">
+        <div class="p-2">
+          <input id="username" name="username" type="text" class="form-control" placeholder="Tên tài khoản" value="<%= filters.username %>"/>
+        </div>
+        <div class="p-2">
+          <input id="email" name="email" type="text" class="form-control" placeholder="Email" value="<%= filters.email %>"/>
+        </div>
+        <div style="width: 250px;" class="p-2">
+          <select id="status" name="status" class="form-select" aria-label="status select">
+            <option hidden value="" <%= filters.status==='' ? 'selected' : "" %>>Trạng thái</option>
+            <option value="true" <%= filters.status==='true' ? 'selected' : "" %>>Đã kích hoạt</option>
+            <option value="false" <%= filters.status==='false' ? 'selected' : "" %>>Chưa kích hoạt</option>
+          </select>
+        </div>
+        <div class="p-2">
+          <button class="btn btn-primary" type="submit">Tìm kiếm</button>
+          <button type="button" class="btn btn-outline-secondary" onclick="onClickResetUser()">Reset</button>
+        </div>
+      </div>
+    </form>
+  </div>
+  <% if(users.length > 0) { %>
+  <table class="table table-bordered bg-white mt-3">
     <thead>
       <tr>
-        <th scope="col">#</th>
+        <th scope="col">Mã khách hàng</th>
         <th scope="col">Họ tên</th>
         <th scope="col">Email</th>
-        <th scope="col">username</th>
+        <th scope="col">Tên tài khoản</th>
         <th scope="col">Tổng số đơn hàng</th>
         <th scope="col">Trạng thái</th>
         <th scope="col">Thao tác</th>
@@ -15,7 +43,7 @@
     <tbody>
       <% users.forEach(function(item, index) { %>
       <tr>
-        <th scope="row"><%= index+1 %></th>
+        <th scope="row"><%= item._id %></th>
         <td><%= item.fullname %></td>
         <td><%= item.email %></td>
         <td><%= item.username %></td>
@@ -80,4 +108,19 @@
       </li>
     </ul>
   </nav>
+  <% } else { %>
+    <div class="col-12">
+      <div class="card bg-light p-5">
+        <img
+          style="margin: auto"
+          width="200px"
+          height="200px"
+          src="https://cdn0.fahasa.com/skin//frontend/ma_vanese/fahasa/images/checkout_cart/ico_emptycart.svg"
+        />
+        <div class="fst-italic m-auto">
+          Không tìm thấy Khách hàng phù hợp &#128517;
+        </div>
+      </div>
+    </div>
+  <% } %>
 </div>
