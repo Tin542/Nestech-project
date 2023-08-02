@@ -146,6 +146,7 @@ function HomeController() {
         let result = await Product.findById(productId);
         let listSuggestItem = await Product.find({
           categoryId: result.categoryId,
+          _id: { $ne: productId}
         }).limit(4); // get 4 suggestions
         let listComment = await Comment.find({ productID: productId }); // get all comments
         if (!result) {
@@ -163,7 +164,7 @@ function HomeController() {
           comments: listComment,
         });
       } catch (error) {
-        console.error("get detail at homeControlelr error: " + err);
+        console.error("get detail at homeControlelr error: " + error);
       }
     },
     getList: async (req, res) => {
