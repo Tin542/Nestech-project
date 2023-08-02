@@ -1,11 +1,14 @@
 "use strict";
 const moment = require("moment");
 
+const ObjectID = require("mongodb").ObjectId;
+
 const Product = require("../models/product").Product;
 const User = require("../models/user").User;
 const OrderDetail = require("../models/orderDetail").OrderDetail;
 const Comment = require("../models/comment").Comment;
 const Category = require("../models/category").category;
+const Order = require("../models/order").Order;
 
 function HomeController() {
   // chua global var
@@ -35,21 +38,104 @@ function HomeController() {
           console.error(error);
         });
     },
+    getPopularProduct: async () => {
+      try {
+        let listOrder = await Order.find({ status: "success", isPaid: true });
+        let listTmp = [];
+        for (let i = 0; i < listOrder.length; i++) {
+          let orderDetails = await OrderDetail.find({
+            orderID: new ObjectID(listOrder[i]._id),
+          });
+          if (orderDetails.length > 0) {
+            listTmp = listTmp.concat(orderDetails);
+          }
+        }
+        // Đếm số lần xuất hiện
+        let arrayResult = [];
+        for (let i = 0; i < listTmp.length; i++) {
+          let idx = arrayResult.findIndex(
+            (el) => el.pid === listTmp[i].productID
+          );
+          if (idx > -1) {
+            arrayResult[idx]["count"] += 1;
+          } else {
+            arrayResult.push({
+              pid: listTmp[i].productID,
+              count: 1,
+            });
+          }
+        }
+        arrayResult.sort((a, b) => b.count - a.count); // sort list theo thứ tự giảm dần count
+        return arrayResult.slice(0, 8); // lấy 10 pid đầu tiên
+      } catch (error) {
+        console.log("error: " + error);
+      }
+    },
+    getPopularCategories: async () => {
+      try {
+        let listCateId = []; // list category id
+        let arrResult = []; // list result
+        let listOrder = await Order.find({ status: "success", isPaid: true });
+        let listTmp = [];
+        for (let i = 0; i < listOrder.length; i++) {
+          let orderDetails = await OrderDetail.find({
+            orderID: new ObjectID(listOrder[i]._id),
+          });
+          if (orderDetails.length > 0) {
+            listTmp = listTmp.concat(orderDetails);
+          }
+        }
+        // lấy list category id dựa trên productID trong orderDetail
+        for (let i = 0; i < listTmp.length; i++) {
+          let pDetail = await Product.findById(listTmp[i].productID);
+          listCateId.push(pDetail.categoryId);
+        }
+        // đếm số lần category xuất hiện
+        for (let i = 0; i < listCateId.length; i++) {
+          let idx = arrResult.findIndex((el) => el.cid === listCateId[i]);
+          if (idx > -1) {
+            arrResult[idx]["count"] += 1;
+          } else {
+            arrResult.push({
+              cid: listCateId[i],
+              count: 1,
+            });
+          }
+        }
+        arrResult.sort((a, b) => b.count - a.count); // sort list theo thứ tự giảm dần count
+        return arrResult.slice(0, 8); // lấy 3 cid đầu tiên
+      } catch (error) {
+        console.log("error: " + error);
+      }
+    },
   };
   let detailProductGB = {};
   let listSuggestGB = [];
   let listCommentsGB = [];
   return {
-    home: (req, res) => {
+    home: async (req, res) => {
       try {
-        return Product.find({ rate: 5 }) // Product.find()
-          .limit(SELF.SIZE)
-          .then((rs) => {
-            res.render("pages/home", { listItems: rs });
-          })
-          .catch((err) => {
-            console.error("get list at homeControlelr error: " + err);
-          });
+        // Top Product
+        let listPid = await SELF.getPopularProduct();
+        let listProduct = [];
+        for (let i = 0; i < listPid.length; i++) {
+          let product = await Product.findById(listPid[i].pid);
+          listProduct.push(product);
+        }
+        // Top Category
+        let listCid = await SELF.getPopularCategories();
+        let listCategories = [];
+        for (let i = 0; i < listCid.length; i++) {
+          let category = await Category.findById(listCid[i].cid);
+          listCategories.push(category);
+        }
+       
+
+        return res.render("pages/home", {
+          listItems: listProduct,
+          topCategories: listCategories,
+        });
+
       } catch (error) {
         console.log("error at home controller", error);
       }
@@ -58,7 +144,9 @@ function HomeController() {
       try {
         let productId = req.params?.id;
         let result = await Product.findById(productId);
-        let listSuggestItem = await Product.find({categoryId: result.categoryId}).limit(4); // get 4 suggestions
+        let listSuggestItem = await Product.find({
+          categoryId: result.categoryId,
+        }).limit(4); // get 4 suggestions
         let listComment = await Comment.find({ productID: productId }); // get all comments
         if (!result) {
           return res.json({ s: 404, msg: "Product not found" });
@@ -88,7 +176,7 @@ function HomeController() {
         let rateStar = req.query.star || "";
         let sortValue = req.query.sortValue || -1;
         let size = req.query.size || 12;
-        
+
         //paging
         if (!page || parseInt(page) <= 0) {
           page = 1;
@@ -112,7 +200,10 @@ function HomeController() {
         if (priceRange) {
           let maxPrice = priceRange.split("-")[1];
           let minPrice = priceRange.split("-")[0];
-          filter["price"] = {$gte: parseInt(minPrice), $lte: parseInt(maxPrice)}
+          filter["price"] = {
+            $gte: parseInt(minPrice),
+            $lte: parseInt(maxPrice),
+          };
         }
         //get all categories
         let categoryList = await SELF.getAllCategories();
@@ -120,7 +211,8 @@ function HomeController() {
         Promise.all([
           // 2 hàm bên trong sẽ thực thi đồng thời ==> giảm thời gian thực thi ==> improve performance
           Product.countDocuments(filter).lean(), // Lấy tổng số product
-          Product.find(filter).sort({price: parseInt(sortValue)})
+          Product.find(filter)
+            .sort({ price: parseInt(sortValue) })
             .skip(skip) // số trang bỏ qua ==> skip = (số trang hiện tại - 1) * số item ở mỗi trang
             .limit(parseInt(size))
             .lean(), // số item ở mỗi trang
