@@ -4,6 +4,7 @@ const Product = require("../models/product").Product;
 const User = require("../models/user").User;
 const Order = require("../models/order").Order;
 const OrderDetail = require("../models/orderDetail").OrderDetail;
+const payPalService = require("../services/paypal");
 
 function orderController() {
   const SELF = {
@@ -43,21 +44,26 @@ function orderController() {
         createData.userID = uid;
         createData.status = "pending";
         if (createData.paymentMethod === "COD") {
-          createData.isPaid = true;
-        } else {
           createData.isPaid = false;
+        } else {
+          createData.isPaid = true;
         }
-        let result = await Order.create(createData);
+        let resultOrder = await Order.create(createData);
         let listCart = await Cart.find({ userID: uid });
 
         listCart.forEach(async (item) => {
           let orderDetailCreate = await SELF.mappingCreateItem(
             item,
-            result._id,
+            resultOrder._id,
             uid
           );
           await OrderDetail.create(orderDetailCreate);
         });
+        if(createData.paymentMethod !== "COD"){
+          let linkPaypal = await payPalService.pay(resultOrder);
+          console.log("Paypal: " + linkPaypal);
+          return res.redirect(linkPaypal);
+        }
         await Cart.deleteMany({ userID: uid });
         return res.redirect("/cart");
       } catch (error) {

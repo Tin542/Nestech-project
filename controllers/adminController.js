@@ -57,7 +57,7 @@ function AdminController() {
           $lte: new Date(`${endDateOfMonth}T23:59:59`),
         },
         isPaid: true,
-        status: "success",
+        status: SELF.ORDER_STATUS.SUCCESS,
       });
       const totalPriceInMonth = listOrderInDay.reduce(
         (accumulator, currentValue) => accumulator + currentValue.totalPrice,
@@ -67,33 +67,34 @@ function AdminController() {
     },
     getPopularProduct: async () => {
       try {
-        let listOrder = await Order.find({ status: "success", isPaid: true });
-        let listTmp = [];
-        for (let i = 0; i < listOrder.length; i++) {
-          let orderDetails = await OrderDetail.find({
-            orderID: new ObjectID(listOrder[i]._id),
-          });
-          if (orderDetails.length > 0) {
-            listTmp = listTmp.concat(orderDetails);
-          }
-        }
-        // Đếm số lần xuất hiện
-        let arrayResult = [];
-        for (let i = 0; i < listTmp.length; i++) {
-          let idx = arrayResult.findIndex(
-            (el) => el.pid === listTmp[i].productID
-          );
-          if (idx > -1) {
-            arrayResult[idx]["count"] += 1;
-          } else {
-            arrayResult.push({
-              pid: listTmp[i].productID,
-              count: 1,
-            });
-          }
-        }
-        arrayResult.sort((a, b) => b.count - a.count); // sort list theo thứ tự giảm dần count
-        return arrayResult.slice(0, 10); // lấy 10 pid đầu tiên
+        let listOrder = await Order.find({
+          status: SELF.ORDER_STATUS.SUCCESS,
+          isPaid: true,
+        });
+        let listOid = listOrder.map((obj) => obj._id.toString());
+        const data = await OrderDetail.aggregate([
+          {
+            $match: {
+              orderID: {
+                $in: listOid,
+              },
+            },
+          },
+          {
+            $group: {
+              _id: "$productID",
+              count: {
+                $sum: 1,
+              },
+            },
+          },
+          {
+            $sort: {
+              count: -1,
+            },
+          },
+        ]);
+        return data.slice(0, 10); // lấy 10 pid đầu tiên
       } catch (error) {
         console.log("error: " + error);
       }
@@ -102,7 +103,10 @@ function AdminController() {
       try {
         let listCateId = []; // list category id
         let arrResult = []; // list result
-        let listOrder = await Order.find({ status: "success", isPaid: true });
+        let listOrder = await Order.find({
+          status: SELF.ORDER_STATUS.SUCCESS,
+          isPaid: true,
+        });
         let listTmp = [];
         for (let i = 0; i < listOrder.length; i++) {
           let orderDetails = await OrderDetail.find({
@@ -209,7 +213,7 @@ function AdminController() {
             });
           })
           .catch((error) => {
-            console.log('error: ' + error);
+            console.log("error: " + error);
           });
       } catch (error) {
         console.log(error);
@@ -411,15 +415,15 @@ function AdminController() {
           page = 1;
         }
         let skip = (parseInt(page) - 1) * SELF.SIZE;
-        
+
         let filter = {};
-        if(email) {
+        if (email) {
           filter["email"] = new RegExp(email, "i");
         }
-        if(username) {
+        if (username) {
           filter["username"] = new RegExp(username, "i");
         }
-        if(status) {
+        if (status) {
           filter["active"] = /^true$/i.test(status);
         }
 
@@ -464,8 +468,8 @@ function AdminController() {
               filters: {
                 email: email,
                 username: username,
-                status: status
-              }
+                status: status,
+              },
             });
           })
           .catch((error) => {
@@ -761,7 +765,7 @@ function AdminController() {
       let listPid = await SELF.getPopularProduct();
       let listProduct = [];
       for (let i = 0; i < listPid.length; i++) {
-        let product = await Product.findById(listPid[i].pid);
+        let product = await Product.findById(listPid[i]._id);
         listProduct.push(product);
       }
 
@@ -808,7 +812,7 @@ function AdminController() {
         let totalRevernue = await SELF.getRevenueInMonth(month, year);
         // Get total order
         let totalOrder = await Order.find({
-          status: "success",
+          status: SELF.ORDER_STATUS.SUCCESS,
           isPaid: true,
         }).count();
         // Get total User

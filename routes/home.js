@@ -26,5 +26,4 @@ router.post('/order/create', orderControlelr.createOrder);
 //Comments
 router.post('/comments/create', homeController.createComment);
 
-
 module.exports = router;

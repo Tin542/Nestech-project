@@ -1,4 +1,7 @@
 "use strict";
+
+const { Promotion } = require("../models/promotion");
+
 const Cart = require("../models/cart").Cart;
 const Product = require("../models/product").Product;
 const User = require("../models/user").User;
@@ -6,6 +9,9 @@ const User = require("../models/user").User;
 function CartController() {
   // chua global var
   const SELF = {
+    listItems: [],
+    prices: 0,
+    user: {},
     createCart: async (uid, product) => {
       try {
         return Cart.create({
@@ -84,16 +90,23 @@ function CartController() {
         if (!currentUser) {
           res.json({ s: 404, msg: "User not found" });
         }
+
         return Cart.find({ userID: uid })
           .then((rs) => {
             if (rs) {
               let totalPrice = SELF.getTotalPrice(rs);
               let session = req.session;
               session.cart = parseInt(rs.length);
+
+              SELF.listItems = rs;
+              SELF.prices = totalPrice;
+              SELF.user = currentUser;
+
               res.render("pages/cart.ejs", {
                 cartitems: rs,
                 totalPrice: totalPrice,
                 userInfo: currentUser,
+
               });
             }
           })
@@ -174,7 +187,7 @@ function CartController() {
         })
           .then((rs) => {
             if (rs) {
-              console.log('update user info success')
+              console.log("update user info success");
               res.redirect("/cart");
             }
           })
