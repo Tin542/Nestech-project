@@ -18,10 +18,11 @@
         </div>
     </div>
 
-    <table class="table mt-3">
+    <table class="table table-striped mt-3">
         <thead>
             <tr>
-                <th scope="col-4">Mã giảm giá</th>
+                <th scope="col-2">Mã giảm giá</th>
+                <th scope="col-2">Chương trình giảm giá</th>
                 <th scope="col-1">Giảm giá</th>
                 <th scope="col-2">Thời gian bắt đầu</th>
                 <th scope="col-2">Thời gian kết thúc</th>
@@ -30,6 +31,7 @@
         <tbody>
             <% promotion.forEach(function(item, index) { %>
             <tr>
+                <td scope="w-2"><%= item.code %></td>
                 <td
                     style="cursor: pointer"
                     class="w-25"
@@ -41,8 +43,8 @@
                     </span>
                 </td>
                 <td scope="w-2"><%= item.GiamGia %>%</td>
-                <td scope="w-2"><%= item.startDate %></td>
-                <td scope="w-2"><%= item.endDate %></td>
+                <td scope="w-2"><%= item.start_date %></td>
+                <td scope="w-2"><%= item.end_date %></td>
                 
                 <td class="w-2">
                     <button
@@ -136,8 +138,20 @@
                         aria-label="Close"
                     ></button>
                 </div>
+
                 <div class="modal-body">
                     <form class="row g-3" action="/admin/promotion/add" method="post">
+                        <div class="col-12">
+                            <label for="name" class="form-label">Code giảm giá</label>
+                            <input
+                                type="text"
+                                class="form-control"
+                                id="code"
+                                name="code"
+                                placeholder="Nhập code"
+                                required
+                            />
+                        </div>
                         <div class="col-12">
                             <label for="name" class="form-label">Tên mã giảm giá</label>
                             <input
@@ -148,25 +162,6 @@
                                 placeholder="Nhập tên"
                                 required
                             />
-                        </div>
-                        <div class="col-12">
-                            <p>Sản phẩm áp dụng</p>
-                            <% productIdList.forEach(function(item, index) { %>
-                                <div class="form-check">
-                                    <input class="form-check-input" type="checkbox" value="<%= item._id %>" id="productIdList" name="productId" >
-                                    <label 
-                                        class="form-check-label" 
-                                        for="product"
-                                        data-bs-toggle="tooltip"
-                                        data-bs-placement="right"
-                                        title="<%= item.name %>"
-                                    >
-                                        <span class="d-inline-block text-truncate" style="max-width: 400px">
-                                            <%= item.name %>
-                                        </span>
-                                    </label>
-                                </div>
-                            <% }); %>
                         </div>
                         <div class="col-12">
                             <label for="name" class="form-label">Giảm giá</label>
@@ -259,6 +254,18 @@
                                 value=""
                             />
                         </div>
+                        <div class="col-12">
+                            <label for="name" class="form-label">Code giảm giá</label>
+                            <input
+                                type="text"
+                                class="form-control"
+                                id="codeEdit"
+                                name="code"
+                                placeholder=""
+                                value=""
+                                required
+                            />
+                        </div>
                         <div class="col-6">
                             <label for="name" class="form-label">Tên mã giảm giá</label>
                             <input
@@ -272,25 +279,6 @@
                             />
                         </div>
                         <div class="col-12">
-                            <p>Sản phẩm áp dụng</p>
-                            <% productIdList.forEach(function(item, index) { %>
-                                <div class="form-check">
-                                    <input class="form-check-input" type="checkbox" value="<%= item._id %>" id="productIdList" name="productId" >
-                                    <label 
-                                        class="form-check-label" 
-                                        for="product"
-                                        data-bs-toggle="tooltip"
-                                        data-bs-placement="right"
-                                        title="<%= item.name %>"
-                                    >
-                                        <span class="d-inline-block text-truncate" style="max-width: 400px">
-                                            <%= item.name %>
-                                        </span>
-                                    </label>
-                                </div>
-                            <% }); %>
-                        </div>
-                        <div class="col-12">
                             <label for="name" class="form-label">Giảm giá</label>
                             <input
                                 type="text"
@@ -298,26 +286,29 @@
                                 id="GiamGiaEdit"
                                 name="GiamGia"
                                 placeholder="Nhập số phần trăm giảm giá"
+                                value=""
                                 required
                             />
                         </div>
                         <div class="col-6">
                             <label for="price" class="form-label">Thời gian bắt đầu</label>
                             <input
-                                type="datetime-local"
+                                type="datetime"
                                 class="form-control"
                                 id="startDateEdit"
                                 name="startDate"
+                                value=""
                                 required
                             />
                         </div>
                         <div class="col-6">
                             <label for="price" class="form-label">Thời gian kết thúc</label>
                             <input
-                                type="datetime-local"
+                                type="datetime"
                                 class="form-control"
                                 id="endDateEdit"
                                 name="endDate"
+                                value=""
                                 required
                             />
                         </div>
@@ -331,6 +322,7 @@
                                 placeholder="Nhập mô tả"
                                 rows="3"
                                 required
+                                value=""
                             ></textarea>
                         </div>   
 

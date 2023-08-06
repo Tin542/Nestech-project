@@ -314,6 +314,10 @@ function AdminController() {
           .skip(skip) // số trang bỏ qua ==> skip = (số trang hiện tại - 1) * số item ở mỗi trang
           .limit(SELF.SIZE) // số item ở mỗi trang
           .then((rs) => {
+            for (let i = 0; i < rs.length; i++) {
+              rs[i]["start_date"] = SELF.formatDateToString(rs[i].startDate);
+              rs[i]["end_date"] = SELF.formatDateToString(rs[i].endDate);
+            }
             res.render("pages/admin/adminPage", {
               promotion: rs,
               products: null,
@@ -338,9 +342,6 @@ function AdminController() {
     addPromotion: async (req, res) => {
       try {
         let data = req.body;
-        data.startDate = SELF.formatDateToString(data.startDate);
-        data.endDate = SELF.formatDateToString(data.endDate);
-
         return Promotion.create(data)
           .then((rs) => {
             return res.redirect("list");
@@ -367,6 +368,7 @@ function AdminController() {
     editPromotion: async (req, res) => {
       try {
         let editData = req.body;
+        console.log("editData: ", editData);
         let detailPromotion = await Promotion.findById(editData._id);
         if (!detailPromotion) {
           res.json({ s: 404, msg: "Promotion not found" });
