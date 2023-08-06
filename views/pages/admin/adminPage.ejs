@@ -85,6 +85,7 @@
             if (rs.s === 200) {
               let data = rs.data;
               // set data vừa get đc lên <input>
+              document.getElementById("_idEdit").value = data._id;
               document.getElementById("codeEdit").value = data.code;
               document.getElementById("nameEdit").value = data.name;
               document.getElementById("GiamGiaEdit").value = data.GiamGia;
