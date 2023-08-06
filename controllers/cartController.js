@@ -2,10 +2,14 @@
 const Cart = require("../models/cart").Cart;
 const Product = require("../models/product").Product;
 const User = require("../models/user").User;
+const Promotion = require("../models/promotion").Promotion;
 
 function CartController() {
   // chua global var
   const SELF = {
+    listItem: [],
+    price: 0,
+    user: {},
     createCart: async (uid, product) => {
       try {
         return Cart.create({
@@ -77,6 +81,28 @@ function CartController() {
         console.log("get cart error", error);
       }
     },
+    code: async (req, res) => {
+      try {
+        let c = req.body;
+        let promotion = await Promotion.findOne({
+          code: c.code,
+          startDate: { $lte: new Date() },
+          endDate: { $gte: new Date() },
+        });
+        let price = (SELF.price * (100 - promotion.GiamGia)) / 100;
+        if (promotion) {
+          return res.render("pages/cart.ejs", {
+            cartitems: SELF.listItem,
+            totalPrice: SELF.price,
+            userInfo: SELF.user,
+            discount: promotion.GiamGia,
+            price: price,
+          });
+        }
+      } catch (error) {
+        console.log("code error", error);
+      }
+    },
     getCurrentCart: async (req, res) => {
       try {
         let uid = res.locals.user; // get current user id;
@@ -90,6 +116,9 @@ function CartController() {
               let totalPrice = SELF.getTotalPrice(rs);
               let session = req.session;
               session.cart = parseInt(rs.length);
+              SELF.listItem = rs;
+              SELF.price = totalPrice;
+              SELF.user = currentUser;
               res.render("pages/cart.ejs", {
                 cartitems: rs,
                 totalPrice: totalPrice,
@@ -174,7 +203,7 @@ function CartController() {
         })
           .then((rs) => {
             if (rs) {
-              console.log('update user info success')
+              console.log("update user info success");
               res.redirect("/cart");
             }
           })
