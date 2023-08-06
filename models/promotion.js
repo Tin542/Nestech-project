@@ -6,9 +6,9 @@ const Promotion = mongoose.Schema(
   {
     name: { type: String },
     GiamGia: { type: Number },
-    startDate: { type: String },
-    endDate: { type: String },
-    productId: { type: Array },
+    startDate: { type: Date },
+    endDate: { type: Date },
+    code: { type: String },
     desc: { type: String },
   },
   { version: false, timestamps: true }

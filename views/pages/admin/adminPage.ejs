@@ -50,7 +50,7 @@
         document.getElementById("category").value = "";
         document.getElementById("star").value = "";
       }
-      function onClickResetUser(){
+      function onClickResetUser() {
         document.getElementById("username").value = "";
         document.getElementById("status").value = "";
         document.getElementById("email").value = "";
@@ -72,6 +72,25 @@
               document.getElementById("imageUrlEdit").value = data.imageUrl;
               document.getElementById("imageUploadEdit").src = data.imageUrl;
               document.getElementById("authorEdit").value = data.author;
+            }
+          },
+        });
+      }
+      function editPromotion(id) {
+        console.log("id: ", id);
+        $.ajax({
+          type: "GET",
+          url: `/admin/promotion/detail/${id}`,
+          success: function (rs) {
+            if (rs.s === 200) {
+              let data = rs.data;
+              // set data vừa get đc lên <input>
+              document.getElementById("codeEdit").value = data.code;
+              document.getElementById("nameEdit").value = data.name;
+              document.getElementById("GiamGiaEdit").value = data.GiamGia;
+              document.getElementById("startDateEdit").value = data.startDate;
+              document.getElementById("endDateEdit").value = data.endDate;
+              document.getElementById("descEdit").value = data.desc;
             }
           },
         });
