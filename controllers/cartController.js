@@ -1,7 +1,4 @@
 "use strict";
-
-const { Promotion } = require("../models/promotion");
-
 const Cart = require("../models/cart").Cart;
 const Product = require("../models/product").Product;
 const User = require("../models/user").User;
