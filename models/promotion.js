@@ -23,12 +23,3 @@ Promotion.statics.objectId = function (id) {
 module.exports = {
   Promotion: mongoose.model("promotion", Promotion),
 };
-
-// var element = document.getElementById("myElement");
-// element.addEventListener("click", function () {
-//   if (element.style.height === "300px") {
-//     element.style.height = "0px";
-//   } else {
-//     element.style.height = "300px";
-//   }
-// });
