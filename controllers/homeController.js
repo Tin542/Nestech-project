@@ -129,8 +129,6 @@ function HomeController() {
           let category = await Category.findById(listCid[i].cid);
           listCategories.push(category);
         }
-       
-
         return res.render("pages/home", {
           listItems: listProduct,
           topCategories: listCategories,

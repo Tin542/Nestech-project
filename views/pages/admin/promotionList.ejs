@@ -1,21 +1,61 @@
 <div class="jumbotron">
-  <div class="container">
-    <div class="row justify-content-between">
-      <div class="col-4">
-        <h3>Danh sách mã giảm giá</h3>
-      </div>
-      <div class="col-4 d-flex flex-row-reverse">
-        <!-- Button trigger modal -->
-        <button
-          type="button"
-          class="btn btn-primary"
-          data-bs-toggle="modal"
-          data-bs-target="#createModal"
-        >
-          Thêm mã giảm giá
-        </button>
-      </div>
+  <div class="d-flex bd-highlight mb-3">
+    <div class="me-auto p-2 bd-highlight"><h3>Danh sách mã giảm giá</h3></div>
+    <div class="p-2 bd-highlight">
+      <button
+        type="button"
+        class="btn btn-primary"
+        data-bs-toggle="modal"
+        data-bs-target="#createModal"
+      >
+        Thêm mã giảm giá
+      </button>
     </div>
+  </div>
+  <div class="card p-3 mb-3">
+    <form action="/admin/promotion/list" method="get">
+      <div class="d-flex justify-content-around align-items-center">
+        <div class="p-2">
+          <input
+            id="scode"
+            name="code"
+            type="text"
+            class="form-control"
+            placeholder="Mã giảm giá"
+            value="<%= filters.code %>"
+          />
+        </div>
+        <div style="width: 250px" class="p-2">
+          <input
+            id="sname"
+            name="name"
+            type="text"
+            class="form-control"
+            placeholder="Tên chương trình"
+            value="<%= filters.name %>"
+          />
+        </div>
+        <div style="width: 250px" class="p-2">
+          <select id="status" name="status" class="form-select" aria-label="status select">
+            <option hidden value="" <%= filters.status==='' ? 'selected' : "" %>>Trạng thái</option>
+            <option value="">Tất cả trạng thái</option>
+            <option value="active" <%= filters.status==='active' ? 'selected' : "" %>>Đang hoạt động</option>
+            <option value="coming" <%= filters.status==='coming' ? 'selected' : "" %>>Sắp diễn ra</option>
+            <option value="out" <%= filters.status==='out' ? 'selected' : "" %>>Hết hạn</option>
+          </select>
+        </div>
+        <div class="p-2">
+          <button class="btn btn-primary" type="submit">Tìm kiếm</button>
+          <button
+            type="button"
+            class="btn btn-outline-secondary"
+            onclick="onClickResetPromotion()"
+          >
+            Reset
+          </button>
+        </div>
+      </div>
+    </form>
   </div>
 
   <table class="table table-striped mt-3">
@@ -26,6 +66,7 @@
         <th scope="col-1">Giảm giá</th>
         <th scope="col-2">Thời gian bắt đầu</th>
         <th scope="col-2">Thời gian kết thúc</th>
+        <th scope="col-2">Trạng thái</th>
       </tr>
     </thead>
     <tbody>
@@ -45,6 +86,15 @@
         <td scope="w-2"><%= item.GiamGia %>%</td>
         <td scope="w-2"><%= item.start_date %></td>
         <td scope="w-2"><%= item.end_date %></td>
+        <td scope="w-2">
+          <% if(item.status === 'coming') { %>
+          <span class="badge bg-primary">Sắp diễn ra</span>
+          <% } %> <% if(item.status === 'out') { %>
+          <span class="badge bg-danger">Hết hạn</span>
+          <% } %> <% if(item.status === 'active') { %>
+          <span class="badge bg-success">Đang hoạt động</span>
+          <% } %>
+        </td>
 
         <td class="w-2">
           <button
