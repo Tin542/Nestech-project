@@ -57,7 +57,7 @@
       </div>
     </form>
   </div>
-
+  <% if(promotion.length > 0) { %>
   <table class="table table-striped mt-3">
     <thead>
       <tr>
@@ -170,7 +170,21 @@
       </li>
     </ul>
   </nav>
-
+  <% } else { %>
+    <div class="col-12">
+      <div class="card bg-light p-5">
+        <img
+          style="margin: auto"
+          width="200px"
+          height="200px"
+          src="https://cdn0.fahasa.com/skin//frontend/ma_vanese/fahasa/images/checkout_cart/ico_emptycart.svg"
+        />
+        <div class="fst-italic m-auto">
+          Không tìm thấy Mã giảm giá phù hợp &#128517;
+        </div>
+      </div>
+    </div>
+  <% } %>
   <div
     class="modal fade"
     id="createModal"

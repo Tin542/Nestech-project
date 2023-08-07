@@ -372,6 +372,10 @@ function AdminController() {
     addPromotion: async (req, res) => {
       try {
         let data = req.body;
+        let checkPromotionExist = await Promotion.findOne({code: data.code}).lean();
+        if(checkPromotionExist){
+          return res.send({ s: 400, msg: "Mã giảm giá đã tồn tại" });
+        }
         return Promotion.create(data)
           .then((rs) => {
             return res.redirect("list");
