@@ -335,7 +335,7 @@ function AdminController() {
             for (let i = 0; i < rs.length; i++) {
               rs[i]["start_date"] = SELF.formatDateToString(rs[i].startDate);
               rs[i]["end_date"] = SELF.formatDateToString(rs[i].endDate);
-
+              // Check status theo ngày
               if (currentDate < rs[i].startDate) {
                 rs[i]["status"] = "coming"; // Sắp diện ra
               } else if (currentDate > rs[i].endDate) {

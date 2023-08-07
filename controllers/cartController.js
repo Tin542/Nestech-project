@@ -84,21 +84,45 @@ function CartController() {
     code: async (req, res) => {
       try {
         let c = req.body;
+
+        let discountPer = undefined; // % giảm giá
+        let price = undefined; // Thành tiền (số tiền sau khi giảm giá)
+        let errorMsg = undefined; // msg lỗi (Mã chưa sử dụng đc - Mã hết hạn - Mã ko hợp lệ)
+        let successMsg = undefined;
+        let currentDate = new Date(); // ngày hiện tại
+        // Lấy Promotion theo mã giảm giá
         let promotion = await Promotion.findOne({
           code: c.code,
-          startDate: { $lte: new Date() },
-          endDate: { $gte: new Date() },
+          // startDate: { $lte: new Date() },
+          // endDate: { $gte: new Date() },
         });
-        let price = (SELF.price * (100 - promotion.GiamGia)) / 100;
+        //
+
         if (promotion) {
-          return res.render("pages/cart.ejs", {
-            cartitems: SELF.listItem,
-            totalPrice: SELF.price,
-            userInfo: SELF.user,
-            discount: promotion.GiamGia,
-            price: price,
-          });
+          if (currentDate < promotion.startDate) {
+            // Mã chưa sử dụng đc
+            errorMsg = "Mã chưa sử dụng được";
+          } else if (currentDate > promotion.endDate) {
+            // Mã hết hạn
+            errorMsg = "Mã hết hạn";
+          } else {
+            price = (SELF.price * (100 - promotion.GiamGia)) / 100;
+            discountPer = promotion.GiamGia;
+            successMsg = "Áp dụng mã thành công"
+          }
+        } else {
+          errorMsg = "Mã không hợp lệ";
         }
+        return res.render("pages/cart.ejs", {
+          cartitems: SELF.listItem,
+          totalPrice: SELF.price,
+          userInfo: SELF.user,
+          discount: discountPer,
+          price: price,
+          msg: errorMsg,
+          successMsg: successMsg,
+          code: c.code,
+        });
       } catch (error) {
         console.log("code error", error);
       }
@@ -124,7 +148,7 @@ function CartController() {
                 cartitems: rs,
                 totalPrice: totalPrice,
                 userInfo: currentUser,
-
+                code: ''
               });
             }
           })
@@ -197,7 +221,6 @@ function CartController() {
       try {
         let uid = res.locals.user; // get current user id;
         let updateInfo = req.body;
-        let listCart = await Cart.find({ userID: uid });
 
         return await User.findByIdAndUpdate(uid, {
           phone: updateInfo.phone,

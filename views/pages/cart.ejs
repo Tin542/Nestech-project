@@ -179,9 +179,22 @@
                   class="form-control"
                   name="code"
                   id="code"
-                  value=""
+                  value="<%= code %>"
                 />
               </div>
+              <% if(typeof msg !== "undefined"){ %>
+              <div class="mb-3 col-md-12">
+                <div class="badge bg-danger text-wrap" style="width: 100%">
+                  <%= msg %>
+                </div>
+              </div>
+              <% } %> <% if(typeof successMsg !== "undefined"){ %>
+              <div class="mb-3 col-md-12">
+                <div class="badge bg-success text-wrap" style="width: 100%">
+                  <%= successMsg %>
+                </div>
+              </div>
+              <% } %>
               <button type="submit" class="btn btn-primary">Áp dụng</button>
             </form>
           </div>
@@ -192,12 +205,12 @@
               </div>
             </div>
             <div class="card-body">
-              <h5 class="card-title">
+              <h5 class="card-title lh-lg">
                 <div class="d-flex justify-content-between">
                   <div>Tổng số tiền (gồm VAT)</div>
                   <div><%= totalPrice %> $</div>
                 </div>
-                <div class="d-flex justify-content-between">
+                <div class="d-flex justify-content-between text-danger fs-6">
                   <div>Giảm giá</div>
                   <div>
                     <% if(typeof discount !== "undefined") { %> <%= discount %>
@@ -233,11 +246,15 @@
                     id="address"
                     value="<%= userInfo.address %>"
                   />
+                  <% if(typeof price !== "undefined") { %>
+                  <input type="hidden" name="totalPrice" value="<%= price %>" />
+                  <% }else { %>
                   <input
                     type="hidden"
                     name="totalPrice"
                     value="<%= totalPrice %>"
                   />
+                  <% } %> $
 
                   <div class="d-flex justify-content-between mb-3">
                     <h5>Phương thức thanh toán</h5>
