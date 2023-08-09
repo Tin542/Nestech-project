@@ -129,8 +129,6 @@ function HomeController() {
           let category = await Category.findById(listCid[i].cid);
           listCategories.push(category);
         }
-       
-
         return res.render("pages/home", {
           listItems: listProduct,
           topCategories: listCategories,
@@ -146,8 +144,9 @@ function HomeController() {
         let result = await Product.findById(productId);
         let listSuggestItem = await Product.find({
           categoryId: result.categoryId,
+          _id: { $ne: productId}
         }).limit(4); // get 4 suggestions
-        let listComment = await Comment.find({ productID: productId }); // get all comments
+        let listComment = await Comment.find({ productID: productId }).sort({ createdAt: -1 }); // get all comments
         if (!result) {
           return res.json({ s: 404, msg: "Product not found" });
         }
@@ -163,7 +162,7 @@ function HomeController() {
           comments: listComment,
         });
       } catch (error) {
-        console.error("get detail at homeControlelr error: " + err);
+        console.error("get detail at homeControlelr error: " + error);
       }
     },
     getList: async (req, res) => {
