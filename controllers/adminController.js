@@ -147,7 +147,6 @@ function AdminController() {
         let keySearch = req.query.pName || "";
         let rateStar = req.query.star || "";
         let categorySearch = req.query.category || "";
-
         let filter = {};
         if (keySearch) {
           filter["name"] = new RegExp(keySearch, "i");
@@ -160,14 +159,12 @@ function AdminController() {
         if (rateStar) {
           filter["rate"] = parseInt(rateStar);
         }
-
         if (!page || parseInt(page) <= 0) {
           page = 1;
         }
         let skip = (parseInt(page) - 1) * SELF.SIZE;
         //get all categories
         let category = await SELF.getAllCategories();
-
         // pagination
         Promise.all([
           // 2 hàm bên trong sẽ thực thi đồng thời ==> giảm thời gian thực thi ==> improve performance
@@ -188,7 +185,6 @@ function AdminController() {
             } else {
               pageCount = productCount / SELF.SIZE; // nếu ko dư thì chia bth
             }
-
             for (let i = 0; i < rs[1].length; i++) {
               let catInfo = await Category.findById(rs[1][i].categoryId).lean();
               rs[1][i]["catName"] = catInfo.name;
@@ -666,7 +662,6 @@ function AdminController() {
         let statusSearch = req.query.status || "";
         let isPaidSearch = req.query.isPaid || "";
         let filter = {};
-
         if (idSearch) {
           filter["_id"] = new ObjectID(idSearch);
         }
@@ -676,12 +671,10 @@ function AdminController() {
         if (isPaidSearch) {
           filter["isPaid"] = /^true$/i.test(isPaidSearch);
         }
-
         if (!page || parseInt(page) <= 0) {
           page = 1;
         }
         let skip = (parseInt(page) - 1) * SELF.SIZE;
-
         // pagination
         Promise.all([
           // 2 hàm bên trong sẽ thực thi đồng thời ==> giảm thời gian thực thi ==> improve performance

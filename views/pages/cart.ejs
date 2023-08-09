@@ -226,90 +226,102 @@
                 </div>
               </h5>
               <hr />
-              <form method="POST" action="/order/create">
-                <div class="mt-3">
-                  <input
-                    type="hidden"
-                    name="fullname"
-                    id="fullname"
-                    value="<%= userInfo.fullname %>"
-                  />
-                  <input
-                    type="hidden"
-                    name="phone"
-                    id="phone"
-                    value="<%= userInfo.phone %>"
-                  />
-                  <input
-                    type="hidden"
-                    name="address"
-                    id="address"
-                    value="<%= userInfo.address %>"
-                  />
-                  <% if(typeof price !== "undefined") { %>
-                  <input type="hidden" name="totalPrice" value="<%= price %>" />
-                  <% }else { %>
-                  <input
-                    type="hidden"
-                    name="totalPrice"
-                    value="<%= totalPrice %>"
-                  />
-                  <% } %> $
 
-                  <div class="d-flex justify-content-between mb-3">
-                    <h5>Phương thức thanh toán</h5>
-                  </div>
-                  <div class="form-check mb-3">
-                    <input
-                      class="form-check-input"
-                      type="radio"
-                      name="paymentMethod"
-                      id="flexRadioDefault3"
-                      value="Paypal"
-                    />
-                    <label
-                      class="form-check-label d-flex"
-                      for="flexRadioDefault3"
-                    >
-                      <div
-                        style="
-                          background: url() no-repeat center center;
-                          width: 40px;
-                        "
-                        class="border border-secondary rounded"
-                      ></div>
-                      &nbsp; Ví PayPal
-                    </label>
-                  </div>
-                  <div class="form-check mb-3">
-                    <input
-                      class="form-check-input"
-                      type="radio"
-                      name="paymentMethod"
-                      id="flexRadioDefault4"
-                      value="COD"
-                      checked
-                    />
-                    <label
-                      class="form-check-label d-flex"
-                      for="flexRadioDefault4"
-                    >
-                      <div
-                        style="
-                          background: url(https://cdn0.fahasa.com/skin/frontend/base/default/images/payment_icon/ico_cashondelivery.svg?q=102308)
-                            no-repeat center center;
-                          width: 40px;
-                        "
-                        class="border border-secondary rounded"
-                      ></div>
-                      &nbsp; Thanh toán khi nhận hàng
-                    </label>
-                  </div>
+              <div class="mt-3">
+                <input
+                  type="hidden"
+                  name="fullname"
+                  id="fullname"
+                  value="<%= userInfo.fullname %>"
+                />
+                <input
+                  type="hidden"
+                  name="phone"
+                  id="phone"
+                  value="<%= userInfo.phone %>"
+                />
+                <input
+                  type="hidden"
+                  name="address"
+                  id="address"
+                  value="<%= userInfo.address %>"
+                />
+                <% if(typeof price !== "undefined") { %>
+                <input
+                  type="hidden"
+                  id="totalPrice"
+                  name="totalPrice"
+                  value="<%= price %>"
+                />
+                <% }else { %>
+                <input
+                  type="hidden"
+                  name="totalPrice"
+                  id="totalPrice"
+                  value="<%= totalPrice %>"
+                />
+                <% } %>
+
+                <div class="d-flex justify-content-between mb-3">
+                  <h5>Phương thức thanh toán</h5>
                 </div>
-                <button class="btn btn-lg btn-danger mt-5 w-100">
-                  Thanh toán
-                </button>
-              </form>
+                <div class="form-check mb-3">
+                  <input
+                    class="form-check-input"
+                    type="radio"
+                    name="paymentMethod"
+                    id="flexRadioDefault3"
+                    value="Paypal"
+                  />
+                  <label
+                    class="form-check-label d-flex"
+                    for="flexRadioDefault3"
+                  >
+                    <div
+                      style="
+                        font-size: 10px;
+                        text-align: center;
+                        padding: 3px;
+                        width: 40px;
+                        color: blue;
+                        font-weight: 700;
+                        font-style: italic;
+                      "
+                      class="border border-secondary rounded"
+                    >
+                      PayPal
+                    </div>
+                    &nbsp; Ví PayPal
+                  </label>
+                </div>
+                <div class="form-check mb-3">
+                  <input
+                    class="form-check-input"
+                    type="radio"
+                    name="paymentMethod"
+                    id="flexRadioDefault4"
+                    value="COD"
+                    checked
+                  />
+                  <label
+                    class="form-check-label d-flex"
+                    for="flexRadioDefault4"
+                  >
+                    <div
+                      style="
+                        background: url(https://cdn0.fahasa.com/skin/frontend/base/default/images/payment_icon/ico_cashondelivery.svg?q=102308)
+                          no-repeat center center;
+                        width: 40px;
+                      "
+                      class="border border-secondary rounded"
+                    ></div>
+                    &nbsp; Thanh toán khi nhận hàng
+                  </label>
+                </div>
+              </div>
+              <button class="btn btn-lg btn-danger mt-5 w-100" onclick="Pay()">
+                Thanh toán
+              </button>
             </div>
           </div>
         </div>
@@ -337,6 +349,48 @@
     <%- include('../partials/footer.ejs') %>
   </body>
   <script>
+    function Pay() {
+      var payment = "";
+      var ele = document.getElementsByName("paymentMethod");
+      for (i = 0; i < ele.length; i++) {
+        if (ele[i].checked) payment = document.getElementById(ele[i].id).value;
+      }
+      if (payment === "COD") {
+        $.ajax({
+          type: "POST",
+          data: {
+            fullname: document.getElementById("fullname").value,
+            phone: document.getElementById("phone").value,
+            address: document.getElementById("address").value,
+            totalPrice: document.getElementById("totalPrice").value,
+            paymentMethod: payment,
+          },
+          url: `/order/create`,
+          success: function (rs) {
+            if (rs.method === "COD") {
+              alert(rs.msg);
+              window.location.reload();
+            }
+          },
+        });
+      } else {
+        $.ajax({
+          type: "POST",
+          url: `/order/paypal`,
+          data: {
+            totalPrice: document.getElementById("totalPrice").value,
+          },
+          success: function (rs) {
+            console.log(rs);
+            if (rs.s === 200) {
+              window.location.href = rs.link;
+            } else {
+              alert(rs.msg);
+            }
+          },
+        });
+      }
+    }
     function addItem(cid) {
       $.ajax({
         type: "GET",

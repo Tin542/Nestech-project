@@ -146,7 +146,7 @@ function HomeController() {
           categoryId: result.categoryId,
           _id: { $ne: productId}
         }).limit(4); // get 4 suggestions
-        let listComment = await Comment.find({ productID: productId }); // get all comments
+        let listComment = await Comment.find({ productID: productId }).sort({ createdAt: -1 }); // get all comments
         if (!result) {
           return res.json({ s: 404, msg: "Product not found" });
         }
