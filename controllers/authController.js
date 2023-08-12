@@ -59,22 +59,23 @@ function AuthController() {
         // register user
         return SELF.enCodePass(data?.password).then(async (hash) => {
           let otp = await (Math.random() + 1).toString(36).substring(6); // create random OTP
-          await emailService.SendMailSG(otp, data?.email).then(async () => {
-            try {
-              const rs = await User.create({
-                fullname: data?.fullname,
-                username: data?.username,
-                password: hash,
-                email: data?.email,
-                otp: otp,
-                role: "customer",
-              });
-              await localStorage.setItem("email", data?.email);
-              return await res.redirect("/auth/verifyEmail");
-            } catch (err) {
-              console.log("register user error: ", err);
-            }
-          });
+          try {
+            const rs = await User.create({
+              fullname: data?.fullname,
+              username: data?.username,
+              password: hash,
+              email: data?.email,
+              otp: otp,
+              role: "customer",
+            });
+            await localStorage.setItem("email", data?.email);
+            return await res.redirect("/auth/verifyEmail");
+          } catch (err) {
+            console.log("register user error: ", err);
+          }
+          // await emailService.SendMailSG(otp, data?.email).then(async () => {
+           
+          // });
         });
       } catch (error) {
         console.log("register error: ", error);
@@ -190,16 +191,17 @@ function AuthController() {
         return User.findByIdAndUpdate(userInfo._id, { otp: otp })
           .then(async (rs) => {
             if (rs) {
-              await emailService
-                .SendMailSG(otp, data?.email)
-                .then((rs) => {
-                  res.render("pages/auth/verifyEmailForReset.ejs", {
-                    isShowed: true,
-                  });
-                })
-                .catch((err) => {
-                  console.log(err);
-                });
+              res.render("pages/auth/verifyEmailForReset.ejs", {
+                isShowed: true,
+              });
+              // await emailService
+              //   .SendMailSG(otp, data?.email)
+              //   .then((rs) => {
+                 
+              //   })
+              //   .catch((err) => {
+              //     console.log(err);
+              //   });
             }
           })
           .catch((err) => {
