@@ -189,23 +189,25 @@ function AdminController() {
               let catInfo = await Category.findById(rs[1][i].categoryId).lean();
               rs[1][i]["catName"] = catInfo.name;
             }
+       
             res.render("pages/admin/adminPage", {
               products: rs[1],
-              promotion: null,
-              category: null,
-              pages: pageCount, // tổng số trang
-              users: null,
-              urlUploaded: null,
-              staffs: null,
               listCategories: category,
-              orders: null,
-              dashboard: null,
-              orderDetail: null,
+              pages: pageCount, // tổng số trang
+              currentPage: parseInt(page),
               filters: {
                 name: keySearch,
                 category: categorySearch,
                 star: rateStar,
               },
+              promotion: null,
+              category: null,
+              users: null,
+              urlUploaded: null,
+              staffs: null,
+              orders: null,
+              dashboard: null,
+              orderDetail: null,
             });
           })
           .catch((error) => {
@@ -351,11 +353,12 @@ function AdminController() {
               orders: null,
               dashboard: null,
               orderDetail: null,
+              currentPage: parseInt(page),
               filters: {
                 code: code,
                 name: name,
-                status: status
-              }
+                status: status,
+              },
             });
           })
           .catch((error) => {
@@ -368,8 +371,10 @@ function AdminController() {
     addPromotion: async (req, res) => {
       try {
         let data = req.body;
-        let checkPromotionExist = await Promotion.findOne({code: data.code}).lean();
-        if(checkPromotionExist){
+        let checkPromotionExist = await Promotion.findOne({
+          code: data.code,
+        }).lean();
+        if (checkPromotionExist) {
           return res.send({ s: 400, msg: "Mã giảm giá đã tồn tại" });
         }
         return Promotion.create(data)
@@ -497,6 +502,7 @@ function AdminController() {
               orders: null,
               dashboard: null,
               orderDetail: null,
+              currentPage: parseInt(page),
               filters: {
                 email: email,
                 username: username,
@@ -581,6 +587,7 @@ function AdminController() {
               orders: null,
               dashboard: null,
               orderDetail: null,
+              currentPage: parseInt(page),
             });
           })
           .catch((error) => {
@@ -706,6 +713,7 @@ function AdminController() {
               orders: rs[1],
               dashboard: null,
               orderDetail: null,
+              currentPage: parseInt(page),
               filters: {
                 idInput: idSearch || "",
                 statusSelectd: statusSearch || "",
@@ -792,17 +800,18 @@ function AdminController() {
     // Dashboard
     dashboard: async (req, res) => {
       let listPid = await SELF.getPopularProduct();
+      
       let listProduct = [];
       for (let i = 0; i < listPid.length; i++) {
         let product = await Product.findById(listPid[i]._id);
-        listProduct.push(product);
+        listProduct.push({ product: product, count: listPid[i].count });
       }
 
       let listCid = await SELF.getPopularCategories();
       let listCategories = [];
       for (let i = 0; i < listCid.length; i++) {
         let category = await Category.findById(listCid[i].cid);
-        listCategories.push(category);
+        listCategories.push({ category: category, count: listCid[i].count });
       }
       return res.render("pages/admin/adminPage", {
         products: null,

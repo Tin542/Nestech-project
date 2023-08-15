@@ -46,6 +46,7 @@ function categoryControler() {
               orders: null,
               dashboard: null,
               orderDetail: null,
+              currentPage: parseInt(page),
               name: keySearch,
             });
           })
