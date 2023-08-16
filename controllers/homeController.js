@@ -14,6 +14,9 @@ function HomeController() {
   // chua global var
   const SELF = {
     SIZE: 8,
+    detailProductGB: {},
+    listSuggestGB: [],
+    listCommentsGB: [],
     calRate: (listCmt, count) => {
       let rate = 0;
       let totalStar = 0;
@@ -109,9 +112,6 @@ function HomeController() {
       }
     },
   };
-  let detailProductGB = {};
-  let listSuggestGB = [];
-  let listCommentsGB = [];
   return {
     home: async (req, res) => {
       try {
@@ -153,9 +153,9 @@ function HomeController() {
         if (!listSuggestItem) {
           return res.json({ s: 404, msg: "Get list suggest fail" });
         }
-        detailProductGB = result;
-        listSuggestGB = listSuggestItem;
-        listCommentsGB = listComment;
+        SELF.detailProductGB = result;
+        SELF.listSuggestGB = listSuggestItem;
+        SELF.listCommentsGB = listComment;
         return res.render("pages/detail", {
           data: result,
           listItems: listSuggestItem,
@@ -287,9 +287,9 @@ function HomeController() {
             });
         } else {
           return res.render("pages/detail", {
-            data: detailProductGB,
-            listItems: listSuggestGB,
-            comments: listCommentsGB,
+            data: SELF.detailProductGB,
+            listItems: SELF.listSuggestGB,
+            comments: SELF.listCommentsGB,
             msg: "Bạn không thể đánh giá sản phẩm khi chưa mua !!",
           });
         }

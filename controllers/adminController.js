@@ -141,6 +141,7 @@ function AdminController() {
     },
   };
   return {
+    // Product
     getList: async (req, res) => {
       try {
         let page = req.query.page;
@@ -279,6 +280,128 @@ function AdminController() {
           .catch((e) => {
             console.log(`deleteProduct - fail: ${e}`);
             return rs.json({ s: 400, msg: "deleteProduct fail" });
+          });
+      } catch (error) {
+        console.log(error);
+      }
+    },
+    // Category
+    categories: async (req, res) => {
+      try {
+        let page = req.query.page;
+        let keySearch = req.query.searchValue || "";
+        if (!page || parseInt(page) <= 0) {
+          page = 1;
+        }
+        let skip = (parseInt(page) - 1) * SELF.SIZE;
+        let regex = new RegExp(keySearch);
+        // pagination
+        let categoryCount = await Category
+          .find({ name: regex })
+          .countDocuments(); // lấy tổng số pategory hiện có
+        let pageCount = 0; // tổng số trang
+        if (categoryCount % SELF.SIZE !== 0) {
+          // nếu tổng số category chia SIZE có dư
+          pageCount = Math.floor(categoryCount / SELF.SIZE) + 1; // làm tròn số xuống cận dưới rồi + 1
+        } else {
+          pageCount = categoryCount / SELF.SIZE; // nếu ko dư thì chia bth
+        }
+        return Category
+          .find({ name: regex }).sort({updatedAt: -1})
+          .skip(skip) // số item bỏ qua ==> skip = (số trang hiện tại - 1) * số item ở mỗi trang
+          .limit(SELF.SIZE) // số item ở mỗi trang
+          .then((rs) => {
+            res.render("pages/admin/adminPage", {
+              category: rs,
+              pages: pageCount,
+              promotion: null,
+              staffs: null,
+              users: null,
+              urlUploaded: null,
+              products: null,
+              orders: null,
+              dashboard: null,
+              orderDetail: null,
+              currentPage: parseInt(page),
+              name: keySearch,
+            });
+          })
+          .catch((error) => {
+            res.send({ s: 400, msg: error });
+          });
+      } catch (error) {
+        console.log(error);
+      }
+    },
+    addcategory: async (req, res) => {
+      try {
+        let data = req.body;
+        data.addDate = SELF.formatDateToString(new Date());
+        data.editDate = SELF.formatDateToString(new Date());
+        return Category
+          .create(data)
+          .then((rs) => {
+            return res.redirect("list");
+          })
+          .catch((err) => {
+            res.send({ s: 400, msg: err });
+          });
+      } catch (error) {
+        console.log(error);
+      }
+    },
+    getcategorydetail: async (req, res) => {
+      try {
+        let categoryId = req.params?.id;
+        let result = await Category.findById(categoryId);
+
+        if (!result) {
+          return res.json({ s: 404, msg: "Category not found" });
+        }
+        return res.json({ s: 200, data: result });
+      } catch (error) {
+        console.log("Get Detail error: " + error);
+      }
+    },
+    editcategory: async (req, res) => {
+      try {
+        let editData = req.body;
+        let detailcategory = await Category.findById(editData._id);
+        if (!detailcategory) {
+          res.json({ s: 404, msg: "category not found" });
+        }
+        delete editData._id; // xoa field id trong editData
+        editData.editDate = SELF.formatDateToString(new Date());
+        return Category
+          .findByIdAndUpdate(detailcategory._id, editData)
+          .then((rs) => {
+            if (rs) {
+              res.redirect("/admin/category/list");
+            }
+          })
+          .catch((err) => {
+            console.log(err);
+          });
+      } catch (error) {
+        console.log("edit category error: ", error);
+      }
+    },
+    deletecategory: async (req, res) => {
+      try {
+        const pId = req.params?.id;
+      
+        const categoryDetail = await Category.findById(pId);
+        if (!categoryDetail) {
+          return res.json({ s: 404, msg: "category not found" });
+        }
+        Category
+          .deleteOne({ _id: pId })
+          .then((rs) => {
+            return res.json({ s: 200, msg: "Delete category success!!" });
+          })
+          .catch((e) => {
+            console.log(`deletecategory - fail: ${e}`);
+            return rs.json({ s: 400, msg: "deletecategory fail" });
           });
       } catch (error) {
         console.log(error);
