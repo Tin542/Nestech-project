@@ -1,15 +1,16 @@
 const express = require("express"); // import express
 const app = express(); // khai bao
-const CONFIG = require("./config");
-const home = require('./routes/home');
-const admin = require('./routes/admin');
-const auth = require('./routes/auth');
 const mongoose = require("mongoose");
 const bodyParser = require("body-parser");
 const cookieParser = require("cookie-parser");
 const sessions = require("express-session");
 const path = require("path");
 // const fileUpload = require('express-fileupload');
+const CONFIG = require("./config");
+const home = require('./routes/home');
+const admin = require('./routes/admin');
+const auth = require('./routes/auth');
+const user = require('./routes/user');
 
 // MongoDB connection
 const db = CONFIG.MONGODB_URL;
@@ -42,6 +43,7 @@ app.use(function(req, res, next) {
   next();
 });
 app.use("/", home);
+app.use('/user', user);
 
 app.listen(CONFIG.PORT, () => {
   console.log(`Example app listening on port ${CONFIG.PORT}`);
