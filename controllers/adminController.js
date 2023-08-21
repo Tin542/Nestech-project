@@ -63,7 +63,7 @@ function AdminController() {
         (accumulator, currentValue) => accumulator + currentValue.totalPrice,
         0
       );
-      return totalPriceInMonth;
+      return totalPriceInMonth.toFixed(2);
     },
     getPopularProduct: async () => {
       try {
@@ -586,6 +586,7 @@ function AdminController() {
         if (status) {
           filter["active"] = /^true$/i.test(status);
         }
+        filter["role"] = "customer";
 
         // pagination
         Promise.all([
