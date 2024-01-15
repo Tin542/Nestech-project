@@ -6,7 +6,7 @@ const cookieParser = require("cookie-parser");
 const sessions = require("express-session");
 const path = require("path");
 require('dotenv').config();
-require("./bin/www");
+// require("./bin/www");
 // const fileUpload = require('express-fileupload');
 
 const home = require('./routes/home');
