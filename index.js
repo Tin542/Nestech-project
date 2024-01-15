@@ -5,15 +5,18 @@ const bodyParser = require("body-parser");
 const cookieParser = require("cookie-parser");
 const sessions = require("express-session");
 const path = require("path");
+require('dotenv').config();
 // const fileUpload = require('express-fileupload');
-const CONFIG = require("./config");
+
 const home = require('./routes/home');
 const admin = require('./routes/admin');
 const auth = require('./routes/auth');
 const user = require('./routes/user');
 
 // MongoDB connection
-const db = CONFIG.MONGODB_URL;
+const db = process.env.MONGODB_URL;
+const port = process.env.PORT;
+
 mongoose
   .connect(db, { useUnifiedTopology: true, useNewUrlParser: true, maxPoolSize: 20 })
   .then(() => console.log("Connected to mongodb =(^.^)="))
@@ -45,8 +48,8 @@ app.use(function(req, res, next) {
 app.use("/", home);
 app.use('/user', user);
 
-app.listen(CONFIG.PORT, () => {
-  console.log(`Example app listening on port ${CONFIG.PORT}`);
+app.listen(port, () => {
+  console.log(`Example app listening on port ${port}`);
 });
 
 // pody-parser 

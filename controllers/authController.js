@@ -8,8 +8,6 @@ const emailService = require("../services/emailService");
 const localStorage = new LocalStorage("./localStorage");
 const bcrypt = require("bcrypt"); // encrypt password
 
-const CONFIG = require("../config");
-
 function AuthController() {
   // chua global var
   const SELF = {
@@ -146,7 +144,7 @@ function AuthController() {
                   userId: userInfo._id,
                   email: userInfo?.email,
                 },
-                CONFIG.SERECT_KEY,
+                process.env.SERECT_KEY,
                 { expiresIn: "100h" }
               );
               userInfo.token = token;
