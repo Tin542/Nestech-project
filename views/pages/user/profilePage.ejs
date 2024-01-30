@@ -38,29 +38,51 @@
               <hr />
               <div class="row">
                 <div class="col lh-lg">
-                  <div><strong>Họ tên:</strong> Nguyễn Văn A</div>
-                  <div><strong>Tên tài khoản:</strong> AA</div>
-                  <div><strong>Email: </strong> dsdddd</div>
+                  <div><strong>Họ tên:</strong> <%= item.fullname %></div>
+                  <div><strong>Tên tài khoản:</strong> <%= item.username %></div>
+                  <div><strong>Email: </strong> <%= item.email %></div>
                 </div>
                 <div class="col lh-lg">
-                  <div><strong>Số điện thoại:</strong> 11111111</div>
-                  <div><strong>Địa chỉ:</strong> ôpkppip></div>
+                  <div><strong>Số điện thoại:</strong> <%= item.phone %></div>
+                  <div><strong>Địa chỉ:</strong> <%= item.address %></div>
                 </div>
               </div>
             </div>
             <div class="card bg-white p-3 mt-3">
               <h5>Lịch sử mua hàng</h5>
               <hr />
-              <div class="row">
-                <div class="col lh-lg">
-                  <div><strong>Họ tên:</strong> Nguyễn Văn A</div>
-                  <div><strong>Tên tài khoản:</strong> AA</div>
-                  <div><strong>Email: </strong> dsdddd</div>
-                </div>
-                <div class="col lh-lg">
-                  <div><strong>Số điện thoại:</strong> 11111111</div>
-                  <div><strong>Địa chỉ:</strong> ôpkppip></div>
-                </div>
+              <div class="row" style="height: 300px; overflow: scroll;">
+                <table class="table table-borderless">
+                  <thead class="table-info">
+                    <tr class="text-center">
+                      <th scope="col">#</th>
+                      <th scope="col">Mã đơn hàng</th>
+                      <th scope="col">Thành tiền</th>
+                      <th scope="col">PT thanh toán</th>
+                      <th scope="col">Ngày mua</th>
+                      <th scope="col"></th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    <% listOrder.forEach(function(item, index) { %>
+                    <tr>
+                      <th scope="row"><%= index+1 %></th>
+                      <td class="d-flex">
+                        <%= item._id %>
+                      </td>
+                      <td class="text-center">
+                        <div class="fw-bold"><%= item.totalPrice %> $</div>
+                      </td>
+                      <td class="w-2 fw-bold text-center">
+                        <%= item.paymentMethod %>
+                      </td>
+                      <td class="w-2 fw-bold text-center">
+                        <%= item.createDate %>
+                      </td>
+                    </tr>
+                    <% }); %>
+                  </tbody>
+                </table>
               </div>
             </div>
           </div>

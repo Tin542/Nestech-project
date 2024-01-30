@@ -64,10 +64,11 @@ function AuthController() {
               password: hash,
               email: data?.email,
               otp: otp,
+              active: true,
               role: "customer",
             });
             await localStorage.setItem("email", data?.email);
-            return await res.redirect("/auth/verifyEmail");
+            return await res.redirect("/auth/login");
           } catch (err) {
             console.log("register user error: ", err);
           }
