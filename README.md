@@ -8,3 +8,5 @@
 ## Admin Account
 - username: admin
 - password: admin
+## env file:
+- https://drive.google.com/drive/folders/1KSgtY9aaqiwRXZWXwkdOL04UTGM8PUq9?usp=sharing
