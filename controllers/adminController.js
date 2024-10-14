@@ -4,6 +4,8 @@ const fs = require("fs");
 const moment = require("moment");
 const ObjectID = require("mongodb").ObjectId;
 const Chart = require("chart.js/auto");
+const { USER_RANK } = require("../constants/app.constant");
+const user = require("../models/user");
 
 const Product = require("../models/product").Product;
 const Promotion = require("../models/promotion").Promotion;
@@ -139,6 +141,44 @@ function AdminController() {
         console.log("error: " + error);
       }
     },
+
+    // Calculate User rank
+    updateUserRank: async (userID) => {
+      try {
+        const user = await User.findById(userID);
+        if (!user) return new Error("User not found");
+
+        let listOrder = await Order.find({
+          status: SELF.ORDER_STATUS.SUCCESS,
+          isPaid: true,
+          userID: user._id,
+        });
+
+        let listOid = listOrder.map((obj) => obj._id.toString());
+        const data = await OrderDetail.aggregate([
+          {
+            $match: {
+              orderID: {
+                $in: listOid,
+              },
+            },
+          },
+          {
+            $sort: {
+              count: -1,
+            },
+          },
+        ]);
+        let numOfProduct = 0;
+
+        data.forEach((od) => {
+          numOfProduct += od.quantity;
+        })
+        return numOfProduct;
+      } catch (error) {
+        console.log("Error at update user rank: ", error);
+      }
+    },
   };
   return {
     // Product
@@ -190,7 +230,7 @@ function AdminController() {
               let catInfo = await Category.findById(rs[1][i].categoryId).lean();
               rs[1][i]["catName"] = catInfo.name;
             }
-       
+
             res.render("pages/admin/adminPage", {
               products: rs[1],
               listCategories: category,
@@ -296,9 +336,9 @@ function AdminController() {
         let skip = (parseInt(page) - 1) * SELF.SIZE;
         let regex = new RegExp(keySearch);
         // pagination
-        let categoryCount = await Category
-          .find({ name: regex })
-          .countDocuments(); // lấy tổng số pategory hiện có
+        let categoryCount = await Category.find({
+          name: regex,
+        }).countDocuments(); // lấy tổng số pategory hiện có
         let pageCount = 0; // tổng số trang
         if (categoryCount % SELF.SIZE !== 0) {
           // nếu tổng số category chia SIZE có dư
@@ -306,8 +346,8 @@ function AdminController() {
         } else {
           pageCount = categoryCount / SELF.SIZE; // nếu ko dư thì chia bth
         }
-        return Category
-          .find({ name: regex }).sort({updatedAt: -1})
+        return Category.find({ name: regex })
+          .sort({ updatedAt: -1 })
           .skip(skip) // số item bỏ qua ==> skip = (số trang hiện tại - 1) * số item ở mỗi trang
           .limit(SELF.SIZE) // số item ở mỗi trang
           .then((rs) => {
@@ -338,8 +378,7 @@ function AdminController() {
         let data = req.body;
         data.addDate = SELF.formatDateToString(new Date());
         data.editDate = SELF.formatDateToString(new Date());
-        return Category
-          .create(data)
+        return Category.create(data)
           .then((rs) => {
             return res.redirect("list");
           })
@@ -372,8 +411,7 @@ function AdminController() {
         }
         delete editData._id; // xoa field id trong editData
         editData.editDate = SELF.formatDateToString(new Date());
-        return Category
-          .findByIdAndUpdate(detailcategory._id, editData)
+        return Category.findByIdAndUpdate(detailcategory._id, editData)
           .then((rs) => {
             if (rs) {
               res.redirect("/admin/category/list");
@@ -389,13 +427,12 @@ function AdminController() {
     deletecategory: async (req, res) => {
       try {
         const pId = req.params?.id;
-      
+
         const categoryDetail = await Category.findById(pId);
         if (!categoryDetail) {
           return res.json({ s: 404, msg: "category not found" });
         }
-        Category
-          .deleteOne({ _id: pId })
+        Category.deleteOne({ _id: pId })
           .then((rs) => {
             return res.json({ s: 200, msg: "Delete category success!!" });
           })
@@ -909,11 +946,30 @@ function AdminController() {
         if (!order) {
           return res.json({ s: 404, msg: "order not found" });
         }
+
+        console.log("statusOrder", statusOrder);
+        console.log("statusPayment", statusPayment);
+
         return await Order.findByIdAndUpdate(order._id, {
           status: statusOrder,
           isPaid: statusPayment,
         })
-          .then(() => {
+          .then(async () => {
+            const result = await SELF.updateUserRank(order.userID);
+            let currentRank = '';
+            if(result >= 50) {
+              currentRank = USER_RANK.SILVER;
+            } else if (result >= 100) {
+              currentRank = USER_RANK.GOLD;
+            } else if (result >= 200) {
+              currentRank = USER_RANK.PLATINUM;
+            } else {
+              currentRank = USER_RANK.BRONZE;
+            }
+            await User.findByIdAndUpdate(order.userID, {
+              rank: currentRank
+            });
+
             res.redirect(`/admin/order/detail/${order._id}`);
           })
           .catch((error) => connsole.log(error));
@@ -924,7 +980,7 @@ function AdminController() {
     // Dashboard
     dashboard: async (req, res) => {
       let listPid = await SELF.getPopularProduct();
-      
+
       let listProduct = [];
       for (let i = 0; i < listPid.length; i++) {
         let product = await Product.findById(listPid[i]._id);

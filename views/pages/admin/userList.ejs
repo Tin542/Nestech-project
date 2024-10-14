@@ -36,6 +36,7 @@
         <th scope="col">Email</th>
         <th scope="col">Tên tài khoản</th>
         <th scope="col">Tổng số đơn hàng</th>
+        <th scope="col">Rank</th>
         <th scope="col">Trạng thái</th>
         <th scope="col">Thao tác</th>
       </tr>
@@ -48,6 +49,7 @@
         <td><%= item.email %></td>
         <td><%= item.username %></td>
         <td><%= item.orders %></td>
+        <td><%= item.rank %></td>
         <td>
           <% if(item.active == false) { %>
           <span class="badge rounded-pill bg-danger">Chưa kích hoạt</span>

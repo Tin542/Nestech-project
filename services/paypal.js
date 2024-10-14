@@ -59,8 +59,8 @@ function PayPalService() {
           payment_method: "paypal",
         },
         redirect_urls: {
-          return_url: "http://localhost:3000/success",
-          cancel_url: "http://localhost:3000/cancel",
+          return_url: "http://localhost:3001/success",
+          cancel_url: "http://localhost:3001/cancel",
         },
         transactions: [
           {

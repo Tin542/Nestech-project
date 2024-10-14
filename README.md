@@ -3,10 +3,17 @@
 - Nguyễn Thành Tín
 - Hồ Thị Thùy Dung
 - Lê Quang Nhật Anh
-## MongoDB
-- mongodb+srv://tinnt0504:Password123@nestech.ahara4m.mongodb.net/test
 ## Admin Account
 - username: admin
-- password: admin
-## env file:
-- https://drive.google.com/drive/folders/1KSgtY9aaqiwRXZWXwkdOL04UTGM8PUq9?usp=sharing
+- password: 123456
+## Tech stack
+- Node version 18+
+- ExpressJS
+- MongoDB
+- Bootstrap 4
+## How to run
+- npm install
+- change .env.example to .env
+- edit .env file
+- npm start
+
