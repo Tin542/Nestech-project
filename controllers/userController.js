@@ -15,13 +15,13 @@ function userController() {
       try {
         let uid = res.locals.user; // get current user id
         const result = await User.findById(uid);
-        const listOrder = await Order.find({ userID: uid }).sort({ createdAt: -1 });
-        listOrder.forEach(element => {
-          element.createDate = SELF.formatDateToString(element.createAt);
-        });
         if (!result) {
           return res.json({ s: 404, msg: "User not found" });
         }
+        const listOrder = await Order.find({ userID: result._id }).sort({ createdAt: -1 });
+        listOrder.forEach(element => {
+          element.createDate = SELF.formatDateToString(element.createAt);
+        });
         return res.render("../views/pages/user/profilePage.ejs", {
           item: result,
           listOrder: listOrder,

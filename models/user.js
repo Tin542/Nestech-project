@@ -1,5 +1,6 @@
 "use strict";
 const mongoose = require("mongoose");
+const { USER_RANK } = require("../constants/app.constant");
 
 // define model schema
 const User = mongoose.Schema(
@@ -14,6 +15,7 @@ const User = mongoose.Schema(
     otp: { type: String },
     token: { type: String },
     role: { type: String },
+    rank: {type: String, default: USER_RANK.BRONZE},
   },
   { version: false, timestamps: true }
 );
